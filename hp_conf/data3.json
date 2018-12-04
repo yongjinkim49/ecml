@@ -1,0 +1,101 @@
+{
+    "dataset": "MNIST",
+    "model": "LeNet-5",
+    "config": { 
+        "max_epoch": 15, 
+        "surrogate": "data3"
+    },    
+    "hyperparams": {
+        "conv1_depth": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [
+                1,
+                350
+            ]
+        },
+        "conv2_depth": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [
+                1,
+                350
+            ]
+        },
+        "fc1_width": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [
+                1,
+                1024
+            ]
+        },
+        "lr": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [
+                -4,
+                -0.5
+            ],
+            "power_of": 10
+        },
+        "reg_param": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [
+                0.0,
+                1.0
+            ]
+        },
+        "keep_prop_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [
+                0.1,
+                1.0
+            ]
+        },
+        "batch_norm": {
+            "type": "bool",
+            "value_type": "preordered",
+            "range": [
+                false,
+                true
+            ]
+        },
+        "act_func": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": [
+                "relu",
+                "tanh",
+                "sigmoid",
+                "elu",
+                "lrelu"
+            ]
+        },
+        "optimizer": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": [
+                "adadelta",
+                "adagrad",
+                "adam",
+                "gd",
+                "momentum",
+                "rmsprop"
+            ]
+        }
+    },
+    "param_order": [
+        "act_func",
+        "batch_norm",
+        "conv1_depth",
+        "conv2_depth",
+        "fc1_width",
+        "keep_prop_rate",
+        "lr",
+        "optimizer",
+        "reg_param"
+    ]
+}

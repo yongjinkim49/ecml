@@ -1,4 +1,6 @@
+@ -1,104 +1,13 @@
 # Byte-compiled / optimized / DLL files
+.ipynb_checkpoints/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -102,3 +104,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+.cache/
+.vscode/
+
+*.xlsx
+*.temp.json
+*.pkl.gz
+*.pkl
+*.bak

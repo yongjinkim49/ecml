@@ -1,0 +1,60 @@
+{
+    "dataset": "PTB",
+    "model": "LSTM",
+    "config": { 
+        "max_epoch": 15, 
+        "surrogate": "data10"
+    },    
+    "hyperparams": {
+        "num_layers": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [1, 2]
+        },
+        "num_steps": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [10, 20]
+        },
+        "hidden_size": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [10, 200]
+        },
+
+        "init_scale": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.01, 0.1]
+        },
+        "learning_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.1, 1.0]
+        },
+        "keep_prob": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.1, 1.0]
+        },
+        "max_grad_norm": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [5.0, 10.0]
+        },
+        "lr_decay": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.5, 1.0]
+        },
+
+        "rnn_mode": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": ["cudnn", "basic", "block"]
+        }
+    },
+    "param_order" : ["hidden_size", "init_scale", "keep_prob", "learning_rate", 
+        "lr_decay", "max_grad_norm", "num_layers", "num_steps", "rnn_mode"],
+    "metric" : "perplexity"
+}

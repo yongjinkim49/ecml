@@ -1,0 +1,69 @@
+{
+    "dataset": "CIFAR-10",
+    "model": "VGG",
+    "config": { 
+        "max_epoch": 50, 
+        "surrogate": "data20",
+        "ffr": 60
+    },    
+    "hyperparams": {
+        "num_conv1_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [8, 32]
+        },
+        "num_conv2_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [32, 64]
+        },
+        "num_conv3_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [64, 128]
+        },
+        "num_conv4_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [64, 128]
+        },
+        "size_conv_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [2, 3]
+        },
+        "num_fc1_neurons": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [10, 1000]
+        },   
+
+        "learning_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [-4, -2],
+            "power_of": 10
+        },
+        "loss_weight": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.0, 1.0]
+        },
+
+        "act_function": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": ["relu", "elu", "tanh"]
+        },
+        "reg_method": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": ["none", "dropout", "batchnorm"]
+        }
+    },
+    "param_order" : ["act_function", "learning_rate", "loss_weight", "num_conv1_filters", "num_conv2_filters", 
+        "num_conv3_filters", "num_conv4_filters", "num_fc1_neurons", "reg_method", "size_conv_filters"],
+        
+    "num_epoch" : 50
+
+}
