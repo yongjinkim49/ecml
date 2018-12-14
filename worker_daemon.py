@@ -4,7 +4,7 @@ import random as rand
 import argparse
 
 @eval_task
-def sample_obj_func(c1_depth, p1_size, c2_depth, 
+def sample_target_func(c1_depth, p1_size, c2_depth, 
         p2_size, f1_width, window_size, 
         learning_rate, reg_param, keep_prop_rate):
 
@@ -27,9 +27,7 @@ def sample_obj_func(c1_depth, p1_size, c2_depth,
         return loss
 
 def sample_main(args):
-
-
-    print(" * HPO worker {}-gpu{} is ready to serve...".format(MACHINE_ID, GPU_ID))
+    
     debug_mode = False
     if args.log_level == "debug":
         debug_mode = True
@@ -38,7 +36,8 @@ def sample_main(args):
         hconf_path = args.hconf_dir + args.hp_config
         hp_cfg = hconf.read_config(hconf_path)
 
-        wait_job_request(sample_obj_func, hp_cfg,
+        print(" * HPO worker {}-gpu{} is ready to serve...".format(MACHINE_ID, GPU_ID))
+        wait_job_request(sample_target_func, hp_cfg,
             debug_mode=debug_mode, 
             port=args.port)
     except KeyboardInterrupt as ki:
