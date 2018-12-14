@@ -2,7 +2,7 @@
     "dataset": "CIFAR-10",
     "model": "ResNet",
     "config": { 
-        "max_epoch": 2, 
+        "max_epoch": 100, 
         "num_samples" : 7000
     },      
     "hyperparams": {
