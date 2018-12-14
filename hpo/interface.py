@@ -28,7 +28,8 @@ import hpo.hp_config as hp_cfg
 DEFAULT_DEBUG_MODE = True
 WORKING_JOB_MGRS = []
 
-def wait_seq_opt_request(run_cfg,  
+def wait_seq_opt_request(run_cfg, hp_cfg,
+                    hp_dir="hp_conf/", 
                     enable_debug=DEFAULT_DEBUG_MODE,
                     port=5000, 
                     enable_surrogate=False,
@@ -39,7 +40,7 @@ def wait_seq_opt_request(run_cfg,
     if enable_debug:
         set_log_level('debug')
 
-    w = SequentialOptimizer(run_cfg, "seq_opt_{}".format(port))
+    w = SequentialOptimizer(run_cfg, hp_cfg, "seq_opt_{}".format(port))
     jm = JobManager(w, use_surrogate=enable_surrogate)
     cred = jm.credential
     WORKING_JOB_MGRS.append(jm)
@@ -52,7 +53,7 @@ def wait_seq_opt_request(run_cfg,
     api.add_resource(Billboard, "/", # for node spec and resources
                     resource_class_kwargs={'job_manager': jm})
     api.add_resource(Config, "/config", # for run spec
-                    resource_class_kwargs={'job_manager': jm})
+                    resource_class_kwargs={'job_manager': jm, "hp_config": hp_cfg})
     
     # For job handling
     api.add_resource(Jobs, "/jobs", 

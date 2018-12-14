@@ -25,7 +25,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 raise ValueError("Connection failed: {}".format(status))
 
         except Exception as ex:
-            #debug("Getting profile failed: {}".format(ex))
+            debug("Getting profile failed: {}".format(ex))
             return None
 
     def get_config(self):
@@ -63,7 +63,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
         elif status == '204':
             return None # if job_id is active, no active job is available now
         else:
-            raise ValueError("Connection error. status code: {}".format(status))
+            raise ValueError("Connection error to job {}. status code: {}".format(job_id, status))
 
     def create_job(self, job_desc):
 

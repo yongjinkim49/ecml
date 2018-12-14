@@ -11,9 +11,8 @@ from hpo.utils.logger import *
 from hpo.eval_time import *
 
 import hpo.bandit_config as run_config
-import hpo.hp_config as hp_config
+import hpo.hp_config as hconf
 import hpo.bandit as bandit
-import hpo.workers.seq_run as runner
 import hpo.batch_sim as batch
 
 
@@ -37,24 +36,24 @@ def validate_args(args):
     surrogate = None
     valid = {}
     #debug(os.getcwd())
-    hp_cfg_path = args.hp_conf
-    if args.config_name.endswith('.json'):
-        # config_name is a json file
-        hp_cfg_path += args.config_name
+    hp_cfg_path = args.hconf_dir
+    if args.hp_config.endswith('.json'):
+        # hp_config is a json file
+        hp_cfg_path += args.hp_config
     else:
-        # config_name is surrogate name, check whether same csv file exists in lookup folder.
-        if not check_lookup_existed(args.config_name):
+        # hp_config is surrogate name, check whether same csv file exists in lookup folder.
+        if not check_lookup_existed(args.hp_config):
             raise ValueError('Invaild arguments.')            
-        surrogate = args.config_name
-        hp_cfg_path += (args.config_name + ".json")
+        surrogate = args.hp_config
+        hp_cfg_path += (args.hp_config + ".json")
     
-    hp_cfg = hp_config.read_config(hp_cfg_path)
+    hp_cfg = hconf.read_config(hp_cfg_path)
     if hp_cfg is None:
-            raise ValueError('Invaild hp_config : {}'.format(hp_cfg_path))
+            raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
               
-    run_cfg = run_config.read(args.conf, path=args.run_conf)
+    run_cfg = run_config.read(args.rconf, path=args.rconf_dir)
     if not run_config.validate(run_cfg):
-        error("Invalid run configuration. see {}".format(args.conf))
+        error("Invalid run configuration. see {}".format(args.rconf))
         raise ValueError('invaild run configuration.')    
     else:
         valid['surrogate'] = surrogate
@@ -109,13 +108,15 @@ def execute(run_cfg, args, save_results=False):
             trainer = None
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
-                if 'surrogate' in args:
+                if 'surrogate' in args and args['surrogate'] != None:
                     use_surrogate = args['surrogate']
-                    path = "hp_conf\{}.json".format(args['surrogate'])
-                    hp_cfg = hp_config.read_config(path)
+                    path = "{}{}.json".format(args['hp_conf'], args['surrogate'])
+                    hp_cfg = hconf.read_config(path)
                     #debug(hp_cfg)
-                elif 'hp_cfg' in args:
+                elif 'hp_cfg' in args and args['hp_cfg'] != None:
                     hp_cfg = args['hp_cfg']
+                else:
+                    raise ValueError("Invalid arguments: {}".format(args))
                 
                 m = bandit.create_runner(trainer, 
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
@@ -191,15 +192,16 @@ def main():
                         'it is automatically terminated. Default setting is {}.'.format(default_expired_time))
     
     # Configurations
-    parser.add_argument('-c', '--conf', default=default_run_config, type=str,
-                        help='Run configuration file name existed in {}.\n'.format(RUN_CONF_PATH)+\
-                        'Default setting is {}'.format(default_run_config))
-    parser.add_argument('-rc', '--run_conf', default=RUN_CONF_PATH, type=str,
+
+    parser.add_argument('-rd', '--rconf_dir', default=RUN_CONF_PATH, type=str,
                         help='Run configuration directory.\n'+\
                         'Default setting is {}'.format(RUN_CONF_PATH))                        
-    parser.add_argument('-hc', '--hp_conf', default=HP_CONF_PATH, type=str,
+    parser.add_argument('-hd', '--hconf_dir', default=HP_CONF_PATH, type=str,
                         help='Hyperparameter configuration directory.\n'+\
                         'Default setting is {}'.format(HP_CONF_PATH))
+    parser.add_argument('-rc', '--rconf', default=default_run_config, type=str,
+                        help='Run configuration file in {}.\n'.format(RUN_CONF_PATH)+\
+                        'Default setting is {}'.format(default_run_config))    
     parser.add_argument('-w', '--worker_url', default='none', type=str,
                         help='Remote training worker URL.\n'+\
                         'Set the valid URL for remote training.') 
@@ -220,7 +222,7 @@ def main():
 #                        '{} are available. Default setting is {}'.format(time_penalties_modes, default_time_penalty))
  
 
-    parser.add_argument('config_name', type=str, help='hyperparameter configuration name.')
+    parser.add_argument('hp_config', type=str, help='hyperparameter configuration name.')
     parser.add_argument('num_trials', type=int, help='The total repeats of the experiment.')
 
     args = parser.parse_args()

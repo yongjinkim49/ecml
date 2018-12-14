@@ -9,6 +9,7 @@ import traceback
 from collections import namedtuple
 from utils.logger import *
 
+
 def read_config(cfg_file):
     hcr = HyperparameterConfigurationReader(cfg_file)
     
@@ -24,7 +25,7 @@ class HyperparameterConfigurationReader(object):
         if os.path.exists(path):
             self._dict = self.read_json(path)
         else:
-            warn("hyperparam config not found: {}".format(path))
+            error("hyperparam config not found: {}".format(path))
 
     def read_json(self, cfg_file_name):
         with open(cfg_file_name) as json_cfg:
@@ -83,6 +84,7 @@ class HyperparameterConfigurationReader(object):
 
         return True
 
+
 class DictionaryToObject(object):
     def __init__(self, d):
         for a, b in d.items():
@@ -93,6 +95,7 @@ class DictionaryToObject(object):
             else:
                 setattr(self, a, DictionaryToObject(b) 
                     if isinstance(b, dict) else b)
+
 
 class HyperparameterConfiguration(DictionaryToObject):
     def __init__(self, d):
@@ -136,6 +139,7 @@ class HyperparameterConfiguration(DictionaryToObject):
 
     def get_dict(self):
         return self._dict
+
 
 def test_main():
     json = read_json('hp_conf/data2.json')

@@ -8,17 +8,16 @@ import numpy as np
 import wot.utils.lookup as lookup
 from wot.utils.logger import *
 
-from wot.workers.evaluator import FunctionEvaluator
+from wot.workers.evaluator import IterativeFunctionEvaluator
 from wot.interface import *
 
-class SurrogateEvaluator(FunctionEvaluator):
+class SurrogateEvaluator(IterativeFunctionEvaluator):
     def __init__(self, name, lookup, **kwargs):
-        self.lookup = lookup        
-        super(SurrogateEvaluator, self).__init__(name)
+        self.lookup = lookup
+        id = "surrogate_{}-".format(name)        
+        super(SurrogateEvaluator, self).__init__(id)
 
-        self.id = "surrogate_{}-".format(name)
         self.type = 'surrogate'
-        
 
         self.cur_model_index = None
         self.time_slip_rate = None
@@ -39,13 +38,15 @@ class SurrogateEvaluator(FunctionEvaluator):
 
     def init_results(self, init_loss):
         # TODO: do something for initial condition setting
-        result = {"run_time": 0.0, "cur_loss": init_loss, "cur_epoch": 0}
+        result = {"run_time": 0.0, "cur_loss": init_loss, "cur_iter": 0, "iter_unit": "epoch"}
 
         self.results.append(result)
 
-    def set_params(self, hpv, index=None):
+    def set_job_description(self, hpv, index=None, job_id=None):
+        if job_id != None:
+            self.job_id = job_id
+
         # skip hpv matching with index value
-        
         if index is not None:
             debug("Parameter lookup using given index: {}".format(index))
             self.params = hpv
@@ -68,8 +69,11 @@ class SurrogateEvaluator(FunctionEvaluator):
 
         try:            
             total_epoches = self.lookup.num_epochs
-            if self.max_iters is not None and self.max_iters < total_epoches:
-                total_epoches = self.max_iters
+            if self.max_iters is not None:
+                if self.iter_unit == "epoch" and self.max_iters < total_epoches:
+                    total_epoches = self.max_iters
+                else:
+                    raise ValueError("Invalid max iteration setting: {}{}".format(self.max_iters, self.iter_unit))
             durations = self.lookup.get_elapsed_times()
             total_samples = len(durations)
             if self.cur_model_index > total_samples:
@@ -95,7 +99,8 @@ class SurrogateEvaluator(FunctionEvaluator):
                     result = {
                         "run_time": cur_dur, 
                         "cur_loss": cur_loss, 
-                        "cur_epoch": num_epoch
+                        "cur_iter": num_epoch,
+                        "iter_unit" : "epoch"
                     }
                     
                     self.results.append(result)
@@ -142,7 +147,7 @@ def test_main():
     sample = samples[test_index]
     sample = convert_to_dict(sample, cfg.param_order)
 
-    sw.set_params(sample)
+    sw.set_job_description(sample)
     sw.start()
     print("after starting: {}".format(sw.get_cur_result()))
     time.sleep(5)

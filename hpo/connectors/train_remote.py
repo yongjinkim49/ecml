@@ -42,28 +42,36 @@ class RemoteTrainConnector(RemoteJobConnector):
     def validate(self):
         try:
             profile = self.get_profile()
+            
             if "spec" in profile and "job_type" in profile["spec"]:
-                if profile["spec"]["job_type"] == "ML trainer":
+                debug("Remote worker profile: {}".format(profile["spec"]))
+                if profile["spec"]["job_type"] == "ML_trainer":
                     config = self.get_config()
-                    if config:                
-                        if config["obj_func"] == 'surrogate':
-                            return True  # skip parameter validation process        
-                        return self.check_params_equal(self.hp_config._dict, config) 
+                    if "run_config" in config and "target_func" in config["run_config"]:                
+                        if config["run_config"]["target_func"] == 'surrogate':
+                            return True  # skip parameter validation process
+                    if "hp_config" in config:        
+                        return self.compare_config(self.hp_config.get_dict(), 
+                                                config["hp_config"]) 
 
         except Exception as ex:
             warn("Validation failed: {}".format(ex))
             
         return False
 
-    def check_params_equal(self, dict1, dict2):
-        if "param_order" in dict1 and "param_order" in dict2:
-            params1 = dict1["param_order"]
-            params2 = dict2["param_order"]
-            if len(params1) == len(params2):
-                for i in range(len(params1)):
-                    if params1[i] != params2[i]:
+    def compare_config(self, origin, target):
+        try:
+            if "hyperparams" in origin and "hyperparams" in target:
+                hps = origin["hyperparams"]
+                ths = target["hyperparams"]
+                # XXX:Check hyperparameter name only
+                for k in hps.keys():
+                    if not k in ths:
                         return False
+                
                 return True
+        except Exception as ex:
+            warn("Configuration comparision failed: {}\n{}\n{}".format(ex, origin, target))
 
         return False
 
@@ -93,7 +101,7 @@ class RemoteTrainConnector(RemoteJobConnector):
 
 class RemoteTrainer(TrainerPrototype):
     def __init__(self, connector, hpvs, 
-                base_error=0.9, polling_interval=1, min_train_epoch=1):
+                base_error=0.9, polling_interval=5, max_timeout= 10, min_train_epoch=1):
 
         self.hpvs = hpvs
         self.hp_config = connector.hp_config
@@ -105,7 +113,7 @@ class RemoteTrainer(TrainerPrototype):
         self.history = []
         self.early_stopped = []
         self.min_train_epoch = min_train_epoch
-
+        self.max_timeout = max_timeout
         self.polling_interval = polling_interval
     
     def reset(self):
@@ -116,34 +124,59 @@ class RemoteTrainer(TrainerPrototype):
     def stop_early(self, curve, est):
         raise NotImplementedError("Stopping mechanism should be implemented. Returns True or False here.")
 
-    def wait_until_done(self, model_index, estimates, space, method='polling'):
-        if method == 'polling':
+    def wait_until_done(self, job_id, model_index, estimates, space):
+
+        acc_curve = None
+        prev_interim_err = None
+        time_out_count = 0
+        while True: # XXX: infinite loop
             try:
-                acc_curve = None
-                while True: # XXX: infinite loop
-                    j = self.controller.get_job("active")
-                    if j != None and "losses" in j:
+                j = self.controller.get_job("active")
+                if j != None:
+                    if "losses" in j and len(j["losses"]) > 0:
                         acc_curve = [ 1.0 - loss for loss in j["losses"] ]
-                        if space != None:
-                            interim_err = acc_curve[-1]
-                            # TODO: how to update interim error?
+                        
+                        # Interim error update
+                        interim_err = j["losses"][-1]
+                        if prev_interim_err == None or prev_interim_err != interim_err:
+                            debug("Interim error {} will be updated".format(interim_err))
                             space.update(model_index, interim_err)
                         
-                        if self.min_train_epoch < len(acc_curve) and self.stop_early(acc_curve, estimates):                        
+                        prev_interim_err = interim_err
+                        
+                        # Early stopping check
+                        if self.min_train_epoch < len(acc_curve) and \
+                            self.stop_early(acc_curve, estimates):                        
                             job_id = j['job_id']
+                            debug("This job will be early stopped")
                             self.controller.stop(job_id)
                             break
-                    elif j == None:
+
+                    elif "losses" in j and len(j["losses"]) == 0:
+                        pass
+                    else:
+                        warn("Invalid job result: {}".format(j))
+                elif j == None:
+                    # cross check 
+                    r = self.controller.get_job(job_id)
+                    if "losses" in r:
+                        num_losses = len(r["losses"])
+                        debug("Current working job finished with {} losses.".format(num_losses))
                         break 
-                    time.sleep(self.polling_interval)
-                if acc_curve:
-                    self.history.append(acc_curve)
+                
+                debug("Waiting {} sec before retrieving the result...".format(self.polling_interval)) 
+                time.sleep(self.polling_interval)
+            
             except Exception as ex:
+                if str(ex) == 'timed out':
+                    time_out_count += 1                    
+                    if time_out_count < self.max_timeout:
+                        debug("Time out happened. Retry count {}/{}".format(time_out_count, self.max_timeout))
+                        continue
+
                 warn("Something goes wrong in remote worker: {}".format(ex))
-                self.history.append(-1)
-       
-        else:
-            raise NotImplementedError("No such waiting method implemented")
+                break
+
 
     def train(self, space, cand_index, estimates=None):
         hpv = {}
@@ -161,11 +194,16 @@ class RemoteTrainer(TrainerPrototype):
                     
                     self.jobs[job_id] = {"cand_index" : cand_index, "status" : "run"}
                     
-                    self.wait_until_done(cand_index, estimates, space)
+                    self.wait_until_done(job_id, cand_index, estimates, space)
 
                     result = self.controller.get_job(job_id)
+                   
                     self.jobs[job_id]["result"] = result
                     self.jobs[job_id]["status"] = "done"
+                    
+                    acc_curve = [ 1.0 - loss for loss in result["losses"] ]
+                    if acc_curve != None:
+                        self.history.append(acc_curve) 
 
                     return result['cur_loss'], result['run_time']
 

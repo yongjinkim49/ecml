@@ -38,7 +38,7 @@ def create_emulator(surrogate,
          save_pkl=False,
          space_url=None,
          num_resume=0,
-         id="HPO emulator"
+         id="HPO_emulator"
          ):
 
     grid_order = None
@@ -72,7 +72,7 @@ def create_runner(trainer_url, run_mode, target_acc, time_expired,
          num_resume=0,
          space_url=None,
          use_surrogate=None,
-         id="HPO runner"
+         id="HPO_runner"
          ):
     
     # FIXME:test auth key. It should be deleted before release.
@@ -258,7 +258,7 @@ class HPOBanditMachine(object):
         test_error, exec_time = self.evaluate(next_index, model)
         total_opt_time = select_opt_time + opt_time
         repo.append(next_index, test_error,
-                                     total_opt_time, exec_time, metrics)
+                    total_opt_time, exec_time, metrics)
         self.samples.update(next_index, test_error)
         
         curr_acc = 1.0 - test_error
@@ -331,7 +331,7 @@ class HPOBanditMachine(object):
 
     def mix(self, strategy, num_trials, save_results=True):
         ''' executing the bandit with many arms by given mixing strategy '''
-        model = 'DIVERSIFIED'
+        model = 'DIV'
         self.temp_saver = TempSaver(self.samples.get_name(),
                                     model, strategy, num_trials, self.run_config)
 
@@ -398,7 +398,7 @@ class HPOBanditMachine(object):
             est_records = None
             if self.with_pkl is True:
                 est_records = self.est_records
-            self.saver.save('DIVERSIFIED', strategy,
+            self.saver.save('DIV', strategy,
                             num_trials, self.results, est_records)
 
             self.temp_saver.remove()

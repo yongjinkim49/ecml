@@ -9,7 +9,12 @@ class RemoteConnectorPrototype(object):
         else:
             self.credential = "jo2fulwkq" # XXX:test auth key. It should be deleted later.
         
-        self.conn = Connection(target_url)
+        if "timeout" in kwargs:
+            self.timeout = kwargs['timeout']
+        else:
+            self.timeout = 10
+
+        self.conn = Connection(target_url, timeout=self.timeout)
         
         self.headers = {'Content-Type':'application/json', 'Accept':'application/json'}
         self.headers['Authorization'] = "Basic {}".format(self.credential)

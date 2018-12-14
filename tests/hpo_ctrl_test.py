@@ -12,17 +12,17 @@ from hpo.connectors.hpo_remote import *
 
 def test_hpo_main():
     worker_url = None
-    ip_addr = "147.47.123.249"
-                
+    ip_addr = "127.0.0.1" #"147.47.123.249"
+    surrogate = None #"data10"            
     # XXX: If you want to uncomment below, you firstly start add_task.py of worker with port 6000.
-    #worker_url = "http://10.0.1.35:6000"
+    worker_url = "http://147.47.120.182:6001"
 
     set_log_level('debug')
 
     rtc = RemoteOptimizerConnector(ip_addr)
     ro = RemoteSequentialOptimizer(rtc, surrogate="data10", worker_url=worker_url, polling_interval=10)
     
-    opts = ro.create_job_description(exp_time='24h', spec="SEQ", num_trials=100)
+    opts = ro.create_job_description(exp_time='12h', spec="SEQ", num_trials=100)
     ro.optimize(opts)
     for j in ro.jobs:
         print("Result of job {}:\n{}".format(j['id'], j['result']))

@@ -2,20 +2,18 @@ import os
 import time
 from multiprocessing import Process, current_process
 
-import hpo.hp_config as hp_cfg
-
 from hpo.utils.logger import *
 from hpo.connectors.hpo_remote import *
 
 from hpo.interface import *
 
 
-def create_local_daemon(run_config, port=5000, log_level="debug"):
+def create_local_daemon(run_config, hp_config, port, log_level="debug"):
 
     set_log_level(log_level)
 
     debug("HPO daemon will be working in port {}.\n".format(port))
-    wait_seq_opt_request(run_config, 
+    wait_seq_opt_request(run_config, hp_config, 
         enable_debug=True, port=port)
 
 
@@ -31,11 +29,13 @@ def run_seq_hpo(connector, run_time, mode, spec, surrogate=None, log_level="debu
     ro.optimize(desc)
 
 
-class LocalParallelOptimizer(object):
-    def __init__(self, run_config, 
+class LocalParallelOptimizerController(object):
+    
+    def __init__(self, run_config, hp_config,
             ip_addr="127.0.0.1", surrogate=None, base_port=5000):
 
         self.run_config = run_config
+        self.hp_config = hp_config,
         self.ip_addr = ip_addr
         self.base_port = base_port
         self.connectors = []
@@ -76,7 +76,8 @@ class LocalParallelOptimizer(object):
 
             for port in self.get_ports():                
                 sp = Process(target=create_local_daemon, 
-                    args=(self.run_config, port))
+                    args=(self.run_config, self.hp_config, port),
+                    daemon=True)
                 daemons.append(sp)
 
             # run services

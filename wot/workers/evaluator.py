@@ -1,5 +1,4 @@
 import os
-import threading
 import time
 import traceback
 import copy
@@ -7,27 +6,32 @@ import copy
 import numpy as np
 
 from wot.utils.logger import *
-from wot.workers.worker import Worker
+from wot.workers.trainer import Trainer
 
 
-class FunctionEvaluator(Worker):
-    def __init__(self, name):
-        super(FunctionEvaluator, self).__init__()
+class IterativeFunctionEvaluator(Trainer):
+    def __init__(self, name, progressive=False):
+        
+        super(IterativeFunctionEvaluator, self).__init__(name)
 
-        self.type = 'obj_func'
+        self.type = 'eval_func'
         self.eval_func = None
         
-        self.id = "obj_func-{}".format(name)
         self.device_id = 'cpu0'
         self.max_iters = 1
+        self.iter_unit = "epoch"
+        self.progressive = progressive
 
-    def set_max_iters(self, max_epoch):
-        self.max_iters = max_epoch
+    def set_max_iters(self, num_max_iters, iter_unit="epoch"):
+        self.max_iters = num_max_iters
 
     def set_exec_func(self, eval_func, args):
         self.eval_func = eval_func
-        self.config = {"obj_func": eval_func.__name__,
-                        "param_order" : args}
+        self.config = {"target_func": eval_func.__name__,
+                        "arguments" : args}
+
+    def set_device_id(self, device_type, device_id):
+        self.device_id = "{}{}".format(device_type, device_id)
 
     def get_cur_result(self):
         if len(self.results) > 0:
@@ -47,43 +51,84 @@ class FunctionEvaluator(Worker):
             error('Set configuration properly before starting.')
             return
         else:
-            super(FunctionEvaluator, self).start()
+            super(IterativeFunctionEvaluator, self).start()
 
     def execute(self):
         try:
             self.reset() # XXX:self.results should be empty here
-            debug("max iteraions: {}".format(self.max_iters))
+            debug("Max iterations: {}{}".format(self.max_iters, self.iter_unit))
             
             base_time = time.time()
-            for i in range(self.max_iters):
+            num_iters = 1
+            max_iters = self.max_iters
+            
+            if self.progressive == True:
+                num_iters = self.max_iters                
+
+            for i in range(num_iters):
                 
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()
-                debug("params: {}".format(self.params))
+                debug("Assigned params: {}".format(self.params))
+
+                cur_loss = None
+                cur_iter = i + 1
+                cur_dur = time.time() - base_time
                 
-                cur_loss = self.eval_func(**self.params)
-                if cur_loss != None:
-                    cur_epoch = i + 1
-                    
-                    cur_dur = time.time() - base_time
-                        
-                    result = {"run_time": cur_dur,
-                            "cur_loss": cur_loss, 
-                            "cur_epoch": cur_epoch}
-                    
-                    self.results.append(result)
-                else:
-                    # wait until terminated
+                # check stop request before long time evaluation
+                if self.stop_flag == True:
+                    break
+
+                if self.progressive == True:
+                    max_iters = i + 1
+
+                result = self.eval_func(self.params, 
+                    cur_iter=i, max_iters=max_iters, iter_unit=self.iter_unit,
+                    job_id=self.job_id)
+                                
+                if result == None:
+                    # if objective function does not return any result,
+                    # wait until terminated by calling stop()
+                    debug("Waiting stop signal")
                     while self.stop_flag == False:
                         time.sleep(1)
 
+                elif type(result) == dict and "cur_loss" in result:
+                    cur_loss = result["cur_loss"]                    
+                    if "run_time" in result and result["run_time"] > 0:                        
+                        cur_dur = result["run_time"]
+                    
+                    if "cur_iter" in result:
+                        cur_iter = result["cur_iter"]
+                    
+                    if "iter_unit" in result:
+                        iter_unit = result["iter_unit"]
+                elif type(result) == float:
+                    cur_loss = result
+                    cur_iter = i + 1
+                    cur_dur = time.time() - base_time
+                else:
+                    warn("Invalid result format: {}".format(result))
+
+                if cur_loss != None:                    
+                    result = {"run_time": cur_dur,
+                            "cur_loss": cur_loss, 
+                            "cur_iter": cur_iter,
+                            "iter_unit": self.iter_unit}
+                    self.results.append(result)
+                
+                elif type(result) == list and len(result) > 0:
+                    self.results = result # update all results
+                
+
         except Exception as ex:
-            warn("exception occurs: {}".format(traceback.format_exc()))
-            self.paused = True
+            warn("Exception occurs: {}".format(traceback.format_exc()))
 
         finally:
             with self.thread_cond:
                 self.busy = False
                 self.params = None
                 self.thread_cond.notify()
+                debug("Evaluation {} finished properly.".format(self.job_id))
+

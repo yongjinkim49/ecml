@@ -67,7 +67,7 @@ class JobManager(object):
     def get_config(self):
         # This returns run config
         if self.use_surrogate:
-            return {"obj_func": "surrogate", "param_order": []}
+            return {"target_func": "surrogate", "param_order": []}
         return self.worker.config 
 
     def get_spec(self):

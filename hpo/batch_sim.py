@@ -116,7 +116,7 @@ class BatchHPOSimulator(object):
         debug("number of completes: {}".format(len(self.cur_samples.get_completes())))
 
     def get_optimizer(self, bandit, cur_iters, num_random_start=2):
-        if bandit['mode'] == 'DIVERSIFIED':
+        if bandit['mode'] == 'DIV':
             model, acq_func, _ = bandit['arm'].select(cur_iters)            
         else:
             model = bandit['mode']
@@ -218,7 +218,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         b['samples'].update(next_index, test_error)
 
         b['local_result'].update_trace(model, acq_func)
-        if b['mode'] == 'DIVERSIFIED':
+        if b['mode'] == 'DIV':
             b['arm'].update(b['cur_iters'], acc, None)
 
         duration = b['local_result'].get_total_duration(-1)
@@ -241,7 +241,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
                 raise ValueError("Invaild configuration")
             m.init_bandit(conf)
 
-            if b['mode'] == 'DIVERSIFIED':
+            if b['mode'] == 'DIV':
                 b['arm'] = m.bandit.get_arm(b['spec'])
 
             b['opt_time'] = 0.0
@@ -281,7 +281,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             for b in self.bandits:
                 m = b['machine']
                 m.init_bandit(b['config'])
-                if b['mode'] == 'DIVERSIFIED':
+                if b['mode'] == 'DIV':
                     b['arm'] = m.bandit.get_arm(b['spec'])
 
                 b['num_duplicates'] = 0
@@ -353,7 +353,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 debug('synchronized at {:.1f} - machine #{} found {:.4f}  ({:.0f} secs)'.format(
                     self.cur_sync_time, b['m_id'], acc, duration))
 
-                if b['mode'] == 'DIVERSIFIED':
+                if b['mode'] == 'DIV':
                     b['local_result'].update_trace(optimizer, acquistion_func)
                     b['arm'].update(self.cur_iters, acc, None)
 

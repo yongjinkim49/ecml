@@ -42,7 +42,7 @@ class HyperparameterVectorGenerator(object):
         else:
             raise ValueError("Not supported grid type: {}".format(grid_type))
         
-        self.grid = sobol.generate()
+        self.grid = np.asarray(sobol.generate())
     
     def get_grid(self):
         return self.grid

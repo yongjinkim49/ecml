@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 import traceback
 
 def print_trace(enable=True):
@@ -10,16 +11,16 @@ def set_log_level(log_level):
         print_trace(True)
 
 def debug(msg):
-    ConsoleLogger().debug("[DEBUG] {}".format(msg))
+    ConsoleLogger().debug(msg)
 
 def warn(msg):
-    ConsoleLogger().warn("[WARN] {}".format(msg))
+    ConsoleLogger().warn(msg)
 
 def error(msg):
-    ConsoleLogger().error("[ERROR] {}".format(msg))
+    ConsoleLogger().error(msg)
 
 def log(msg):
-    ConsoleLogger().log("[LOG] {}".format(msg))
+    ConsoleLogger().log(msg)
 
 
 class Singleton(object):
@@ -28,6 +29,7 @@ class Singleton(object):
         if class_ not in class_._instances:
             class_._instances[class_] = super(Singleton, class_).__new__(class_, *args, **kwargs)
         return class_._instances[class_]
+
 
 class ConsoleLogger(Singleton):
 
@@ -47,22 +49,22 @@ class ConsoleLogger(Singleton):
 
     def debug(self, msg):
         if self.levels.index(self.cur_level) <= self.levels.index('debug'):
-            print(msg)
+            print("[{}:D] {}".format(os.getpid(), msg))
 
     def warn(self, msg):
         if self.levels.index(self.cur_level) <= self.levels.index('warn'):
-            print(msg)
+            print("[{}:W] {}".format(os.getpid(), msg))
         if self.trace:
             traceback.print_exc()
 
     def error(self, msg):
         if self.levels.index(self.cur_level) <= self.levels.index('error'):
-            print(msg)
+            print("[{}:E] {}".format(os.getpid(), msg))
         if self.trace:
             traceback.print_stack()        
 
     def log(self, msg):
-        print(msg)
+        print("[{}:L] {}".format(os.getpid(), msg))
 
 
 

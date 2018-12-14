@@ -5,11 +5,13 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from hpo.interface import *
-import hpo.bandit_config as run_config
+import hpo.bandit_config as bconf
+import hpo.hp_config as hconf
 
 def main():
-    run_cfg = run_config.read('parallel-test.json')
-    wait_seq_opt_request(run_cfg, True)
+    run_cfg = bconf.read('parallel-test.json')
+    hp_cfg = hconf.read('./hp_conf/data1.json')
+    wait_seq_opt_request(run_cfg, hp_cfg, True)
 
 if __name__ == "__main__":
     main()

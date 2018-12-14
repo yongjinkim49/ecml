@@ -20,9 +20,8 @@ def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=
     if hasattr(cfg, 'num_epoch'):
         num_epochs = cfg.num_epoch
     
-    if data_type == 'data200':
-        
-        loader = LookupData200Loader(data_type, csv_data, cfg)
+    if data_type == 'data200' or data_type == 'data207':
+        loader = CifarResnetSurrogateLoader(data_type, csv_data, cfg)
     else:
         loader = LookupDataLoader(data_type, csv_data, cfg, num_epochs, grid_shuffle)
     return loader
@@ -95,10 +94,10 @@ class LookupDataLoader(object):
         return np.max(self.get_accuracies_per_epoch().values, axis=1)
 
 
-class LookupData200Loader(LookupDataLoader):
+class CifarResnetSurrogateLoader(LookupDataLoader):
     ''' Load lookup table data as pandas DataFrame object'''
     def __init__(self, dataset_type, surrogate, hp_cfg):
-        super(LookupData200Loader, self).__init__(dataset_type, surrogate, hp_cfg, 100, False)
+        super(CifarResnetSurrogateLoader, self).__init__(dataset_type, surrogate, hp_cfg, 100, False)
 
     def get_accuracies_per_epoch(self, end_epoch=None):
         
@@ -116,7 +115,4 @@ class LookupData200Loader(LookupDataLoader):
         return sobol_grid
 
 
-if __name__ == '__main__':
-    l = load('data200', data_folder='./lookup/')
-    print(l.num_hyperparams)
-    print(list([int(t) for t in l.get_elapsed_times()]))
+

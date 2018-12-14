@@ -41,7 +41,6 @@ class SearchHistory(object):
 
     def append(self):
         # TODO: check hyperparams are existed
-
         model_index = self.num_samples # assign new model index
         self.complete = np.append(self.complete, model_index)
         self.observed_errors = np.append(self.observed_errors, 0.0) 
@@ -55,11 +54,11 @@ class GridSamplingSpace(SearchHistory):
         self.name = name
         self.hp_config = hp_config
 
-        self.grid = grid
-        self.hpv = hpv
+        self.grid = np.asarray(grid)
+        self.hpv = np.asarray(hpv)
 
         super(GridSamplingSpace, self).__init__(len(hpv))
-        debug('sampling space initialized.')
+        debug('Grid sampling space {} initialized.'.format(name))
 
     def get_name(self):
         return self.name
@@ -72,9 +71,13 @@ class GridSamplingSpace(SearchHistory):
 
     def get_grid(self, index=None):
         if index == "completes":
-            return self.grid[self.get_completes(), :]
+            completes = self.get_completes()
+            #debug("index of completes: {}".format(completes))
+            return self.grid[completes, :]
         elif index == "candidates":
-            return self.grid[self.get_candidates(), :]        
+            candidates = self.get_candidates()
+            #debug("index of candidates: {}".format(candidates))
+            return self.grid[candidates, :]        
         elif index != None:
             return self.grid[index]
         else:
@@ -88,7 +91,6 @@ class GridSamplingSpace(SearchHistory):
             for i in range(len(params)):
                 p = params[i]
                 hpv[p] = args[i]
-
             return hpv
         else:
             return self.hpv

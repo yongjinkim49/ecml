@@ -13,15 +13,15 @@ from hpo.utils.logger import *
 
 def test_run_main():
     # XXX: prerequisite: training worker service should be executed before running.
-    trainer_url = 'http://10.0.1.35:5000'
-    hp_cfg_path = './hp_conf/data1.json'
+    trainer_url = 'http://147.47.120.182:6001'
+    hp_cfg_path = './hp_conf/data207.json'
     hp_cfg = hp_config.read_config(hp_cfg_path)
     
     if hp_cfg is None:
         print("Invalid hyperparameter configuration file: {}".format(hp_cfg_path))
         return  
 
-    conf = run_config.read('arms-ale.json')
+    conf = run_config.read('arms.json')
     runner = bandit.create_runner(trainer_url, 'TIME', 0.999, 4 * 60 * 60, 
                 run_config=conf, hp_config=hp_cfg)
     #runner.with_pkl = True

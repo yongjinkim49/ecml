@@ -1,0 +1,50 @@
+{
+    "dataset": "CIFAR-10",
+    "model": "ResNet",
+    "config": { 
+        "max_epoch": 2, 
+        "num_samples" : 7000
+    },      
+    "hyperparams": {
+        "learning_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [-4, -1],
+            "power_of": 10
+        },
+        "weight_decay": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [-5, -3],
+            "power_of": 10
+        },
+        "momentum": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.1, 0.9]
+        },
+        "batch_norm_decay": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.9, 0.999]
+        },
+        "use_distortion_for_training": {
+            "type": "bool",
+            "value_type": "preordered",
+            "range": [false, true]
+        },
+        "train_batch_size": {
+            "type": "int",
+            "value_type": "preordered",
+            "range": [45, 90, 180, 360, 450]
+        },
+        "num_layers": {
+            "type": "int",
+            "value_type": "preordered",
+            "range": [38, 44, 50, 56, 62, 70, 78]
+        }
+    },        
+    "param_order" : ["batch_norm_decay", "learning_rate", "momentum", 
+        "train_batch_size", "use_distortion_for_training", "weight_decay", 
+        "num_layers"]
+}

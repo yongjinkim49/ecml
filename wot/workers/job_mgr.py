@@ -17,7 +17,7 @@ class TrainingJobFactory(object):
         self.worker = worker
 
     def create(self, dataset, model, hpv, cfg):
-        job_id = "{}_{}-{}".format(self.worker.id, self.worker.device_id, len(self.jobs))
+        job_id = "{}_{}-{}".format(self.worker.name, self.worker.device_id, len(self.jobs))
 
         job = {
             "job_id" : job_id, 
@@ -27,7 +27,8 @@ class TrainingJobFactory(object):
             "losses" : [],
             "run_time" : None,
             "times" : [],
-            "cur_epoch" : 0,
+            "cur_iter" : 0,
+            "iter_unit" : "epoch",
             "dataset" : dataset,
             "model": model,
             "config": cfg,
@@ -36,18 +37,19 @@ class TrainingJobFactory(object):
         return job        
 
 class JobManager(object):
-    def __init__(self, worker, use_surrogate=False):
+    def __init__(self, worker, use_surrogate=False, retrieve_func=None):
         self.database = self.load_db()
         self.jobs =  self.database['jobs'] #[ dummy_item, ] # XXX:change to empty list in future
         self.credential = "Basic {}".format(self.database['credential'])
          
         self.worker = worker
         self.use_surrogate = use_surrogate
+        self.retrieve_func = retrieve_func
         
         self.to_dos = []
 
     def __del__(self):
-        debug("All jobs will be terminated")
+        #debug("All of jobs will be terminated")
         # force to terminate all jobs
         for j in self.jobs:
             j["status"] = 'terminated'
@@ -72,13 +74,13 @@ class JobManager(object):
 
     def get_config(self):
         if self.use_surrogate:
-            return {"obj_func": "surrogate", "param_order": []}
+            return {"target_func": "surrogate", "param_order": []}
         return self.worker.config
         
     def get_spec(self):
         id = {
-            "job_type": "ML trainer",
-            "id": self.worker.id,
+            "job_type": "ML_trainer",
+            "id": self.worker.name,
             "device_type": self.worker.device_id }
         return id
 
@@ -88,6 +90,7 @@ class JobManager(object):
         try:
             f = TrainingJobFactory(self.worker, self.jobs)
             job = f.create(dataset, model, hpv, cfg)
+            job_id = job['job_id']
             
             self.jobs.append(job)
             debug("job appended properly.")
@@ -106,13 +109,19 @@ class JobManager(object):
             max_epoch = None
             if "max_epoch" in cfg:
                 max_epoch = cfg['max_epoch']
-                worker.set_max_iters(max_epoch)
+                worker.set_max_iters(max_epoch, "epoch")
+            elif "max_iter" in cfg:
+                max_iter = cfg['max_iter']
+                iter_unit = "epoch"
+                if "iter_unit" in cfg:
+                    iter_unit = cfg['iter_unit']
+                worker.set_max_iters(max_iter, iter_unit)    
             
             cand_index = None
             if 'cand_index' in cfg:
                 cand_index = cfg['cand_index']
 
-            if worker.set_params(hpv, cand_index):
+            if worker.set_job_description(hpv, cand_index, job_id):
                 job['status'] = 'assigned'
                 self.to_dos.append({"worker": worker, "job_id": job['job_id']})
                 debug("task created properly.")
@@ -120,7 +129,7 @@ class JobManager(object):
                 debug("invalid hyperparam vector: {}".format(hpv))
                 raise ValueError("invalid hyperparameters")
             #self.sync_db()
-            job_id = job['job_id']
+            
         except:
             #debug("invalid arguments: {}, {}, {}, {}".format(dataset, model, hpv, cfg))
             warn("invalid job description: {}".format(job))
@@ -135,7 +144,6 @@ class JobManager(object):
         return None
 
     def get(self, job_id):
-                 
         for j in self.jobs:
             if j['job_id'] == job_id:
                 return j
@@ -163,6 +171,9 @@ class JobManager(object):
             id = w['job_id']
             j = self.get(id)
             if j['status'] == 'processing':
+                if self.retrieve_func != None:
+                    self.worker.update_result(self.retrieve_func)
+
                 cur_result = w['worker'].get_cur_result()
                 if cur_result is not None:
                     self.update(id, **cur_result)
@@ -172,12 +183,12 @@ class JobManager(object):
                 #self.sync_db()
                 break
 
-    def update_epoch_result(self, cur_epoch, cur_loss, run_time):
+    def update_result(self, cur_iter, iter_unit, cur_loss, run_time):
         for w in self.to_dos:
             if w['worker'].get_cur_status() == 'processing':
                 job_id = w['job_id']
-                w['worker'].add_result(cur_epoch, cur_loss, run_time)
-                debug("{} epoch result of {} is updated".format(cur_epoch, job_id))
+                w['worker'].add_result(cur_iter, cur_loss, run_time, iter_unit)
+                debug("The result of {} at {} {} is updated".format(job_id, cur_iter, iter_unit))
                 break
 
     def control(self, job_id, cmd):

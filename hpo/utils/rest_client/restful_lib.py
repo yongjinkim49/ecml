@@ -34,7 +34,7 @@ import mimetypes
 from cStringIO import StringIO
 
 class Connection:
-    def __init__(self, base_url, username=None, password=None):
+    def __init__(self, base_url, username=None, password=None, timeout=None):
         self.base_url = base_url
         self.username = username
         m = mimeTypes()
@@ -49,7 +49,7 @@ class Connection:
         self.path = path
         
         # Create Http class with support for Digest HTTP Authentication, if necessary
-        self.h = httplib2.Http(".cache")
+        self.h = httplib2.Http(".cache", timeout=timeout)
         self.h.follow_all_redirects = True
         if username and password:
             self.h.add_credentials(username, password)
