@@ -18,6 +18,6 @@ class JsonDBManager(object):
 
     def save(self, database):
         if self.file:
-            with open(self.file_name, 'w') as json_jobs:
-                json.dump(self.database, json_jobs)             
+            with open(self.file_name, 'w') as json_db:
+                json.dump(self.database, json_db)             
         

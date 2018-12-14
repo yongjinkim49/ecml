@@ -30,7 +30,7 @@ class JobFactory(object):
 class JobManager(object):
     def __init__(self, worker, use_surrogate=False):
         self.database = self.load_db()
-        self.jobs =  [] # self.database['jobs'] # XXX:for debug only
+        self.jobs = [] # self.database['jobs'] # XXX:for debug only
         self.credential = "Basic {}".format(self.database['credential'])
          
         self.worker = worker
@@ -50,7 +50,8 @@ class JobManager(object):
         self.save_db()
 
     def save_db(self):
-        self.database['jobs'] = self.jobs
+        if 'jobs' in self.database: 
+            self.database['jobs'] = self.jobs
         if self.dbm:
             self.dbm.save(self.database)
         else:
