@@ -1,4 +1,4 @@
-# Unified Hyperparameter Optimization Framework of Deep Neural Networks 
+# Resource Oriented Unified Hyperparameter Optimization Framework of Deep Neural Networks 
 
 ## Abstract
 
