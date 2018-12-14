@@ -1,8 +1,14 @@
-# Resource Oriented Unified Hyperparameter Optimization Framework of Deep Neural Networks 
+# Unified Hyperparameter Optimization Framework of Deep Neural Networks at Scale
 
 ## Abstract
 
 TBD
+* Easily Expandable HPO algorithms
+* Diversification of HPO algorithms
+* Large scale HPO by building microservices
+  * Resource Oriented Architecture with RESTful Web API
+
+TODO:System architecture diagram required
 
 This project unifies three practical ML HPO frameworks:
 
@@ -53,9 +59,9 @@ TODO
 
 ------
 
-## How to run the experiment with surrogates
+## How to run the experiment in single mode
 
-### Running on Console
+### Run with Console Mode
 
 ```bash
 (mab)$ python hpo_runner.py data2 10 -m=GP -s=EI -e=GOAL -eg=0.99
@@ -132,6 +138,25 @@ optional arguments:
 
 For more information, kindly refer to the [Wiki page](https://github.com/hyunghunny/hpo-mab/wiki).
 
-### Running by remote connection
+#### Run HPO through surrogates
+TODO
+
+#### Run HPO through the remote worker
+
+TODO
+
+## How to run the experiment on Microservice Mode
+
+### Install WoT interface 
+
+TODO
+
+### Run HPO with Web Service Mode
+
+TODO
+
+## How to run the experiment in parallel mode
+
+#### Configure your mashup
 
 TODO
