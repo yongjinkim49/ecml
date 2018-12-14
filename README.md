@@ -4,16 +4,17 @@
 
 TBD
 * Easily Expandable HPO algorithms
-* Diversification of HPO algorithms
+* HPO as Multi-armed Bandits
+* Diversification for Robust and Effective HPO
 * Large scale HPO by building microservices
   * Resource Oriented Architecture with RESTful Web API
 
 TODO:System architecture diagram required
 
-This project unifies three practical ML HPO frameworks:
+We unified three practical ML HPO frameworks:
 
 * [Spearmint](https://github.com/JasperSnoek/spearmint) 
-* [SMAC]
+* [SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/)
 * [Hyperopt](https://github.com/hyperopt/hyperopt)
 
 ## Installation
@@ -21,11 +22,10 @@ This project unifies three practical ML HPO frameworks:
 ### Prerequisites
 
 I strongly suggest to make new virtual environment by using [Anaconda](https://www.anaconda.com/download/).
-With Anaconda, below creates a new python environment which almost required packages are already installed:
-Due to package dependencies, this project works on Python 2.7.x.
+Due to complex package dependencies, this project only tested on Python 2.7.x.
 
 ```bash
-    conda create -n hpo python=2.7 anaconda
+    conda create -n hpo python=2.7
 ```
 
 After creating the environment, activate your environment as follows:
@@ -48,9 +48,9 @@ If you are working on Linux, install these packages as follows:
 
 ```bash
 
-(mab)device:path$ conda install pandas scikit-learn future 
-(mab)device:path$ conda install -c conda-forge weave
-(mab)device:path$ pip install hyperopt validators flask-restful
+(hpo)device:path$ conda install pandas scikit-learn future 
+(hpo)device:path$ conda install -c conda-forge weave
+(hpo)device:path$ pip install hyperopt validators flask-restful
 ```
 
 ### Install with PIP
