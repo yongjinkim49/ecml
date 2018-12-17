@@ -164,14 +164,14 @@ class RemoteTrainer(TrainerPrototype):
                         debug("Current working job finished with {} losses.".format(num_losses))
                         break 
                 
-                debug("Waiting {} sec before retrieving the result...".format(self.polling_interval)) 
+                #debug("Waiting {} sec...".format(self.polling_interval)) 
                 time.sleep(self.polling_interval)
             
             except Exception as ex:
                 if str(ex) == 'timed out':
                     time_out_count += 1                    
                     if time_out_count < self.max_timeout:
-                        debug("Time out happened. Retry count {}/{}".format(time_out_count, self.max_timeout))
+                        debug("Timeout occurred. Retry {}/{}...".format(time_out_count, self.max_timeout))
                         continue
 
                 warn("Something goes wrong in remote worker: {}".format(ex))

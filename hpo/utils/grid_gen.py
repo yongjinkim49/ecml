@@ -50,7 +50,7 @@ class HyperparameterVectorGenerator(object):
         return self.grid
 
     def get_hpv(self):
-        debug("HPV-0: {}".format(self.hpvs[0]))
+        #debug("HPV-0: {}".format(self.hpvs[0]))
         return self.hpvs
 
     def generate(self, return_type='array'):

@@ -392,7 +392,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             return True
 
         else:
-            debug('time out')
+            debug('Timeout')
             return False
 
 
