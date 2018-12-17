@@ -42,6 +42,8 @@ class IterativeFunctionEvaluator(Trainer):
             result['losses'] = [copy.copy(r['cur_loss']) for r in self.results]
             result['times'] = [copy.copy(r['run_time']) for r in self.results]
             
+            result['cur_loss'] = min(result['losses'])
+            result['run_time'] = sum(result['times'])
             return result
 
         else:

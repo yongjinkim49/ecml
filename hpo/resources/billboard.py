@@ -23,6 +23,7 @@ class Billboard(Resource):
         urls = [
             {"/": {"method": ['GET']}},
             {"/config": {"method": ['GET']}}, 
+
             {"/jobs": {"method": ['GET', 'POST']}},
             {"/jobs/active": {"method": ['GET']}},
             {"/jobs/[job_id]": {"method": ['GET', 'PUT', 'DELETE'], "job_id" : ["active"]}},
@@ -33,6 +34,6 @@ class Billboard(Resource):
             {"/space/grids/[id]": {"method": ['GET']}},
             {"/space/vectors/[id]": {"method": ['GET']}},
             {"/space/errors/[id]": {"method": ['GET', 'PUT']}}
-            ] 
+        ] 
         
         return {"spec" : self.jm.get_spec(), "urls": urls }, 200 

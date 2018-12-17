@@ -2,6 +2,7 @@ import json
 import copy
 import six
 import base64
+import time
 
 from hpo.utils.rest_client.restful_lib import Connection
 from hpo.utils.logger import *
@@ -10,6 +11,7 @@ from hpo.connectors.proto import *
 class RemoteJobConnector(RemoteConnectorPrototype):
 
     def __init__(self, url, **kwargs):
+        self.wait_time = 3
 
         super(RemoteJobConnector, self).__init__(url, **kwargs)
 
@@ -90,24 +92,43 @@ class RemoteJobConnector(RemoteConnectorPrototype):
         return None
 
     def start(self, job_id):
+        retry_count = 0        
         try:
-            active_job = self.get_job("active")
-            if active_job != None:
-                warn("worker is busy. current working job: {}".format(active_job['job_id']))
-            else:
-                ctrl = {"control": "start"}
-                resp = self.conn.request_put("/jobs/{}".format(job_id), args=ctrl, headers=self.headers)
-                status = resp['headers']['status']
-                
-                if status == '202':
-                    js = json.loads(resp['body'])
-                    if 'hyperparams' in js:
-                        debug("Current training item: {}".format(js['hyperparams']))
+            while True:
+                active_job = self.get_job("active")
+                if active_job != None:
+                    debug("Worker is busy. current working job: {}".format(active_job['job_id']))
+                    retry_count += 1
+                    if retry_count > self.num_retry:
+                        warn("Starting {} job failed.".format(job_id))
+                        return False
                     else:
-                        debug("Current HPO item: {}".format(js))
-                    return True
+                        time.sleep(self.wait_time)
+                        debug("Retry {}/{} after waiting {}sec".format(retry_count, self.num_retry, self.wait_time))
+                        continue
                 else:
-                    raise ValueError("Invalid worker status: {}".format(status))                
+                    ctrl = {"control": "start"}
+                    resp = self.conn.request_put("/jobs/{}".format(job_id), args=ctrl, headers=self.headers)
+                    status = resp['headers']['status']
+                    
+                    if status == '202':
+                        js = json.loads(resp['body'])
+                        if 'hyperparams' in js:
+                            debug("Current training item: {}".format(js['hyperparams']))
+                        else:
+                            debug("Current HPO item: {}".format(js))
+                        return True
+                    elif status == '500':
+                        retry_count += 1
+                        if retry_count > self.num_retry:
+                            warn("Starting {} job failed.".format(job_id))
+                            return False
+                        else:
+                            time.sleep(self.wait_time)
+                            debug("Retry {}/{} after waiting {}sec".format(retry_count, self.num_retry, self.wait_time))
+                            continue                        
+                    else:
+                        raise ValueError("Invalid worker status: {}".format(status))                
         except Exception as ex:
             warn("Starting job {} is failed".format(job_id))
             return False
