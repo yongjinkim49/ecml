@@ -50,7 +50,7 @@ class HyperparameterVectorGenerator(object):
         return self.grid
 
     def get_hpv(self):
-        debug("{}".format(self.hpvs[0]))
+        debug("HPV-0: {}".format(self.hpvs[0]))
         return self.hpvs
 
     def generate(self, return_type='array'):
@@ -111,7 +111,13 @@ class HyperparameterVectorGenerator(object):
 
                 if hasattr(hp_cfg, 'power_of'):
                     result = np.power(hp_cfg.power_of, result)
-
+        
+        if hp_cfg.type == 'int':
+            result = int(result)
+        elif hp_cfg.type == 'bool':
+            result = bool(result)
+        elif hp_cfg.type == 'str':
+            result = str(result)
         return result
 
 # def test_main():
