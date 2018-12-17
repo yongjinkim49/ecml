@@ -50,7 +50,7 @@ def wait_seq_opt_request(run_cfg, hp_cfg,
     api = Api(app)
 
     # For profile
-    api.add_resource(Billboard, "/", # for node spec and resources
+    api.add_resource(Billboard, "/", # for profile and 
                     resource_class_kwargs={'job_manager': jm})
     api.add_resource(Config, "/config", # for run spec
                     resource_class_kwargs={'job_manager': jm, "hp_config": hp_cfg})

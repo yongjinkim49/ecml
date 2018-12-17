@@ -54,16 +54,25 @@ class RemoteJobConnector(RemoteConnectorPrototype):
             raise ValueError("Connection error. worker status code: {}".format(status))   
     
     def get_job(self, job_id):
-        resp = self.conn.request_get("/jobs/{}".format(job_id), args={}, headers=self.headers)
-        status = resp['headers']['status']
+        retry_count = 0
+        while True:
+            resp = self.conn.request_get("/jobs/{}".format(job_id), args={}, headers=self.headers)
+            status = resp['headers']['status']
 
-        if status == '200':
-            job = json.loads(resp['body'])        
-            return job
-        elif status == '204':
-            return None # if job_id is active, no active job is available now
-        else:
-            raise ValueError("Connection error to {} job. status code: {}".format(job_id, status))
+            if status == '200':
+                job = json.loads(resp['body'])        
+                return job
+            elif status == '204':
+                return None # if job_id is active, no active job is available now
+            elif status == '500':
+                retry_count += 1
+                if retry_count > self.num_retry:
+                    raise ValueError("Connection error to {} job. status code: {}".format(job_id, status))
+                else:
+                    debug("Connection failed due to server error. retry {}/{}".format(retry_count, self.num_retry))
+                    continue
+            else:
+                raise ValueError("Connection error to {} job. status code: {}".format(job_id, status))
 
     def create_job(self, job_desc):
 

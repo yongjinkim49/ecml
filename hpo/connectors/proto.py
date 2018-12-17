@@ -14,6 +14,11 @@ class RemoteConnectorPrototype(object):
         else:
             self.timeout = 10
 
+        if "num_retry" in kwargs:
+            self.num_retry = kwargs['timeout']
+        else:
+            self.num_retry = 10
+
         self.conn = Connection(target_url, timeout=self.timeout)
         
         self.headers = {'Content-Type':'application/json', 'Accept':'application/json'}

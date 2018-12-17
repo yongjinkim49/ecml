@@ -20,10 +20,19 @@ class Billboard(Resource):
             return "Unauthorized", 401
         
         # TODO:to be added dynamically
-        urls = [{"/": {"method": ['GET']}},
+        urls = [
+            {"/": {"method": ['GET']}},
             {"/config": {"method": ['GET']}}, 
             {"/jobs": {"method": ['GET', 'POST']}},
             {"/jobs/active": {"method": ['GET']}},
-            {"/jobs/[job_id]": {"method": ['GET', 'PUT', 'DELETE']}}] 
+            {"/jobs/[job_id]": {"method": ['GET', 'PUT', 'DELETE'], "job_id" : ["active"]}},
+
+            {"/space": {"method": ['GET']}},
+            {"/space/completes": {"method": ['GET']}},
+            {"/space/candidates": {"method": ['GET']}},
+            {"/space/grids/[id]": {"method": ['GET']}},
+            {"/space/vectors/[id]": {"method": ['GET']}},
+            {"/space/errors/[id]": {"method": ['GET', 'PUT']}}
+            ] 
         
         return {"spec" : self.jm.get_spec(), "urls": urls }, 200 
