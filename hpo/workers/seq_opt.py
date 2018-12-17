@@ -98,7 +98,7 @@ class SequentialOptimizer(Worker):
                 ValueError("Surrogate {} configuration not found.".format(s_name))
         
         if 'shared_space_url' in run_cfg:
-            space = connect_remote_space(run_cfg['shared_space_url'])
+            space = bandit.connect_remote_space(run_cfg['shared_space_url'])
         else:
             space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
 
