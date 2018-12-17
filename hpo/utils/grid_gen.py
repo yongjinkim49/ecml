@@ -44,7 +44,7 @@ class HyperparameterVectorGenerator(object):
             raise ValueError("Not supported grid type: {}".format(grid_type))
         
         self.grid = np.asarray(sobol.generate())
-        self.hpvs = np.asarray(self.generate())
+        self.hpvs = self.generate()
     
     def get_grid(self):
         return self.grid
@@ -67,7 +67,7 @@ class HyperparameterVectorGenerator(object):
                     hp_cfg = getattr(hps, param_name)
                     arg = self.to_param_value(hp_cfg, value)
                     hpv.append(arg)
-                debug("hp{}:{}".format(i, hpv)) 
+                #debug("hp{}:{}".format(i, hpv)) 
                 hpv_list.append(hpv)
             return hpv_list            
         else: 
