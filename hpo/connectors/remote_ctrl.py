@@ -204,7 +204,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
         self.num_samples = None
         self.hp_config = None
-
+        
         self.get_status()
         #self.get_candidates()
         #self.get_completes()
@@ -225,8 +225,15 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
                 raise ValueError("Connection failed: {}".format(status))
 
         except Exception as ex:
-            warn("Getting space failed: {}".format(ex))
+            warn("Getting remote space configuration failed: {}".format(ex))
             return None
+
+    def get_num_samples(self):
+        if self.num_samples != None:
+            return self.num_samples
+        else:
+            warn("Handshaking failed")
+            return 20000 #XXX:for avoiding error
 
     def get_candidates(self):
         try:

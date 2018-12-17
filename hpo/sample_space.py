@@ -150,7 +150,7 @@ class RemoteSamplingSpace(SearchHistory):
     def __init__(self, name, proxy):
         self.space = proxy
         
-        num_samples = proxy.num_samples
+        num_samples = proxy.get_num_samples()
         self.name = "remote_{}".format(name)
 
         return super(RemoteSamplingSpace, self).__init__(num_samples)
