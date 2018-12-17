@@ -66,7 +66,8 @@ class HyperparameterVectorGenerator(object):
                     value = vec[j]
                     hp_cfg = getattr(hps, param_name)
                     arg = self.to_param_value(hp_cfg, value)
-                    hpv.append(arg) 
+                    hpv.append(arg)
+                debug("hp{}:{}".format(i, hpv)) 
                 hpv_list.append(hpv)
             return hpv_list            
         else: 
