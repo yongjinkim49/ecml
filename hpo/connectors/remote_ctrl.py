@@ -232,8 +232,8 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         if self.num_samples != None:
             return self.num_samples
         else:
-            warn("Handshaking failed")
-            return 20000 #XXX:for avoiding error
+            raise ValueError("Handshaking failed!")
+            
 
     def get_candidates(self):
         try:

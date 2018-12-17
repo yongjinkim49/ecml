@@ -5,9 +5,14 @@ from hpo.utils.grid_gen import *
 from hpo.connectors.remote_ctrl import RemoteSampleSpaceConnector
 from hpo.utils.converter import VectorGridConverter
 
+
 def get_remote_samples(name, space_url):
-    connector = RemoteSampleSpaceConnector(space_url)
-    return RemoteSamplingSpace(name, connector)
+    try:
+        connector = RemoteSampleSpaceConnector(space_url)
+        return RemoteSamplingSpace(name, connector)
+    except Exception as ex:
+        warn("Remote samples connection fail: {}".format(ex))
+        return None
   
 
 class SearchHistory(object):

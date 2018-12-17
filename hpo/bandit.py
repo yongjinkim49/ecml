@@ -45,11 +45,7 @@ def create_surrogate_space(surrogate, run_config):
 
 def connect_remote_space(space_url):
     name = "remote_grid_sample-{}".format(space_url)
-    s = RemoteSamplingSpace(name, RemoteSampleSpaceConnector(space_url))
-    if s != None:
-        debug("Remote sampling space connected: {}".format(space_url))
-    else:
-        warn("Remote sampling space not connected!: {}".format(space_url))
+    s = get_remote_samples(name, space_url)
     return s    
 
 
