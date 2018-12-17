@@ -58,7 +58,7 @@ class GridSamplingSpace(SearchHistory):
         self.hpv = np.asarray(hpv)
 
         super(GridSamplingSpace, self).__init__(len(hpv))
-        debug('Grid sampling space {} initialized.'.format(name))
+        
 
     def get_name(self):
         return self.name

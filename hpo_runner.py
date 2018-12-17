@@ -106,7 +106,7 @@ def execute(run_cfg, args, save_results=False):
             use_surrogate = None
 
             trainer = None
-            space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
+            space = None
 
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
@@ -114,9 +114,11 @@ def execute(run_cfg, args, save_results=False):
                     use_surrogate = args['surrogate']
                     path = "{}{}.json".format(args['hp_conf'], args['surrogate'])
                     hp_cfg = hconf.read_config(path)
+                    space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
                     
                 elif 'hp_cfg' in args and args['hp_cfg'] != None:
                     hp_cfg = args['hp_cfg']
+                    space = bandit.create_grid_space(hp_cfg)
                 else:
                     raise ValueError("Invalid arguments: {}".format(args))
                 

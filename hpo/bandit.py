@@ -39,13 +39,33 @@ def create_surrogate_space(surrogate, run_config):
         grid_order = run_config['grid']['order']    
     l = lookup.load(surrogate, grid_order=grid_order)
     s = SurrogateSamplingSpace(l)
+    debug("Surrogate sampling space created: {}".format(surrogate))
     return s
 
 
 def connect_remote_space(space_url):
     name = "remote_grid_sample-{}".format(space_url)
     s = RemoteSamplingSpace(name, RemoteSampleSpaceConnector(space_url))
+    if s != None:
+        debug("Remote sampling space connected: {}".format(space_url))
+    else:
+        warn("Remote sampling space not connected!: {}".format(space_url))
     return s    
+
+
+def create_grid_space(cfg, 
+                      num_samples=20000, grid_seed=1):
+    if hasattr(cfg, 'config'):
+        if hasattr(cfg.config, 'num_samples'):
+            num_samples = cfg.config.num_samples
+
+        if hasattr(cfg.config, 'grid_seed'):
+            grid_seed = cfg.config.grid_seed
+    name = "grid_sample-{}".format(int(time.time/1000))
+    hvg = HyperparameterVectorGenerator(cfg, num_samples, grid_seed)
+    s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), cfg)
+    debug("Grid sampling space created: {}".format(name))
+    return s
 
 
 def create_emulator(space,
@@ -91,17 +111,9 @@ def create_runner(trainer_url, space,
             cfg = hp_cfg.HyperparameterConfiguration(hp_config)
         else:
             cfg = hp_config
-        
-        if hasattr(cfg, 'config'):
-            if hasattr(cfg.config, 'num_samples'):
-                num_samples = cfg.config.num_samples
 
-            if hasattr(cfg.config, 'grid_seed'):
-                grid_seed = cfg.config.grid_seed
-        
-        hvg = HyperparameterVectorGenerator(cfg, num_samples, grid_seed)
-        hpvs = hvg.generate()
-        t = train_remote.init(trainer_url, run_config, cfg, hpvs, **kwargs)
+        hpvs = space.get_hpv()
+        trainer = train_remote.init(trainer_url, run_config, cfg, hpvs, **kwargs)
         
         machine = HPOBanditMachine(
             space, trainer, run_mode, target_acc, time_expired, run_config,

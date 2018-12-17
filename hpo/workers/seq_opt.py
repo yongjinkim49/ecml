@@ -99,6 +99,8 @@ class SequentialOptimizer(Worker):
         
         if 'shared_space_url' in run_cfg:
             space = bandit.connect_remote_space(run_cfg['shared_space_url'])
+            if space == None:
+                space = bandit.create_grid_space(run_cfg)
         else:
             space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
 

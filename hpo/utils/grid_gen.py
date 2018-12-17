@@ -43,9 +43,13 @@ class HyperparameterVectorGenerator(object):
             raise ValueError("Not supported grid type: {}".format(grid_type))
         
         self.grid = np.asarray(sobol.generate())
+        self.hpvs = np.asarray(self.generate())
     
     def get_grid(self):
         return self.grid
+
+    def get_hpv(self):
+        return self.hpvs
 
     def generate(self, return_type='array'):
         hps = self.config.hyperparams
@@ -107,38 +111,38 @@ class HyperparameterVectorGenerator(object):
 
         return result
 
-def test_main():
-    import hp_cfg
-    json_cfg = './lookup/data10.json'
-    cfg = None
-    if os.path.exists(json_cfg):
-        cfg = hp_cfg.read(json_cfg)
-        if not hp_cfg.validate(cfg):
-            print("invalid configuration format")
-    else:
-        print("file not found")
+# def test_main():
+#     import hp_cfg
+#     json_cfg = './lookup/data10.json'
+#     cfg = None
+#     if os.path.exists(json_cfg):
+#         cfg = hp_cfg.read(json_cfg)
+#         if not hp_cfg.validate(cfg):
+#             print("invalid configuration format")
+#     else:
+#         print("file not found")
     
-    if cfg is not None:
-        gg = SobolGridGenerator(cfg.get_hyperparams(), 100)
-        grid = gg.generate('table')
-        print(grid)
+#     if cfg is not None:
+#         gg = SobolGridGenerator(cfg.get_hyperparams(), 100)
+#         grid = gg.generate('table')
+#         print(grid)
 
-def test_main2():
-    import hp_cfg
-    json_cfg = 'hp_conf/data10.json'
-    cfg = None
-    if os.path.exists(json_cfg):
-        cfg = hp_cfg.read(json_cfg)
-        if not hp_cfg.validate(cfg):
-            print("invalid configuration format")
-    else:
-        print("file not found")
+# def test_main2():
+#     import hp_cfg
+#     json_cfg = 'hp_conf/data10.json'
+#     cfg = None
+#     if os.path.exists(json_cfg):
+#         cfg = hp_cfg.read(json_cfg)
+#         if not hp_cfg.validate(cfg):
+#             print("invalid configuration format")
+#     else:
+#         print("file not found")
     
-    if cfg is not None:
-        gg = HyperparameterVectorGenerator(cfg, 100)
-        grid = gg.generate()
-        for g in grid:
-            print(["{}".format(i) for i in g])
+#     if cfg is not None:
+#         gg = HyperparameterVectorGenerator(cfg, 100)
+#         grid = gg.generate()
+#         for g in grid:
+#             print(["{}".format(i) for i in g])
 
-if __name__ == '__main__':
-    test_main()
+# if __name__ == '__main__':
+#     test_main()
