@@ -89,6 +89,7 @@ class SequentialOptimizer(Worker):
 
         results = []
         s_name = None
+        space = None
         
         if 'surrogate' in args:
             s_name = args['surrogate']
@@ -96,20 +97,20 @@ class SequentialOptimizer(Worker):
             if hp_cfg == None:
                 ValueError("Surrogate {} configuration not found.".format(s_name))
         
-        shared_space = None
         if 'shared_space_url' in run_cfg:
-            shared_space = run_cfg['shared_space_url']
+            space = connect_remote_space(run_cfg['shared_space_url'])
+        else:
+            space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
 
         if 'worker_url' in args:
             if valid.url(args['worker_url']):
 
                 self.machine = bandit.create_runner(
-                    args['worker_url'], 
+                    args['worker_url'], space,
                     args['exp_crt'], args['exp_goal'], args['exp_time'],
                     run_cfg, hp_cfg,                            
                     num_resume=num_resume,
                     save_pkl=save_pkl,
-                    space_url=shared_space,
                     use_surrogate=s_name,
                     id=self.id)
                 
@@ -117,16 +118,14 @@ class SequentialOptimizer(Worker):
             else:
                 raise ValueError("Invalid worker URL: {}".format(args["worker_url"]))
         else:
-            
-            self.machine = bandit.create_emulator(
-                args['surrogate'], 
+
+            self.machine = bandit.create_emulator(space,
                 args['exp_crt'], args['exp_goal'], args['exp_time'],
                 num_resume=num_resume,
-                space_url=shared_space,
                 save_pkl=save_pkl, 
                 run_config=run_cfg,
                 id=self.id + "_emul")
-            self.samples = SurrogateSamplingSpace(l)
+            self.samples = self.machine.samples
 
         if args['mode'] == 'DIV' or args['mode'] == 'ADA':
             results = self.machine.mix(args['spec'], args['num_trials'], 

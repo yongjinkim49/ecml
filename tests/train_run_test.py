@@ -22,8 +22,10 @@ def test_run_main():
         return  
 
     conf = run_config.read('arms.json')
-    runner = bandit.create_runner(trainer_url, 'TIME', 0.999, 4 * 60 * 60, 
-                run_config=conf, hp_config=hp_cfg)
+    space = bandit.create_surrogate_space('data207', conf)
+    runner = bandit.create_runner(trainer_url, space,
+                                'TIME', 0.999, 4 * 60 * 60, 
+                                run_config=conf, hp_config=hp_cfg)
     #runner.with_pkl = True
     set_log_level('debug')
     print_trace()

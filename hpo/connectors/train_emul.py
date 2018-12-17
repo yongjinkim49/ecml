@@ -11,8 +11,12 @@ from sklearn.preprocessing import PolynomialFeatures
 from hpo.utils.logger import *
 from hpo.connectors.proto import TrainerPrototype
 
-def init(lookup, run_config):
+def init(space, run_config):
     try:
+        if not hasattr(space, 'lookup'):
+            raise ValueError("Invalid surrogate space")
+        lookup = space.lookup
+        
         if run_config and "auto_early_stop" in run_config:
             log_func = None
             if "log" in run_config and run_config["log"]["log_err"]:

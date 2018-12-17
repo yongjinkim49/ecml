@@ -12,7 +12,9 @@ from hpo.utils.logger import *
 def test_emul_main():
     
     conf = run_config.read('arms-alet.json')
-    emul = bandit.create_emulator('data10', 'TIME', 0.999, '24h', 
+    space, lookup = bandit.create_surrogate_space('data10', conf)
+    emul = bandit.create_emulator(space, lookup,
+                'TIME', 0.999, '24h', 
                 run_config=conf)
     #emul.with_pkl = True
     set_log_level('debug')

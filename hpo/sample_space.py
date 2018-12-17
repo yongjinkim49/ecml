@@ -116,6 +116,7 @@ class SurrogateSamplingSpace(GridSamplingSpace):
         # preloaded results
         self.test_errors = lookup.get_test_errors()
         self.exec_times = lookup.get_elapsed_times()
+        self.lookup = lookup
 
     # For search history 
 

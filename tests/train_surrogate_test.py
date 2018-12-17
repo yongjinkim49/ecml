@@ -12,11 +12,13 @@ from hpo.utils.logger import *
 
 def test_run_main():
     # XXX: prerequisite: surrogate.py of training worker service should be executed before running.
-    trainer_url = 'http://127.0.0.1:5000' #'http://10.0.1.35:5000'
+    trainer_url = 'http://127.0.0.1:5000' 
     conf = run_config.read('arms-alet.json')
-    runner = bandit.create_runner(trainer_url, 'TIME', 0.999, '4h', 
-                run_config=conf,
-                use_surrogate=True)
+    space = connect_remote_space(trainer_url)
+    runner = bandit.create_runner(trainer_url, space,
+                                'TIME', 0.999, '4h', 
+                                run_config=conf,
+                                use_surrogate=True)
     #runner.with_pkl = True
     set_log_level('debug')
     print_trace()

@@ -32,29 +32,33 @@ import hpo.connectors.train_emul as train_emul
 
 NUM_MAX_ITERATIONS = 10000
 
-def create_emulator(surrogate, 
-         run_mode, target_acc, time_expired, 
-         run_config=None,
-         save_pkl=False,
-         space_url=None,
-         num_resume=0,
-         id="HPO_emulator"
-         ):
 
-    grid_order = None
-
+def create_surrogate_space(surrogate, run_config):
+    grid_order = None 
     if 'grid' in run_config and 'order' in run_config['grid']:
         grid_order = run_config['grid']['order']    
     l = lookup.load(surrogate, grid_order=grid_order)
-    t = train_emul.init(l, run_config)
+    s = SurrogateSamplingSpace(l)
+    return s
 
-    if space_url:
-        s = RemoteSamplingSpace(surrogate, RemoteSampleSpaceConnector(space_url))
-    else:
-        s = SurrogateSamplingSpace(l)
 
+def connect_remote_space(space_url):
+    name = "remote_grid_sample-{}".format(space_url)
+    s = RemoteSamplingSpace(name, RemoteSampleSpaceConnector(space_url))
+    return s    
+
+
+def create_emulator(space,
+                    run_mode, target_acc, time_expired, 
+                    run_config=None,
+                    save_pkl=False,
+                    num_resume=0,
+                    id="HPO_emulator"
+                    ):
+
+    trainer = train_emul.init(space, run_config)
     machine = HPOBanditMachine(
-        s, t, 
+        space, trainer, 
         run_mode, target_acc, time_expired, run_config, 
         num_resume=num_resume, 
         with_pkl=save_pkl,
@@ -64,16 +68,16 @@ def create_emulator(surrogate,
     return machine
 
 
-def create_runner(trainer_url, run_mode, target_acc, time_expired, 
-         run_config, hp_config,
-         save_pkl=False,
-         num_samples=20000,
-         grid_seed=1,
-         num_resume=0,
-         space_url=None,
-         use_surrogate=None,
-         id="HPO_runner"
-         ):
+def create_runner(trainer_url, space, 
+                  run_mode, target_acc, time_expired, 
+                  run_config, hp_config,
+                  save_pkl=False,
+                  num_samples=20000,
+                  grid_seed=1,
+                  num_resume=0,
+                  use_surrogate=None,
+                  id="HPO_runner"
+                  ):
     
     # FIXME:test auth key. It should be deleted before release.
     kwargs = { "credential" : "jo2fulwkq" }  
@@ -97,19 +101,10 @@ def create_runner(trainer_url, run_mode, target_acc, time_expired,
         
         hvg = HyperparameterVectorGenerator(cfg, num_samples, grid_seed)
         hpvs = hvg.generate()
-
         t = train_remote.init(trainer_url, run_config, cfg, hpvs, **kwargs)
-
-        if space_url:
-            name = "remote_grid_sample-{}".format(space_url)
-            s = RemoteSamplingSpace(name, RemoteSampleSpaceConnector(space_url))
-            id += " through {}".format(space_url)
-        else:
-            name = "grid_sample_{}_{}".format(num_samples, grid_seed)
-            s = GridSamplingSpace(name, hpvs, hvg.get_grid(), hp_config)
         
         machine = HPOBanditMachine(
-            s, t, run_mode, target_acc, time_expired, run_config,
+            space, trainer, run_mode, target_acc, time_expired, run_config,
             num_resume=num_resume, 
             with_pkl=save_pkl, 
             id=id)

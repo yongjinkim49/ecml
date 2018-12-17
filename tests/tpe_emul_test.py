@@ -12,7 +12,9 @@ from hpo.utils.logger import *
 def test_emul_main():
 
     conf = run_config.read('pairing/2fools.json')
-    emul = bandit.create_emulator('data3', 'TIME', 0.999, '6h', 
+    space, lookup = bandit.create_surrogate_space('data3', conf)
+    emul = bandit.create_emulator(space, lookup, 
+                'TIME', 0.999, '6h', 
                 run_config=conf)
     #emul.with_pkl = True
     set_log_level('debug')

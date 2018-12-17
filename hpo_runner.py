@@ -106,19 +106,21 @@ def execute(run_cfg, args, save_results=False):
             use_surrogate = None
 
             trainer = None
+            space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
+
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
                 if 'surrogate' in args and args['surrogate'] != None:
                     use_surrogate = args['surrogate']
                     path = "{}{}.json".format(args['hp_conf'], args['surrogate'])
                     hp_cfg = hconf.read_config(path)
-                    #debug(hp_cfg)
+                    
                 elif 'hp_cfg' in args and args['hp_cfg'] != None:
                     hp_cfg = args['hp_cfg']
                 else:
                     raise ValueError("Invalid arguments: {}".format(args))
                 
-                m = bandit.create_runner(trainer, 
+                m = bandit.create_runner(trainer, space,
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl,
@@ -126,8 +128,7 @@ def execute(run_cfg, args, save_results=False):
                             hp_config=hp_cfg,
                             use_surrogate=use_surrogate)
             else:
-                trainer = args['surrogate']
-                m = bandit.create_emulator(trainer, 
+                m = bandit.create_emulator(space, 
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl, 

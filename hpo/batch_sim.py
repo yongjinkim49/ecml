@@ -86,8 +86,8 @@ class BatchHPOSimulator(object):
 
             if 'save_pkl' in bandits[i]:
                 save_pkl = bandits[i]['save_pkl']
-
-            emulator = bandit.create_emulator(self.data_type, self.run_mode, self.target_acc, self.time_expired, 
+            space = bandit.create_surrogate_space(self.data_type, conf)
+            emulator = bandit.create_emulator(space, self.run_mode, self.target_acc, self.time_expired, 
                                  run_config=conf, save_pkl=save_pkl)
             b['m_id'] = i
             b['machine'] = emulator
