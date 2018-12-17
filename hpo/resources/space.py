@@ -30,5 +30,4 @@ class Space(Resource):
         space["num_samples"] = samples.num_samples
         space["hp_config"] = samples.get_hp_config().get_dict()
 
-
         return space, 200 

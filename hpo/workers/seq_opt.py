@@ -37,6 +37,8 @@ class SequentialOptimizer(Worker):
         self.samples = None
 
     def get_sampling_space(self):
+        if self.samples == None:
+            warn("Sampling space is not initialized.")
         return self.samples
         
     def start(self):
@@ -63,7 +65,7 @@ class SequentialOptimizer(Worker):
             self.results = self.run(self.rconf, self.hconf, self.params)
 
         except Exception as ex:
-            warn("Exception occurs: {}".format(traceback.format_exc()))            
+            warn("Exception occurs: {}".format(sys.exc_info()[0]))            
             self.stop_flag = True
 
         finally:

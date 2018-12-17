@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import traceback
 import copy
@@ -123,7 +124,7 @@ class IterativeFunctionEvaluator(Trainer):
                 
 
         except Exception as ex:
-            warn("Exception occurs: {}".format(traceback.format_exc()))
+            warn("Exception occurs: {}".format(sys.exc_info()[0]))
 
         finally:
             with self.thread_cond:

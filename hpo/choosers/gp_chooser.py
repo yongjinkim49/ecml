@@ -244,7 +244,7 @@ class GPChooser:
                         est_eval_time, penalty_rate)
 
             except:
-                warn("Exception occurs when acquisition function with ")
+                warn("Exception occurs when acquires next candidate with {}".format(af))
                 return acq_func(best, func_m, func_v)
 
     def sample_hypers(self, comp, vals):

@@ -1,4 +1,5 @@
 import os
+import sys
 import threading
 import time
 import traceback
@@ -107,7 +108,7 @@ class SurrogateEvaluator(IterativeFunctionEvaluator):
                     
 
         except Exception as ex:
-            warn("exception occurs: {}".format(traceback.format_exc()))
+            warn("Exception occurs: {}".format(sys.exc_info()[0]))
         finally:
             with self.thread_cond:
                 self.busy = False

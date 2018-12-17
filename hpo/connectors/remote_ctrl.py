@@ -63,7 +63,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
         elif status == '204':
             return None # if job_id is active, no active job is available now
         else:
-            raise ValueError("Connection error to job {}. status code: {}".format(job_id, status))
+            raise ValueError("Connection error to {} job. status code: {}".format(job_id, status))
 
     def create_job(self, job_desc):
 
