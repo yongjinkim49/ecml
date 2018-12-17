@@ -60,7 +60,7 @@ class GridSamplingSpace(SearchHistory):
         self.hp_config = hp_config
 
         self.grid = np.asarray(grid)
-        self.hpv = np.asarray(hpv)
+        self.hpv = hpv
 
         super(GridSamplingSpace, self).__init__(len(hpv))
         
