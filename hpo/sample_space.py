@@ -24,7 +24,7 @@ class SearchHistory(object):
         self.complete = np.arange(0)
         self.candidates = np.setdiff1d(np.arange(self.num_samples), self.complete)
         
-        self.observed_errors = np.zeros(self.num_samples)
+        self.observed_errors = np.ones(self.num_samples)
 
     def get_candidates(self):
         return self.candidates
@@ -63,7 +63,6 @@ class GridSamplingSpace(SearchHistory):
         self.hpv = hpv
 
         super(GridSamplingSpace, self).__init__(len(hpv))
-        
 
     def get_name(self):
         return self.name

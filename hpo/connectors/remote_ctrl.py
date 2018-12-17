@@ -98,6 +98,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 active_job = self.get_job("active")
                 if active_job != None:
                     debug("Worker is busy. current working job: {}".format(active_job['job_id']))
+                    self.stop(active_job['job_id'])
                     retry_count += 1
                     if retry_count > self.num_retry:
                         warn("Starting {} job failed.".format(job_id))
@@ -125,7 +126,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                             return False
                         else:
                             time.sleep(self.wait_time)
-                            debug("Retry {}/{} after waiting {}sec".format(retry_count, self.num_retry, self.wait_time))
+                            debug("Retry {}/{}...".format(retry_count, self.num_retry, self.wait_time))
                             continue                        
                     else:
                         raise ValueError("Invalid worker status: {}".format(status))                
