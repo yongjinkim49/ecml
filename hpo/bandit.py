@@ -53,8 +53,7 @@ def connect_remote_space(space_url):
     return s    
 
 
-def create_grid_space(cfg, 
-                      num_samples=20000, grid_seed=1):
+def create_grid_space(cfg, num_samples=20000, grid_seed=1):
     if hasattr(cfg, 'config'):
         if hasattr(cfg.config, 'num_samples'):
             num_samples = cfg.config.num_samples

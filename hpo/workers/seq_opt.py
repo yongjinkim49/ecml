@@ -97,11 +97,17 @@ class SequentialOptimizer(Worker):
             if hp_cfg == None:
                 ValueError("Surrogate {} configuration not found.".format(s_name))
         
-        if 'shared_space_url' in run_cfg:
+        if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):
+            space_url = run_cfg['shared_space_url']
             space = bandit.connect_remote_space(run_cfg['shared_space_url'])
             if space == None:
-                space = bandit.create_grid_space(run_cfg)
+                if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
+                    debug("Local share space not initialized yet. Create new grid space")
+                    space = bandit.create_grid_space(run_cfg)
+                else:
+                    error("Unable connect to space URL: {}".format(space_url))
         else:
+            warn("Invalid space URL: {}".format(run_cfg['shared_space_url']))
             space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
 
         if 'worker_url' in args:
