@@ -49,16 +49,16 @@ def connect_remote_space(space_url):
     return s    
 
 
-def create_grid_space(cfg, num_samples=20000, grid_seed=1):
-    if hasattr(cfg, 'config'):
-        if hasattr(cfg.config, 'num_samples'):
-            num_samples = cfg.config.num_samples
+def create_grid_space(hp_cfg, num_samples=20000, grid_seed=1):
+    if hasattr(hp_cfg, 'config'):
+        if hasattr(hp_cfg.config, 'num_samples'):
+            num_samples = hp_cfg.config.num_samples
 
-        if hasattr(cfg.config, 'grid_seed'):
-            grid_seed = cfg.config.grid_seed
+        if hasattr(hp_cfg.config, 'grid_seed'):
+            grid_seed = hp_cfg.config.grid_seed
     name = "grid_sample-{}".format(time.strftime('%Y%m%dT-%H:%M:%SZ',time.gmtime()))
-    hvg = HyperparameterVectorGenerator(cfg, num_samples, grid_seed)
-    s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), cfg)
+    hvg = HyperparameterVectorGenerator(hp_cfg, num_samples, grid_seed)
+    s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), hp_cfg)
     debug("Grid sampling space created: {}".format(name))
     return s
 
