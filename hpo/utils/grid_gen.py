@@ -4,6 +4,7 @@ import pandas as pd
 
 from sobol_lib import i4_sobol_generate
 
+from hpo.utils.logger import *
 
 class GridGenerator(object):
     def __init__(self, num_dim, num_samples):
@@ -49,9 +50,11 @@ class HyperparameterVectorGenerator(object):
         return self.grid
 
     def get_hpv(self):
+        debug("{}".format(self.hpvs[0]))
         return self.hpvs
 
     def generate(self, return_type='array'):
+        debug("Generating hyperparams...")
         hps = self.config.hyperparams
         hpv_list = []
         if return_type == 'array':
