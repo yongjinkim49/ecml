@@ -56,7 +56,7 @@ def create_grid_space(hp_cfg, num_samples=20000, grid_seed=1):
 
         if hasattr(hp_cfg.config, 'grid_seed'):
             grid_seed = hp_cfg.config.grid_seed
-    name = "grid_sample-{}".format(time.strftime('%Y%m%dT-%H:%M:%SZ',time.gmtime()))
+    name = "grid_sample-{}".format(time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime()))
     hvg = HyperparameterVectorGenerator(hp_cfg, num_samples, grid_seed)
     s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), hp_cfg)
     debug("Grid sampling space created: {}".format(name))

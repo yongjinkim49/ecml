@@ -11,7 +11,7 @@ def get_remote_samples(name, space_url):
         connector = RemoteSampleSpaceConnector(space_url)
         return RemoteSamplingSpace(name, connector)
     except Exception as ex:
-        warn("Remote samples connection fail: {}".format(ex))
+        warn("Fail to get remote samples: {}".format(ex))
         return None
   
 

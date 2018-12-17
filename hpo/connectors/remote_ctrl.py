@@ -222,10 +222,10 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
                 return space
             else:
-                raise ValueError("Connection failed: {}".format(status))
+                raise ValueError("Connection failed with code {}".format(status))
 
         except Exception as ex:
-            warn("Getting remote space configuration failed: {}".format(ex))
+            debug("Getting remote space: {}".format(ex))
             return None
 
     def get_num_samples(self):

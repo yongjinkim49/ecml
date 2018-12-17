@@ -102,7 +102,7 @@ class SequentialOptimizer(Worker):
             space = bandit.connect_remote_space(run_cfg['shared_space_url'])
             if space == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
-                    debug("Local share space not initialized yet. Create new grid space")
+                    debug("Create new grid space")
                     space = bandit.create_grid_space(hp_cfg)
                 else:
                     error("Unable connect to space URL: {}".format(space_url))
