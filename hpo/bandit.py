@@ -67,8 +67,8 @@ def create_emulator(surrogate,
 def create_runner(trainer_url, run_mode, target_acc, time_expired, 
          run_config, hp_config,
          save_pkl=False,
-         num_samples = 20000,
-         grid_seed = 1,
+         num_samples=20000,
+         grid_seed=1,
          num_resume=0,
          space_url=None,
          use_surrogate=None,
@@ -76,8 +76,7 @@ def create_runner(trainer_url, run_mode, target_acc, time_expired,
          ):
     
     # FIXME:test auth key. It should be deleted before release.
-    kwargs = {"credential" : "jo2fulwkq"}  
-    name = 'run-{}'.format(int(time.time()))
+    kwargs = { "credential" : "jo2fulwkq" }  
     
     try:
         if use_surrogate != None:            
@@ -102,10 +101,12 @@ def create_runner(trainer_url, run_mode, target_acc, time_expired,
         t = train_remote.init(trainer_url, run_config, cfg, hpvs, **kwargs)
 
         if space_url:
+            name = "remote_grid_sample-{}".format(space_url)
             s = RemoteSamplingSpace(name, RemoteSampleSpaceConnector(space_url))
             id += " through {}".format(space_url)
         else:
-            s = GridSamplingSpace(name, hpvs, hvg.get_grid(), t.hp_config)
+            name = "grid_sample_{}_{}".format(num_samples, grid_seed)
+            s = GridSamplingSpace(name, hpvs, hvg.get_grid(), hp_config)
         
         machine = HPOBanditMachine(
             s, t, run_mode, target_acc, time_expired, run_config,

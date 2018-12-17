@@ -10,8 +10,6 @@ import hpo.hp_config as hconf
 
 from hpo.workers.worker import Worker 
 import hpo.utils.lookup as lookup
-import hpo.connectors.train_emul as train_emul
-import hpo.connectors.train_remote as train_remote
 
 from hpo.utils.grid_gen import *
 from hpo.sample_space import *
@@ -104,25 +102,9 @@ class SequentialOptimizer(Worker):
 
         if 'worker_url' in args:
             if valid.url(args['worker_url']):
-                trainer = args['worker_url']
-                num_samples = 20000
-                num_seed = 1
-                if "num_samples" in args:
-                    num_samples = args['num_samples']
-
-                if "num_seed" in args:
-                    num_seed = args['num_seed']
-
-                hvg = HyperparameterVectorGenerator(hp_cfg, num_samples, num_seed)
-                hpvs = hvg.generate()
-                grid = hvg.get_grid()
-                t = train_remote.init(args['worker_url'], run_cfg, hp_cfg, hpvs, 
-                    credential="jo2fulwkq") # TODO:read cridential from secure DB
-                name = "remote_grid_sample_{}_{}".format(num_samples, num_seed)
-                self.samples = GridSamplingSpace(name, hpvs, grid, t)
 
                 self.machine = bandit.create_runner(
-                    trainer, 
+                    args['worker_url'], 
                     args['exp_crt'], args['exp_goal'], args['exp_time'],
                     run_cfg, hp_cfg,                            
                     num_resume=num_resume,
@@ -130,21 +112,21 @@ class SequentialOptimizer(Worker):
                     space_url=shared_space,
                     use_surrogate=s_name,
                     id=self.id)
+                
+                self.samples = self.machine.samples
             else:
                 raise ValueError("Invalid worker URL: {}".format(args["worker_url"]))
         else:
-            l = lookup.load(s_name)
-            t = train_emul.init(l, run_cfg)
-            self.samples = SurrogateSamplingSpace(l)
-            trainer = args['surrogate']
+            
             self.machine = bandit.create_emulator(
-                trainer, 
+                args['surrogate'], 
                 args['exp_crt'], args['exp_goal'], args['exp_time'],
                 num_resume=num_resume,
                 space_url=shared_space,
                 save_pkl=save_pkl, 
                 run_config=run_cfg,
                 id=self.id + "_emul")
+            self.samples = SurrogateSamplingSpace(l)
 
         if args['mode'] == 'DIV' or args['mode'] == 'ADA':
             results = self.machine.mix(args['spec'], args['num_trials'], 
