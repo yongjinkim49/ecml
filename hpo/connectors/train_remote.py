@@ -101,7 +101,7 @@ class RemoteTrainConnector(RemoteJobConnector):
 
 class RemoteTrainer(TrainerPrototype):
     def __init__(self, connector, hpvs, 
-                base_error=0.9, polling_interval=5, max_timeout= 10, min_train_epoch=1):
+                base_error=0.9, polling_interval=5, max_timeout= 100, min_train_epoch=1):
 
         self.hpvs = hpvs
         self.hp_config = connector.hp_config
