@@ -183,9 +183,8 @@ class RemoteTrainer(TrainerPrototype):
         cfg = { 'cand_index' : cand_index }
         param_names = self.hp_config.get_hyperparams()
         debug("Training HPV: {}".format(self.hpvs[cand_index]))
-        for p in range(len(param_names)):
-            param = param_names[p]
-            value = self.hpvs[cand_index][p]
+        for param in range(param_names):
+            value = self.hpvs[cand_index][param]
             hpv[param] = value
 
         if self.controller.validate():
