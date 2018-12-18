@@ -365,7 +365,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             if self.validate(id) == False:
                 raise ValueError("Invalid id: {}".format(id))
         
-            args = {"error": error}
+            args = {"value": error}
             resp = self.conn.request_put("/space/errors/{}".format(id), args=args, headers=self.headers)
             status = resp['headers']['status']
             

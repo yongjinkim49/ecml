@@ -40,7 +40,7 @@ class ObservedError(Resource):
     def put(self, id):
         parser = reqparse.RequestParser()        
         parser.add_argument("Authorization", location="headers") # for security reason
-        parser.add_argument("error", location='args')
+        parser.add_argument("value", location='args')
         args = parser.parse_args()
 
         if args['Authorization'] != self.credential:
@@ -51,7 +51,7 @@ class ObservedError(Resource):
             return "Sampling space is not initialized", 500
         else:
             try:
-                samples.update(int(id), float(args["error"]))
+                samples.update(int(id), float(args["value"]))
                 error = {"id": id}
                 error["error"] = samples.get_errors(int(id))
                 
