@@ -26,6 +26,7 @@ def sample_target_func(c1_depth, p1_size, c2_depth,
         print("Random loss: {:.4f}".format(loss))
         return loss
 
+
 def sample_main(args):
     
     debug_mode = False
@@ -36,7 +37,7 @@ def sample_main(args):
         hconf_path = args.hconf_dir + args.hp_config
         hp_cfg = hconf.read_config(hconf_path)
 
-        print(" * HPO worker {}-gpu{} is ready to serve...".format(MACHINE_ID, GPU_ID))
+        print(" * HPO worker is ready to serve...")
         wait_job_request(sample_target_func, hp_cfg,
             debug_mode=debug_mode, 
             port=args.port)

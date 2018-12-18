@@ -28,8 +28,8 @@
     ],
     "bandits" : [
         { "mode": "DIV", "spec": "RANDOM", "port":5000 },
-        { "mode": "DIV", "spec": "RANDOM", "port":5001 },
-        { "mode": "DIV", "spec": "RANDOM", "port":5002 },
-        { "mode": "DIV", "spec": "RANDOM", "port":5003 }    
+        { "mode": "DIV", "spec": "RANDOM", "port":6000 },
+        { "mode": "DIV", "spec": "RANDOM", "port":6001 },
+        { "mode": "DIV", "spec": "RANDOM", "port":6002 }    
     ]
 }

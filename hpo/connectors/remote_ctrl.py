@@ -105,7 +105,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                         return False
                     else:
                         time.sleep(self.wait_time)
-                        debug("Retry {}/{} after waiting {}sec".format(retry_count, self.num_retry, self.wait_time))
+                        debug("Retry {}/{} after waiting {} sec".format(retry_count, self.num_retry, self.wait_time))
                         continue
                 else:
                     ctrl = {"control": "start"}
