@@ -11,6 +11,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from hpo.utils.logger import *
 from hpo.connectors.proto import TrainerPrototype
 
+
 def init(space, run_config):
     try:
         if not hasattr(space, 'lookup'):
@@ -29,6 +30,7 @@ def init(space, run_config):
     except Exception as ex:
         warn("early stop trainer creation failed: {}".format(ex))
         return NoEarlyStopTrainer(lookup)
+
 
 class TrainEmulator(TrainerPrototype):
     def __init__(self, lookup):

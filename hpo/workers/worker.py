@@ -83,17 +83,17 @@ class Worker(object):
     def pause(self):
         self.paused = True
         self.pause_cond.acquire()
-        debug("Pause requested.")
+        #debug("Pause requested.")
 
     def resume(self):
         self.paused = False
         self.pause_cond.notify()
         self.pause_cond.release()
-        debug("Resume requested.")
+        #debug("Resume requested.")
 
     def stop(self):
         if not self.thread is None:
-            debug("Stop requested.")
+            #debug("Stop requested.")
             self.stop_flag = True
             self.thread.join()
 

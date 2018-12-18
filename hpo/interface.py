@@ -64,14 +64,15 @@ def wait_seq_opt_request(run_cfg, hp_cfg,
     # For sampling space and history sharing
     api.add_resource(Space, "/space", 
                     resource_class_kwargs={'worker': w, 'credential': cred})
-    api.add_resource(Completes, "/space/completes", 
-                    resource_class_kwargs={'worker': w, 'credential': cred})
-    api.add_resource(Candidates, "/space/candidates", 
-                    resource_class_kwargs={'worker': w, 'credential': cred})                                         
     api.add_resource(Grid, "/space/grids/<string:id>", 
                     resource_class_kwargs={'worker': w, 'credential': cred})
     api.add_resource(HyperparamVector, "/space/vectors/<string:id>", 
                     resource_class_kwargs={'worker': w, 'credential': cred})
+    
+    api.add_resource(Completes, "/space/completes", 
+                    resource_class_kwargs={'worker': w, 'credential': cred})
+    api.add_resource(Candidates, "/space/candidates", 
+                    resource_class_kwargs={'worker': w, 'credential': cred})                                         
     api.add_resource(ObservedError, "/space/errors/<string:id>", 
                     resource_class_kwargs={'worker': w, 'credential': cred})
 
