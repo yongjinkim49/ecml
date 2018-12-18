@@ -183,7 +183,7 @@ class RemoteTrainer(TrainerPrototype):
         cfg = { 'cand_index' : cand_index }
         param_names = self.hp_config.get_hyperparams()
         debug("Training HPV: {}".format(self.hpvs[cand_index]))
-        for param in range(param_names):
+        for param in param_names:
             value = self.hpvs[cand_index][param]
             hpv[param] = value
 
