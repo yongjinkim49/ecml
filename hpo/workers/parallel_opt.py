@@ -2,7 +2,7 @@ import os
 import time
 from multiprocessing import Process, current_process
 
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.connectors.hpo_remote import *
 
 from hpo.interface import *
@@ -13,7 +13,7 @@ def create_local_daemon(run_config, hp_config, port, log_level="debug"):
     set_log_level(log_level)
 
     debug("HPO daemon will be working in port {}.\n".format(port))
-    wait_seq_opt_request(run_config, hp_config, 
+    wait_hpo_request(run_config, hp_config, 
         enable_debug=True, port=port)
 
 

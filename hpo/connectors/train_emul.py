@@ -8,8 +8,8 @@ import math
 from sklearn import linear_model
 from sklearn.preprocessing import PolynomialFeatures
 
-from hpo.utils.logger import *
-from hpo.connectors.proto import TrainerPrototype
+from commons.loggerr import *
+from commons.proto import TrainerPrototype
 
 
 def init(space, run_config):

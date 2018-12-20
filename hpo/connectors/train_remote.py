@@ -6,9 +6,9 @@ import copy
 import numpy as np
 import math
 
-from hpo.utils.logger import *
+from commons.logger import *
 
-from hpo.connectors.proto import TrainerPrototype
+from commons.proto import TrainerPrototype
 from hpo.connectors.remote_ctrl import RemoteJobConnector
 
 

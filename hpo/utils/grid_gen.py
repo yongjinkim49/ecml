@@ -4,7 +4,7 @@ import pandas as pd
 
 from sobol_lib import i4_sobol_generate
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 class GridGenerator(object):
     def __init__(self, num_dim, num_samples):

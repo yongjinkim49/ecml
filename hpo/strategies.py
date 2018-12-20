@@ -7,7 +7,7 @@ import time
 import random
 import copy as cp
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 import numpy as np
 from sklearn.preprocessing import normalize

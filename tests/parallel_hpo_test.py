@@ -5,9 +5,9 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from multiprocessing import Process, current_process
+from commons.logger import *
 
 from hpo.workers.parallel_opt import *
-from hpo.utils.logger import *
 import hpo.bandit_config as bconf
 import hpo.hp_config as hconf
 

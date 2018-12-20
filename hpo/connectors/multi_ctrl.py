@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import math
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 
 class DiversifiedHPOManager(object):

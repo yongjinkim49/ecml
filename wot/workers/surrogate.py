@@ -6,8 +6,9 @@ import traceback
 
 import numpy as np
 
+from commons.logger import *
+
 import wot.utils.lookup as lookup
-from wot.utils.logger import *
 
 from wot.workers.evaluator import IterativeFunctionEvaluator
 from wot.interface import *

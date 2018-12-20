@@ -31,7 +31,7 @@ import gp_util
 from acq_func import *
 from util import *
 
-from hpo.utils.logger import *
+from commons.loggerr import *
 
 
 def init(expt_dir, arg_string):

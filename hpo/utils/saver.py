@@ -9,7 +9,7 @@ import pickle
 import gzip
 import json
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 class ResultSaver(object):
     def __init__(self, data_type, run_mode, 

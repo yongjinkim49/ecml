@@ -8,7 +8,7 @@ import hpo.bandit as bandit
 import hpo.bandit_config as run_config
 import hpo.hp_config as hp_config
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 
 def test_run_main():

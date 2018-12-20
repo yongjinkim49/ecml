@@ -21,7 +21,7 @@ from hpo.utils.grid_gen import *
 
 from hpo.utils.saver import ResultSaver, TempSaver
 from hpo.utils.measurer import RankIntersectionMeasure
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.utils.converter import TimestringConverter
 
 from hpo.bandit_config import BanditConfigurator

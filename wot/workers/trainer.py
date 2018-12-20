@@ -4,7 +4,7 @@ import time
 import traceback
 import copy
 
-from wot.utils.logger import *
+from commons.logger import *
 from wot.workers.worker import Worker
 
 class Trainer(Worker):

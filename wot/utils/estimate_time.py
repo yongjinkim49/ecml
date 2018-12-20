@@ -9,7 +9,7 @@ import scipy.stats as sps
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import datasets, linear_model, metrics
 
-from utils.logger import *
+from commons.logger import *
 
 def get_exec_time_estimator(type, sobol_grid=None, exec_time=None):
     if type == 'LR':

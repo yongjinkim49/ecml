@@ -1,9 +1,12 @@
-from hpo.utils.rest_client.restful_lib import Connection
+from commons.rest_client.restful_lib import Connection
+from commons.database import JsonDBManager 
 
+from commons.logger import * 
 
 class RemoteConnectorPrototype(object):
     def __init__(self, target_url, **kwargs):
         self.url = target_url
+
         if "credential" in kwargs:
             self.credential = kwargs['credential']
         else:
@@ -25,7 +28,6 @@ class RemoteConnectorPrototype(object):
         self.headers['Authorization'] = "Basic {}".format(self.credential)
 
 
-
 class TrainerPrototype(object):
 
     def reset(self):
@@ -36,3 +38,29 @@ class TrainerPrototype(object):
 
     def get_interim_error(self, model_index, cur_dur):
         raise NotImplementedError("This should return interim loss.")
+
+
+class ManagerPrototype(object):
+
+    def __init__(self, *args, **kwargs):
+        self.dbm = JsonDBManager()
+        self.database = self.dbm.get_db()
+        self.credential = "Basic {}".format(self.database['credential'])
+
+    def save_db(self, key, data):
+        if 'jobs' in self.database: 
+            self.database[key] = data
+        if self.dbm:
+            self.dbm.save(self.database)
+        else:
+            warn("database can not be updated because it does not loaded yet.")
+
+    def sync_db(self):
+        debug('database will be updated')
+        self.save_db('jobs', self.jobs)
+
+    def authorize(self, auth_key):
+        if auth_key == self.credential:
+            return True
+        else:
+            return False

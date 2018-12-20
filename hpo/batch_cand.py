@@ -7,7 +7,7 @@ import copy
 
 import numpy as np
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 class CandidateSelector(object):
     def __init__(self, model, acq_func):

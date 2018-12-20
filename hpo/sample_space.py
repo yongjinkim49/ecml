@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.utils.grid_gen import *
 from hpo.connectors.remote_ctrl import RemoteSampleSpaceConnector
 from hpo.utils.converter import VectorGridConverter

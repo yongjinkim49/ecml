@@ -9,7 +9,7 @@ import scipy.stats as sps
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import datasets, linear_model, metrics
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 
 ALL_TIME_STRATEGIES = ['ET_L0.1', 'ET_L0.2', 'ET_L0.4',

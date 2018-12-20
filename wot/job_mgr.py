@@ -4,11 +4,11 @@ import json
 
 from future.utils import iteritems
 
-from wot.utils.logger import * 
-import wot.utils.lookup as lookup
-from wot.utils.database import JsonDBManager 
+from commons.logger import * 
+from commons.proto import ManagerPrototype 
 
 from wot.workers.surrogate import SurrogateEvaluator
+import wot.utils.lookup as lookup
 
 
 class TrainingJobFactory(object):
@@ -36,11 +36,11 @@ class TrainingJobFactory(object):
         }
         return job        
 
-class JobManager(object):
+class TrainingJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False, retrieve_func=None):
-        self.database = self.load_db()
+
+        super(TrainingJobManager, self).__init__()
         self.jobs =  self.database['jobs'] #[ dummy_item, ] # XXX:change to empty list in future
-        self.credential = "Basic {}".format(self.database['credential'])
          
         self.worker = worker
         self.use_surrogate = use_surrogate
@@ -54,23 +54,7 @@ class JobManager(object):
         for j in self.jobs:
             j["status"] = 'terminated'
 
-        self.save_db()
-
-    def save_db(self):
-        # XXX: disabled for testing use
-        self.database['jobs'] = [] #self.jobs
-        if self.dbm:
-            self.dbm.save(self.database)
-        else:
-            warn("database can not be updated because it does not loaded yet.")
-
-    def load_db(self):
-        self.dbm = JsonDBManager()
-        return self.dbm.database
-
-    def sync_db(self):
-        debug('database will be updated')
-        self.save_db()
+        self.save_db('jobs', self.jobs)
 
     def get_config(self):
         if self.use_surrogate:

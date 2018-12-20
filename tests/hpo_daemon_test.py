@@ -11,7 +11,7 @@ import hpo.hp_config as hconf
 def main():
     run_cfg = bconf.read('parallel-test.json')
     hp_cfg = hconf.read('./hp_conf/data1.json')
-    wait_seq_opt_request(run_cfg, hp_cfg, True)
+    wait_hpo_request(run_cfg, hp_cfg, True)
 
 if __name__ == "__main__":
     main()

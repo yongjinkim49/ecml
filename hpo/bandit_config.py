@@ -13,7 +13,7 @@ import hpo.choosers.hyperopt_chooser as hoc
 import hpo.choosers.random_chooser as RandomChooser
 
 from hpo.strategies import *
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.eval_time import * 
 
 

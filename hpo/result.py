@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from hpo.utils.logger import *
+from commons.logger import *
 
 class HPOResultFactory(object):
     def __init__(self):

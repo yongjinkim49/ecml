@@ -38,7 +38,7 @@ def sample_main(args):
         hp_cfg = hconf.read_config(hconf_path)
 
         print(" * HPO worker is ready to serve...")
-        wait_job_request(sample_target_func, hp_cfg,
+        wait_train_request(sample_target_func, hp_cfg,
             debug_mode=debug_mode, 
             port=args.port)
     except KeyboardInterrupt as ki:

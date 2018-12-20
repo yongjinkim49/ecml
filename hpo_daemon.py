@@ -63,7 +63,7 @@ def main():
             raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
 
         debug("HPO daemon will be ready to serve...")
-        wait_seq_opt_request(run_cfg, hp_cfg, hp_dir=args.hconf_dir, enable_debug=enable_debug, port=args.port)
+        wait_hpo_request(run_cfg, hp_cfg, hp_dir=args.hconf_dir, enable_debug=enable_debug, port=args.port)
     
     except KeyboardInterrupt as ki:
         warn("Terminated by Ctrl-C.")

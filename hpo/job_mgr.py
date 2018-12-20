@@ -5,12 +5,11 @@ import copy
 
 from future.utils import iteritems
 
-from hpo.utils.logger import * 
-import hpo.utils.lookup as lookup
-from hpo.utils.database import JsonDBManager 
+from commons.logger import * 
+from commons.proto import ManagerPrototype 
 
 
-class JobFactory(object):
+class HPOJobFactory(object):
     def __init__(self, worker, n_jobs):
         self.n_jobs = n_jobs
         self.worker = worker
@@ -18,7 +17,7 @@ class JobFactory(object):
     def create(self, jr):
         job = {}
         job['job_id'] = "{}_{}-{}".format(self.worker.id, self.worker.device_id, self.n_jobs)
-        job['created'] = time.time()
+        job['created'] = time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
         job['status'] = "not assigned"
         job['result'] = None
         for key in jr.keys():
@@ -27,11 +26,12 @@ class JobFactory(object):
         return job  
 
 
-class JobManager(object):
+class HPOJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False):
-        self.database = self.load_db()
+
+
+        super(HPOJobManager, self).__init__()
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
-        self.credential = "Basic {}".format(self.database['credential'])
          
         self.worker = worker
         self.prefix = worker.id
@@ -47,23 +47,7 @@ class JobManager(object):
         for j in self.jobs:
             j["status"] = 'terminated'
 
-        self.save_db()
-
-    def save_db(self):
-        if 'jobs' in self.database: 
-            self.database['jobs'] = self.jobs
-        if self.dbm:
-            self.dbm.save(self.database)
-        else:
-            warn("database can not be updated because it does not loaded yet.")
-
-    def load_db(self):
-        self.dbm = JsonDBManager()
-        return self.dbm.database
-
-    def sync_db(self):
-        debug('database will be updated')
-        self.save_db()
+        self.save_db('jobs', self.jobs)
 
     def get_config(self):
         # This returns run config
@@ -82,7 +66,7 @@ class JobManager(object):
         job_id = None
         # TODO: validate parameters
         try:
-            f = JobFactory(self.worker, len(self.jobs))
+            f = HPOJobFactory(self.worker, len(self.jobs))
             job = f.create(args)
             self.jobs.append(job)
             debug("Job {} added properly.".format(job['job_id']))
@@ -222,6 +206,11 @@ class JobManager(object):
         warn("No jobs available.")
         return False
 
-
+    def stop_working_job(self):
+        for w in self.to_dos:
+            if w['worker'].get_cur_status() == 'processing':
+                job_id = w['job_id']
+                self.remove(job_id)                
+                break
 
            

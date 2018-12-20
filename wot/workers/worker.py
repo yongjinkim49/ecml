@@ -6,7 +6,7 @@ import copy
 
 import numpy as np
 
-from wot.utils.logger import *
+from commons.logger import *
 
 class Worker(object):
     def __init__(self, name):

@@ -11,10 +11,10 @@ from wot.resources.config import Config
 from wot.resources.jobs import Jobs
 from wot.resources.job import Job 
 
-from wot.workers.job_mgr import JobManager
+from wot.job_mgr import TrainingJobManager
 from wot.workers.evaluator import *
 
-from wot.utils.logger import *
+from commons.logger import *
 import multiprocessing as mp
 
 DEFAULT_DEBUG_MODE = False
@@ -22,7 +22,7 @@ JOB_MANAGER = None
 API_SERVER_PROCESS = None
 
 # Job handling APIs
-def wait_job_request(eval_worker, hp_cfg,
+def wait_train_request(eval_worker, hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=5000,
                     device_type="cpu",
@@ -40,7 +40,7 @@ def wait_job_request(eval_worker, hp_cfg,
     ej = eval_worker()
     ej.set_device_id(device_type, device_id)
     if JOB_MANAGER == None:
-        JOB_MANAGER = JobManager(ej, 
+        JOB_MANAGER = TrainingJobManager(ej, 
                                 use_surrogate=enable_surrogate, 
                                 retrieve_func=retrieve_func)
     else:

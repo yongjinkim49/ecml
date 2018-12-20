@@ -2,7 +2,7 @@ import os
 import time
 import json
 
-from hpo.utils.logger import * 
+from commons.logger import * 
 
 from flask import jsonify, request
 from flask_restful import Resource, reqparse
@@ -16,7 +16,7 @@ class Billboard(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         args = parser.parse_args()
-        if args['Authorization'] != self.jm.credential:
+        if self.jm.authorize(args['Authorization']):
             return "Unauthorized", 401
         
         # TODO:to be added dynamically

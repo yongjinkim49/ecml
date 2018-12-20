@@ -9,7 +9,7 @@ import sklearn.ensemble.forest
 from util import *
 from acq_func import *
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 from sklearn.externals.joblib import Parallel, delayed
 

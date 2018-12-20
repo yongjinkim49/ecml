@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import hpo.hp_config as hp_cfg
 
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.connectors.train_remote import RemoteTrainConnector
 
 def test_train_main():

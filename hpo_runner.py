@@ -7,7 +7,7 @@ import os
 import argparse
 
 import validators as valid
-from hpo.utils.logger import *
+from commons.logger import *
 from hpo.eval_time import *
 
 import hpo.bandit_config as run_config

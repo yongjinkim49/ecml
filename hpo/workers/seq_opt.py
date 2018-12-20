@@ -3,7 +3,7 @@ import time
 import copy
 import validators as valid
 
-from hpo.utils.logger import *
+from commons.logger import *
 
 import hpo.bandit as bandit
 import hpo.hp_config as hconf
@@ -110,6 +110,8 @@ class SequentialOptimizer(Worker):
             warn("Invalid space URL: {}".format(run_cfg['shared_space_url']))
             space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
 
+        self.samples = space
+
         if 'worker_url' in args:
             if valid.url(args['worker_url']):
 
@@ -122,7 +124,6 @@ class SequentialOptimizer(Worker):
                     use_surrogate=s_name,
                     id=self.id)
                 
-                self.samples = self.machine.samples
             else:
                 raise ValueError("Invalid worker URL: {}".format(args["worker_url"]))
         else:
@@ -133,7 +134,6 @@ class SequentialOptimizer(Worker):
                 save_pkl=save_pkl, 
                 run_config=run_cfg,
                 id=self.id + "_emul")
-            self.samples = self.machine.samples
 
         if args['mode'] == 'DIV' or args['mode'] == 'ADA':
             results = self.machine.mix(args['spec'], args['num_trials'], 

@@ -2,7 +2,7 @@ import os
 import time
 import json
 
-from wot.utils.logger import * 
+from commons.logger import * 
 
 from flask import jsonify, request
 from flask_restful import Resource, reqparse

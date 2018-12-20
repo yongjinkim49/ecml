@@ -5,12 +5,12 @@ import json
 from flask import jsonify, request
 from flask_restful import Resource, reqparse
 
-from hpo.utils.logger import * 
+from commons.logger import * 
 
 class ObservedError(Resource):
     def __init__(self, **kwargs):
-        self.worker = kwargs['worker']
-        self.credential = kwargs['credential']
+        self.sm = kwargs['worker']
+
         super(ObservedError, self).__init__()
 
     def get(self, id):
@@ -18,9 +18,9 @@ class ObservedError(Resource):
         parser.add_argument("Authorization", location="headers") # for security reason
         
         args = parser.parse_args()
-        if args['Authorization'] != self.credential:
+        if args['Authorization'] != self.sm.credential:
             return "Unauthorized", 401
-        samples = self.worker.get_sampling_space()
+        samples = self.sm.get_sampling_space()
         if samples == None:
             return "Sampling space is not initialized", 500
 
@@ -46,7 +46,7 @@ class ObservedError(Resource):
         if args['Authorization'] != self.credential:
             return "Unauthorized", 401
 
-        samples = self.worker.get_sampling_space()
+        samples = self.sm.get_sampling_space()
         if samples is None:
             return "Sampling space is not initialized", 500
         else:

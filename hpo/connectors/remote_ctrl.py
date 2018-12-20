@@ -4,9 +4,9 @@ import six
 import base64
 import time
 
-from hpo.utils.rest_client.restful_lib import Connection
-from hpo.utils.logger import *
-from hpo.connectors.proto import *
+from commons.rest_client.restful_lib import Connection
+from commons.logger import *
+from commons.proto import *
 
 class RemoteJobConnector(RemoteConnectorPrototype):
 
@@ -212,7 +212,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_status(self):
         try:
-            resp = self.conn.request_get("/space", args={}, headers=self.headers)
+            resp = self.conn.request_get("/", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -238,7 +238,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_candidates(self):
         try:
-            resp = self.conn.request_get("/space/candidates", args={}, headers=self.headers)
+            resp = self.conn.request_get("/candidates", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -254,7 +254,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_completes(self):
         try:
-            resp = self.conn.request_get("/space/completes", args={}, headers=self.headers)
+            resp = self.conn.request_get("/completes", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -287,7 +287,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             if self.validate(id) == False:
                 raise ValueError("Invalid id: {}".format(id))
 
-            resp = self.conn.request_get("/space/grids/{}".format(id), args={}, headers=self.headers)
+            resp = self.conn.request_get("/grids/{}".format(id), args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -313,7 +313,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             if self.validate(id) == False:
                 raise ValueError("Invalid id: {}".format(id))
 
-            resp = self.conn.request_get("/space/vectors/{}".format(id), args={}, headers=self.headers)
+            resp = self.conn.request_get("/vectors/{}".format(id), args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -340,7 +340,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
                 if not id in self.get_completes():
                     raise ValueError("Invalid id: {}".format(id))
 
-            resp = self.conn.request_get("/space/errors/{}".format(id), args={}, headers=self.headers)
+            resp = self.conn.request_get("/errors/{}".format(id), args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -366,7 +366,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
                 raise ValueError("Invalid id: {}".format(id))
         
             args = {"value": error}
-            resp = self.conn.request_put("/space/errors/{}".format(id), args=args, headers=self.headers)
+            resp = self.conn.request_put("/errors/{}".format(id), args=args, headers=self.headers)
             status = resp['headers']['status']
             
             if status == '202':

@@ -7,7 +7,7 @@ import sys
 import traceback
 
 from collections import namedtuple
-from utils.logger import *
+from commons.logger import *
 
 
 def read_config(cfg_file):

@@ -5,9 +5,9 @@ import time
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import hpo.hp_config as hp_cfg
+from commons.logger import *
 
-from hpo.utils.logger import *
+import hpo.hp_config as hp_cfg
 from hpo.connectors.hpo_remote import *
 
 def test_hpo_main():

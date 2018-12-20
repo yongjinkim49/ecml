@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 import wot.utils.hp_cfg as hp_cfg
-from wot.utils.logger import *
+from commons.logger import *
 
 def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=None):
     grid_shuffle = False
