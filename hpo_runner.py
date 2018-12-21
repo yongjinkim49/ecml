@@ -14,6 +14,7 @@ import hpo.bandit_config as run_config
 import hpo.hp_config as hconf
 import hpo.bandit as bandit
 import hpo.batch_sim as batch
+import hpo.space_mgr as space
 
 
 ALL_OPT_MODELS = ['RANDOM', 'GP', 'GP-NM', 'RF', 'HO', 'GP-HLE', 'RF-HLE', 'HO-HLE']
@@ -106,7 +107,7 @@ def execute(run_cfg, args, save_results=False):
             use_surrogate = None
 
             trainer = None
-            space = None
+            samples = None
 
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
@@ -114,15 +115,18 @@ def execute(run_cfg, args, save_results=False):
                     use_surrogate = args['surrogate']
                     path = "{}{}.json".format(args['hp_conf'], args['surrogate'])
                     hp_cfg = hconf.read_config(path)
-                    space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
+                    grid_order = None 
+                    if 'grid' in run_cfg and 'order' in run_cfg['grid']:
+                        grid_order = run_cfg['grid']['order']                     
+                    samples = space.create_surrogate_space(args['surrogate'], grid_order)
                     
                 elif 'hp_cfg' in args and args['hp_cfg'] != None:
                     hp_cfg = args['hp_cfg']
-                    space = bandit.create_grid_space(hp_cfg)
+                    samples = space.create_grid_space(hp_cfg.get_dict())
                 else:
                     raise ValueError("Invalid arguments: {}".format(args))
                 
-                m = bandit.create_runner(trainer, space,
+                m = bandit.create_runner(trainer, samples,
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl,
@@ -130,7 +134,7 @@ def execute(run_cfg, args, save_results=False):
                             hp_config=hp_cfg,
                             use_surrogate=use_surrogate)
             else:
-                m = bandit.create_emulator(space, 
+                m = bandit.create_emulator(samples, 
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl, 

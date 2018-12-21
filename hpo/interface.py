@@ -42,7 +42,7 @@ def wait_hpo_request(run_cfg, hp_cfg,
     if enable_debug:
         set_log_level('debug')
 
-    w = SequentialOptimizer(run_cfg, hp_cfg, "seq_opt_{}".format(port))
+    w = SequentialModelBasedOptimizer(run_cfg, hp_cfg, "seq_opt_{}".format(port))
     jm = HPOJobManager(w, use_surrogate=enable_surrogate)
     sm = SamplingSpaceManager()
 
@@ -64,7 +64,7 @@ def wait_hpo_request(run_cfg, hp_cfg,
     api.add_resource(Job, "/jobs/<string:job_id>", 
                     resource_class_kwargs={'job_manager': jm})
     
-    # For sampling space and history sharing
+    # For managing sampling space and history sharing
     api.add_resource(Spaces, "/spaces", 
                     resource_class_kwargs={'space_manager': sm})    
     api.add_resource(Space, "/spaces/<string:space_id>", 

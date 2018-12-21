@@ -4,6 +4,13 @@ from commons.logger import *
 
 JSON_DB_FILE = 'db.json'
 
+def get_database_manager(db_type="JSON"):
+    if db_type == "JSON":
+        return JsonDBManager()
+    else:
+        raise NotImplementedError("No such DB type implemented: {}".format(db_type))
+
+
 class JsonDBManager(object):
     def __init__(self, file_name=JSON_DB_FILE):
         self.file_name = file_name

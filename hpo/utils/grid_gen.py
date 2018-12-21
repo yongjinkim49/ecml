@@ -5,6 +5,7 @@ import pandas as pd
 from sobol_lib import i4_sobol_generate
 
 from commons.logger import *
+from hpo.hp_config import HyperparameterConfiguration
 
 class GridGenerator(object):
     def __init__(self, num_dim, num_samples):
@@ -33,8 +34,8 @@ class SobolGridGenerator(GridGenerator):
 
 
 class HyperparameterVectorGenerator(object):
-    def __init__(self, config, num_samples, seed=1, grid_type='Sobol'):
-        self.config = config
+    def __init__(self, config_dict, num_samples, seed=1, grid_type='Sobol'):
+        self.config = HyperparameterConfiguration(config_dict)
         self.params = self.config.get_hyperparams()
                 
         sobol = None
@@ -120,39 +121,3 @@ class HyperparameterVectorGenerator(object):
         elif hp_cfg.type == 'str':
             result = str(result)
         return result
-
-# def test_main():
-#     import hp_cfg
-#     json_cfg = './lookup/data10.json'
-#     cfg = None
-#     if os.path.exists(json_cfg):
-#         cfg = hp_cfg.read(json_cfg)
-#         if not hp_cfg.validate(cfg):
-#             print("invalid configuration format")
-#     else:
-#         print("file not found")
-    
-#     if cfg is not None:
-#         gg = SobolGridGenerator(cfg.get_hyperparams(), 100)
-#         grid = gg.generate('table')
-#         print(grid)
-
-# def test_main2():
-#     import hp_cfg
-#     json_cfg = 'hp_conf/data10.json'
-#     cfg = None
-#     if os.path.exists(json_cfg):
-#         cfg = hp_cfg.read(json_cfg)
-#         if not hp_cfg.validate(cfg):
-#             print("invalid configuration format")
-#     else:
-#         print("file not found")
-    
-#     if cfg is not None:
-#         gg = HyperparameterVectorGenerator(cfg, 100)
-#         grid = gg.generate()
-#         for g in grid:
-#             print(["{}".format(i) for i in g])
-
-# if __name__ == '__main__':
-#     test_main()

@@ -2,7 +2,7 @@ import os
 import time
 import json
 
-from commons.loggerr import * 
+from commons.logger import * 
 
 from flask import jsonify, request
 from flask_restful import Resource, reqparse
@@ -22,7 +22,7 @@ class Candidates(Resource):
 
         samples = self.sm.get_space(space_id)
         if samples == None:
-            return "Sampling space is not initialized", 500
+            return "Sampling space {} is not available".format(space_id), 500
 
         result = {}
 

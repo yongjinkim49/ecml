@@ -12,16 +12,17 @@ import gzip
 
 import numpy as np
 
+from commons.logger import *
+
 from hpo.sample_space import *
+import hpo.eval_time as eval_time
+
 from hpo.result import HPOResultFactory
 
 import hpo.utils.lookup as lookup
-import hpo.eval_time as eval_time
 from hpo.utils.grid_gen import *
-
 from hpo.utils.saver import ResultSaver, TempSaver
 from hpo.utils.measurer import RankIntersectionMeasure
-from commons.logger import *
 from hpo.utils.converter import TimestringConverter
 
 from hpo.bandit_config import BanditConfigurator
@@ -31,36 +32,6 @@ import hpo.connectors.train_remote as train_remote
 import hpo.connectors.train_emul as train_emul
 
 NUM_MAX_ITERATIONS = 10000
-
-
-def create_surrogate_space(surrogate, run_config):
-    grid_order = None 
-    if 'grid' in run_config and 'order' in run_config['grid']:
-        grid_order = run_config['grid']['order']    
-    l = lookup.load(surrogate, grid_order=grid_order)
-    s = SurrogateSamplingSpace(l)
-    debug("Surrogate sampling space created: {}".format(surrogate))
-    return s
-
-
-def connect_remote_space(space_url):
-    name = "remote_grid_sample-{}".format(space_url)
-    s = get_remote_samples(name, space_url)
-    return s    
-
-
-def create_grid_space(hp_cfg, num_samples=20000, grid_seed=1):
-    if hasattr(hp_cfg, 'config'):
-        if hasattr(hp_cfg.config, 'num_samples'):
-            num_samples = hp_cfg.config.num_samples
-
-        if hasattr(hp_cfg.config, 'grid_seed'):
-            grid_seed = hp_cfg.config.grid_seed
-    name = "grid_sample-{}".format(time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime()))
-    hvg = HyperparameterVectorGenerator(hp_cfg, num_samples, grid_seed)
-    s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), hp_cfg)
-    debug("Grid sampling space created: {}".format(name))
-    return s
 
 
 def create_emulator(space,

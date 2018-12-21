@@ -9,22 +9,21 @@ from flask_restful import Resource, reqparse
 
 class Grid(Resource):
     def __init__(self, **kwargs):
-        self.worker = kwargs['worker']
-        self.credential = kwargs['credential']
+        self.sm = kwargs['space_manager']
         super(Grid, self).__init__()
 
-    def get(self, id):
+    def get(self, space_id, sample_id):
         
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         args = parser.parse_args()
         
-        if args['Authorization'] != self.credential:
+        if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
-        samples = self.worker.get_sampling_space()
+        samples = self.sm.get_space(space_id)
         if samples == None:
-            return "Sampling space is not initialized", 500
+            return "Sampling space {} is not available".format(space_id), 500
 
         if id == 'all':
             all_items =[]
@@ -35,7 +34,7 @@ class Grid(Resource):
             
             return all_items, 200                
         
-        elif id == 'candidates':
+        elif sample_id == 'candidates':
             candidates = []
             for c_id in samples.get_candidates():
                 grid = {"id": c_id}
@@ -44,7 +43,7 @@ class Grid(Resource):
             
             return candidates, 200
 
-        elif id == 'completes':
+        elif sample_id == 'completes':
             completes = []
             for c_id in samples.get_completes():
                 grid = {"id": c_id}
@@ -54,8 +53,8 @@ class Grid(Resource):
             return completes, 200
         else:
             try:
-                grid = {"id": id}
-                grid["values"] = samples.get_grid(int(id)).tolist()
+                grid = {"id": sample_id}
+                grid["values"] = samples.get_grid(int(sample_id)).tolist()
                 return grid, 200
 
             except Exception as ex:

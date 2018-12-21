@@ -29,8 +29,7 @@ class HPOJobFactory(object):
 class HPOJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False):
 
-
-        super(HPOJobManager, self).__init__()
+        super(HPOJobManager, self).__init__("job_manager")
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
          
         self.worker = worker

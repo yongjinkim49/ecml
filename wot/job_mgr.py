@@ -39,7 +39,7 @@ class TrainingJobFactory(object):
 class TrainingJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False, retrieve_func=None):
 
-        super(TrainingJobManager, self).__init__()
+        super(TrainingJobManager, self).__init__("job_manager")
         self.jobs =  self.database['jobs'] #[ dummy_item, ] # XXX:change to empty list in future
          
         self.worker = worker

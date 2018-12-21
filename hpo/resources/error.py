@@ -7,24 +7,26 @@ from flask_restful import Resource, reqparse
 
 from commons.logger import * 
 
+
 class ObservedError(Resource):
     def __init__(self, **kwargs):
-        self.sm = kwargs['worker']
+        self.sm = kwargs['space_manager']
 
         super(ObservedError, self).__init__()
 
-    def get(self, id):
+    def get(self, space_id, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         
         args = parser.parse_args()
-        if args['Authorization'] != self.sm.credential:
+        if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
-        samples = self.sm.get_sampling_space()
+        
+        samples = self.sm.get_space(space_id)
         if samples == None:
-            return "Sampling space is not initialized", 500
+            return "Sampling space {} is not available".format(space_id), 404
 
-        if id == 'completes':
+        if sample_id == 'completes':
             errors = []
             for c_id in samples.get_completes():
                 err = {"id" : c_id}
@@ -32,28 +34,29 @@ class ObservedError(Resource):
                 errors.append(err)
             return errors, 200
         else:
-            error = {"id": id}
-            error["error"] = samples.get_errors(int(id))
+            error = {"id": sample_id}
+            error["error"] = samples.get_errors(int(sample_id))
 
             return error, 200 
     
-    def put(self, id):
+    def put(self, space_id, sample_id):
         parser = reqparse.RequestParser()        
         parser.add_argument("Authorization", location="headers") # for security reason
         parser.add_argument("value", location='args')
         args = parser.parse_args()
 
-        if args['Authorization'] != self.credential:
+        if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
-        samples = self.sm.get_sampling_space()
+        samples = self.sm.get_space(space_id)
         if samples is None:
-            return "Sampling space is not initialized", 500
+            return "Space {} not found".format(space_id), 404
         else:
             try:
-                samples.update(int(id), float(args["value"]))
-                error = {"id": id}
-                error["error"] = samples.get_errors(int(id))
+                self.sm.set_space_status(space_id, "active")
+                samples.update(int(sample_id), float(args["value"]))
+                error = {"id": sample_id}
+                error["error"] = samples.get_errors(int(sample_id))
                 
                 return error, 202
 

@@ -1,19 +1,11 @@
 import numpy as np
 import time
 from commons.logger import *
-from hpo.utils.grid_gen import *
-from hpo.connectors.remote_ctrl import RemoteSampleSpaceConnector
+
+from hpo.hp_config import HyperparameterConfiguration
 from hpo.utils.converter import VectorGridConverter
+from hpo.utils.grid_gen import *
 
-
-def get_remote_samples(name, space_url):
-    try:
-        connector = RemoteSampleSpaceConnector(space_url)
-        return RemoteSamplingSpace(name, connector)
-    except Exception as ex:
-        warn("Fail to get remote samples: {}".format(ex))
-        return None
-  
 
 class SearchHistory(object):
     def __init__(self, num_samples):
@@ -57,7 +49,10 @@ class GridSamplingSpace(SearchHistory):
 
     def __init__(self, name, grid, hpv, hp_config):
         self.name = name
-        self.hp_config = hp_config
+        if type(hp_config) == dict:
+            self.hp_config = HyperparameterConfiguration(hp_config)
+        else:
+            self.hp_config = hp_config
 
         self.grid = np.asarray(grid)
         self.hpv = hpv

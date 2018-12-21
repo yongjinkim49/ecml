@@ -22,7 +22,7 @@ class Completes(Resource):
 
         samples = self.sm.get_space(space_id)
         if samples == None:
-            return "Sampling space is not initialized", 500
+            return "Sampling space {} is not available".format(space_id), 500
 
         result = {}
         

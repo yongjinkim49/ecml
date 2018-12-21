@@ -1,5 +1,5 @@
 from commons.rest_client.restful_lib import Connection
-from commons.database import JsonDBManager 
+from commons.database import get_database_manager 
 
 from commons.logger import * 
 
@@ -42,13 +42,14 @@ class TrainerPrototype(object):
 
 class ManagerPrototype(object):
 
-    def __init__(self, *args, **kwargs):
-        self.dbm = JsonDBManager()
+    def __init__(self, type):
+        self.type = type
+        self.dbm = get_database_manager()
         self.database = self.dbm.get_db()
         self.credential = "Basic {}".format(self.database['credential'])
 
     def save_db(self, key, data):
-        if 'jobs' in self.database: 
+        if key in self.database: 
             self.database[key] = data
         if self.dbm:
             self.dbm.save(self.database)
@@ -57,7 +58,10 @@ class ManagerPrototype(object):
 
     def sync_db(self):
         debug('database will be updated')
-        self.save_db('jobs', self.jobs)
+        if self.type == "job_manager":
+            self.save_db('jobs', self.jobs)
+        elif self.type == "space_manager":
+            self.save_db('spaces', self.jobs)
 
     def authorize(self, auth_key):
         if auth_key == self.credential:

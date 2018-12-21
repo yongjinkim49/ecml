@@ -17,7 +17,7 @@ class Config(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         args = parser.parse_args()
-        if args['Authorization'] != self.jm.credential:
+        if not self.jm.authorize(args['Authorization']):
             return "Unauthorized", 401
         my_cfg = {}
         my_cfg["run_config"] = self.jm.get_config()

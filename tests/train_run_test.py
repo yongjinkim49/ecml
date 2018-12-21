@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import hpo.bandit as bandit
 import hpo.bandit_config as run_config
 import hpo.hp_config as hp_config
+import hpo.space_mgr as space
 
 from commons.logger import *
 
@@ -22,8 +23,8 @@ def test_run_main():
         return  
 
     conf = run_config.read('arms.json')
-    space = bandit.create_surrogate_space('data207', conf)
-    runner = bandit.create_runner(trainer_url, space,
+    samples = space.create_surrogate_space('data207')
+    runner = bandit.create_runner(trainer_url, samples,
                                 'TIME', 0.999, 4 * 60 * 60, 
                                 run_config=conf, hp_config=hp_cfg)
     #runner.with_pkl = True

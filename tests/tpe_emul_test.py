@@ -5,6 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import hpo.bandit as bandit
+import hpo.space_mgr as space
 import hpo.bandit_config as run_config
 
 from commons.logger import *
@@ -12,8 +13,9 @@ from commons.logger import *
 def test_emul_main():
 
     conf = run_config.read('pairing/2fools.json')
-    space, lookup = bandit.create_surrogate_space('data3', conf)
-    emul = bandit.create_emulator(space, lookup, 
+    samples = space.create_surrogate_space('data3')
+    lookup = samples.lookup
+    emul = bandit.create_emulator(samples, lookup, 
                 'TIME', 0.999, '6h', 
                 run_config=conf)
     #emul.with_pkl = True

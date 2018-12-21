@@ -12,13 +12,15 @@ from hpo.workers.worker import Worker
 import hpo.utils.lookup as lookup
 
 from hpo.utils.grid_gen import *
-from hpo.sample_space import *
+import hpo.space_mgr as space
 
-class SequentialOptimizer(Worker):
+
+
+class SequentialModelBasedOptimizer(Worker):
     
     def __init__(self, run_config, hp_config, id, hp_dir="hp_conf/"):
         
-        super(SequentialOptimizer, self).__init__()
+        super(SequentialModelBasedOptimizer, self).__init__()
         self.rconf = run_config
         self.hconf = hp_config
         self.hp_dir = hp_dir
@@ -44,7 +46,7 @@ class SequentialOptimizer(Worker):
             error('Set configuration properly before starting.')
             return
         else:
-            super(SequentialOptimizer, self).start()
+            super(SequentialModelBasedOptimizer, self).start()
 
     def get_cur_result(self):
         if len(self.results) == 0:
@@ -76,7 +78,7 @@ class SequentialOptimizer(Worker):
         if self.machine != None:
             self.machine.force_stop()
 
-        super(SequentialOptimizer, self).stop()
+        super(SequentialModelBasedOptimizer, self).stop()
  
     def run(self, run_cfg, hp_cfg, args, save_results=False):
             
@@ -89,7 +91,8 @@ class SequentialOptimizer(Worker):
 
         results = []
         s_name = None
-        space = None
+        
+        self.samples = None
         
         if 'surrogate' in args:
             s_name = args['surrogate']
@@ -99,24 +102,25 @@ class SequentialOptimizer(Worker):
         
         if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):
             space_url = run_cfg['shared_space_url']
-            space = bandit.connect_remote_space(run_cfg['shared_space_url'])
-            if space == None:
+            self.samples = space.connect_remote_space(run_cfg['shared_space_url'])
+            if self.samples == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
                     debug("Create new grid space")
-                    space = bandit.create_grid_space(hp_cfg)
+                    self.samples = space.create_grid_space(hp_cfg.get_dict())
                 else:
                     error("Unable connect to space URL: {}".format(space_url))
         else:
             warn("Invalid space URL: {}".format(run_cfg['shared_space_url']))
-            space = bandit.create_surrogate_space(args['surrogate'], run_cfg)
+            self.samples = space.create_surrogate_space(args['surrogate'])
 
-        self.samples = space
+        if self.samples == None:
+            raise ValueError("Invalid sampling space! Not initialized properly")
 
         if 'worker_url' in args:
             if valid.url(args['worker_url']):
 
                 self.machine = bandit.create_runner(
-                    args['worker_url'], space,
+                    args['worker_url'], self.samples,
                     args['exp_crt'], args['exp_goal'], args['exp_time'],
                     run_cfg, hp_cfg,                            
                     num_resume=num_resume,
@@ -128,7 +132,7 @@ class SequentialOptimizer(Worker):
                 raise ValueError("Invalid worker URL: {}".format(args["worker_url"]))
         else:
 
-            self.machine = bandit.create_emulator(space,
+            self.machine = bandit.create_emulator(self.samples,
                 args['exp_crt'], args['exp_goal'], args['exp_time'],
                 num_resume=num_resume,
                 save_pkl=save_pkl, 

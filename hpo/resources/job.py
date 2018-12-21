@@ -16,7 +16,7 @@ class Job(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         args = parser.parse_args()
-        if args['Authorization'] != self.jm.credential:
+        if not self.jm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
         self.jm.sync_result() # XXX: A better way may be existed
@@ -40,7 +40,7 @@ class Job(Resource):
         parser.add_argument("control", location='args')
         args = parser.parse_args()
 
-        if args['Authorization'] != self.jm.credential:
+        if not self.jm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
         job = self.jm.get(job_id)
@@ -58,7 +58,7 @@ class Job(Resource):
         parser.add_argument("Authorization", location="headers") # for security reason
 
         args = parser.parse_args()
-        if args['Authorization'] != self.jm.credential:
+        if not self.jm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
         if self.jm.remove(job_id):

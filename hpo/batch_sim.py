@@ -14,6 +14,7 @@ import hpo.bandit as bandit
 
 from hpo.result import BatchHPOResultFactory
 from hpo.batch_cand import CandidateSelector
+import hpo.space_mgr as space
 
 
 def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, config):
@@ -86,8 +87,13 @@ class BatchHPOSimulator(object):
 
             if 'save_pkl' in bandits[i]:
                 save_pkl = bandits[i]['save_pkl']
-            space = bandit.create_surrogate_space(self.data_type, conf)
-            emulator = bandit.create_emulator(space, self.run_mode, self.target_acc, self.time_expired, 
+
+            grid_order = None 
+            if 'grid' in conf and 'order' in conf['grid']:
+                grid_order = conf['grid']['order']                 
+            
+            samples = space.create_surrogate_space(self.data_type, grid_order)
+            emulator = bandit.create_emulator(samples, self.run_mode, self.target_acc, self.time_expired, 
                                  run_config=conf, save_pkl=save_pkl)
             b['m_id'] = i
             b['machine'] = emulator

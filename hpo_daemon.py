@@ -17,7 +17,6 @@ ALL_LOG_LEVELS = ['debug', 'warn', 'error', 'log']
 
 
 def main():
-
     try:
         default_run_config = 'arms.json'
         default_log_level = 'warn'

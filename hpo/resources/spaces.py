@@ -17,7 +17,7 @@ class Spaces(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument("Authorization", location="headers") # for security reason
             args = parser.parse_args()
-            if args['Authorization'] != self.sm.credential:
+            if not self.sm.authorize(args['Authorization']):
                 return "Unauthorized", 401
             
             space_req = request.get_json(force=True)
@@ -42,4 +42,4 @@ class Spaces(Resource):
             return "Unauthorized", 401
         
         self.sm.sync_result() # XXX: A better way may be existed
-        return self.sm.get_available_spaces(n=10), 200
+        return self.sm.get_available_spaces(), 200
