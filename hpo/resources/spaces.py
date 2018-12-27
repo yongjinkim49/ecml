@@ -40,6 +40,5 @@ class Spaces(Resource):
         args = parser.parse_args()
         if args['Authorization'] != self.sm.credential:
             return "Unauthorized", 401
-        
-        self.sm.sync_result() # XXX: A better way may be existed
+
         return self.sm.get_available_spaces(), 200
