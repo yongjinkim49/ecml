@@ -20,7 +20,7 @@ class Space(Resource):
         if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
-        samples = self.sm.get_space(space_id)
+        samples = self.sm.get_samples(space_id)
         if samples == None:
             return "Sampling space {} is not available".format(space_id), 500
 
@@ -41,7 +41,7 @@ class Space(Resource):
         if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
-        samples = self.sm.get_space(space_id)
+        samples = self.sm.get_samples(space_id)
         if samples is None:
             return "Space {} not found".format(space_id), 404
         else:

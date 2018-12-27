@@ -81,9 +81,7 @@ class HPOJobManager(ManagerPrototype):
         except:
             warn("invalid job description: {}".format(args))
             raise ValueError("invalid job description")
-            #pass
-
-        #self.sync_db()
+        
         return job['job_id']
     
     def get_active_job_id(self):        
@@ -125,7 +123,7 @@ class HPOJobManager(ManagerPrototype):
                 cur_status = w['worker'].get_cur_status()
                 if cur_status == 'idle':
                     self.update(id, status='done')
-                #self.sync_db()
+
                 break
 
     def control(self, job_id, cmd):
@@ -184,7 +182,6 @@ class HPOJobManager(ManagerPrototype):
                     if k in j:
                         j[k] = v
                         #debug("{} of {} is updated: {}".format(k, job_id, v))
-                        #self.sync_db()
                     else:
                         debug("{} is invalid in {}".format(k, job_id))
 

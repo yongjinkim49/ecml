@@ -34,16 +34,6 @@ def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1):
     return s
 
 
-def connect_remote_space(space_url):
-    try:
-        name = "grid-{}".format(space_url)
-        connector = RemoteSampleSpaceConnector(space_url)
-        return RemoteSamplingSpace(name, connector)
-    except Exception as ex:
-        warn("Fail to get remote samples: {}".format(ex))
-        return None   
-
-
 class SamplingSpaceManager(ManagerPrototype):
 
     def __init__(self, *args, **kwargs):
@@ -53,12 +43,11 @@ class SamplingSpaceManager(ManagerPrototype):
     def create(self, space_spec):
         if "surrogate" in space_spec:
             surrogate = space_spec["surrogate"]
-            grid_order = None        
+            grid_order = None
+
             if "grid_order" in space_spec:
                 grid_order = space_spec["grid_order"]
-
             s = create_surrogate_space(surrogate, grid_order)
-
         else:
             if not "hp_config" in space_spec:
                 raise ValueError("No hp_config in sampling space spec: {}".format(space_spec))
@@ -74,7 +63,7 @@ class SamplingSpaceManager(ManagerPrototype):
             s = create_grid_space(hp_cfg, num_samples, grid_seed)
         
         space_id = s.name
-        space_obj = {"id" : space_id, "space": s }
+        space_obj = {"id" : space_id, "samples": s }
         space_obj["created"] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
         space_obj["status"] = "created"    
         
@@ -88,19 +77,20 @@ class SamplingSpaceManager(ManagerPrototype):
     def set_space_status(self, space_id, status):
         if space_id in self.spaces:
             self.spaces['space_id']['status'] = status
+            self.spaces['space_id']['updated'] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
             return True
         else:
             debug("No such space {} existed".format(space_id))
             return False
 
-    def get_space(self, space_id):
+    def get_samples(self, space_id):
         if space_id == "active":
             for s in self.spaces:
                 if self.spaces[s]['status'] == "active":
-                    return self.spaces[s]
+                    return self.spaces[s]['samples']
             return None
         elif space_id in self.spaces:
-            return self.spaces[space_id]
+            return self.spaces[space_id]['samples']
         else:
             debug("No such named space {} existed".format(space_id))
             return None

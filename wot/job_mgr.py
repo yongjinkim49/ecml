@@ -112,7 +112,6 @@ class TrainingJobManager(ManagerPrototype):
             else:
                 debug("invalid hyperparam vector: {}".format(hpv))
                 raise ValueError("invalid hyperparameters")
-            #self.sync_db()
             
         except:
             #debug("invalid arguments: {}, {}, {}, {}".format(dataset, model, hpv, cfg))
@@ -164,7 +163,6 @@ class TrainingJobManager(ManagerPrototype):
                 cur_status = w['worker'].get_cur_status()
                 if cur_status == 'idle':
                     self.update(id, status='done')
-                #self.sync_db()
                 break
 
     def update_result(self, cur_iter, iter_unit, cur_loss, run_time):
@@ -225,7 +223,6 @@ class TrainingJobManager(ManagerPrototype):
                     if k in j:
                         j[k] = v
                         #debug("{} of {} is updated: {}".format(k, job_id, v))
-                        #self.sync_db()
                     else:
                         debug("{} is invalid in {}".format(k, job_id))
 

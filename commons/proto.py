@@ -56,13 +56,6 @@ class ManagerPrototype(object):
         else:
             warn("database can not be updated because it does not loaded yet.")
 
-    def sync_db(self):
-        debug('database will be updated')
-        if self.type == "job_manager":
-            self.save_db('jobs', self.jobs)
-        elif self.type == "space_manager":
-            self.save_db('spaces', self.jobs)
-
     def authorize(self, auth_key):
         if auth_key == self.credential:
             return True

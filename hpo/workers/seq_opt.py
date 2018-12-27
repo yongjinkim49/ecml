@@ -12,7 +12,7 @@ from hpo.workers.worker import Worker
 import hpo.utils.lookup as lookup
 
 from hpo.utils.grid_gen import *
-import hpo.space_mgr as space
+import hpo.connectors.remote_ctrl as remote
 
 
 
@@ -102,7 +102,7 @@ class SequentialModelBasedOptimizer(Worker):
         
         if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):
             space_url = run_cfg['shared_space_url']
-            self.samples = space.connect_remote_space(run_cfg['shared_space_url'])
+            self.samples = remote.connect_remote_space(run_cfg['shared_space_url'])
             if self.samples == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
                     debug("Create new grid space")

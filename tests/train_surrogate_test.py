@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import hpo.bandit as bandit
-import hpo.space_mgr as space
+import hpo.connectors.remote_ctrl as remote
 import hpo.bandit_config as run_config
 
 from commons.logger import *
@@ -15,7 +15,7 @@ def test_run_main():
     # XXX: prerequisite: surrogate.py of training worker service should be executed before running.
     trainer_url = 'http://127.0.0.1:5000' 
     conf = run_config.read('arms-alet.json')
-    samples = space.connect_remote_space(trainer_url)
+    samples = remote.connect_remote_space(trainer_url)
     runner = bandit.create_runner(trainer_url, samples,
                                 'TIME', 0.999, '4h', 
                                 run_config=conf,
