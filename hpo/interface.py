@@ -18,7 +18,9 @@ from hpo.resources.candidates import Candidates
 from hpo.resources.completes import Completes
 from hpo.resources.grid import Grid
 from hpo.resources.hparams import HyperparamVector
-from hpo.resources.error import ObservedError 
+from hpo.resources.error import ObservedError
+from hpo.resources.spaces import Spaces
+from hpo.resources.space import Space 
 
 from hpo.workers.seq_opt import *
 from hpo.job_mgr import HPOJobManager
