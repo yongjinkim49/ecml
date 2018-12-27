@@ -8,9 +8,8 @@ import math
 from sklearn import linear_model
 from sklearn.preprocessing import PolynomialFeatures
 
-from commons.loggerr import *
 from commons.proto import TrainerPrototype
-
+from commons.logger import *
 
 def init(space, run_config):
     try:

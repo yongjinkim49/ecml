@@ -31,7 +31,7 @@ import gp_util
 from acq_func import *
 from util import *
 
-from commons.loggerr import *
+from commons.logger import *
 
 
 def init(expt_dir, arg_string):
