@@ -4,13 +4,9 @@ from commons.database import get_database_manager
 from commons.logger import * 
 
 class RemoteConnectorPrototype(object):
-    def __init__(self, target_url, **kwargs):
+    def __init__(self, target_url, credential, **kwargs):
         self.url = target_url
-
-        if "credential" in kwargs:
-            self.credential = kwargs['credential']
-        else:
-            self.credential = "jo2fulwkq" # XXX:test auth key. It should be deleted later.
+        self.credential = credential
         
         if "timeout" in kwargs:
             self.timeout = kwargs['timeout']
@@ -42,8 +38,8 @@ class TrainerPrototype(object):
 
 class ManagerPrototype(object):
 
-    def __init__(self, type):
-        self.type = type
+    def __init__(self, mgr_type):
+        self.type = mgr_type
         self.dbm = get_database_manager()
         self.database = self.dbm.get_db()
         self.credential = "Basic {}".format(self.database['credential'])

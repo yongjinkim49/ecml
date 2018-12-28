@@ -10,7 +10,7 @@ import numpy as np
 
 from hyperopt import hp, fmin, tpe, base, rand, Trials, STATUS_OK, JOB_STATE_DONE
 
-import hpo.hp_config as hp_cfg
+import commons.hp_cfg as hp_cfg
 from commons.logger import *
 from hpo.utils.converter import VectorGridConverter
 

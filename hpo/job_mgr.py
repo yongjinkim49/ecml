@@ -29,7 +29,7 @@ class HPOJobFactory(object):
 class HPOJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False):
 
-        super(HPOJobManager, self).__init__("job_manager")
+        super(HPOJobManager, self).__init__(type(self).__name__)
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
          
         self.worker = worker
@@ -55,11 +55,11 @@ class HPOJobManager(ManagerPrototype):
         return self.worker.config 
 
     def get_spec(self):
-        id = {
-            "job_type": "HPO runner",
+        my_spec = {
+            "job_type": "HPO_runner",
             "id": self.worker.id,
             "device_type": self.worker.device_id }
-        return id
+        return my_spec
 
     def add(self, args):
         job_id = None

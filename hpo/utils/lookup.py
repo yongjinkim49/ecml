@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 
-import hpo.hp_config as hp_cfg
+import commons.hp_cfg as hp_cfg
 
 def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=None):
     grid_shuffle = False

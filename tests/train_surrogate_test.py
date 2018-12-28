@@ -13,13 +13,13 @@ from commons.logger import *
 
 def test_run_main():
     # XXX: prerequisite: surrogate.py of training worker service should be executed before running.
-    trainer_url = 'http://127.0.0.1:5000' 
+    trainer_url = 'http://127.0.0.1:5000'
+    space_url = 'http://127.0.0.1:5000'
     conf = run_config.read('arms-alet.json')
-    samples = remote.connect_remote_space(trainer_url)
+    samples = remote.connect_remote_space(space_url, "jo2fulwkq")
     runner = bandit.create_runner(trainer_url, samples,
                                 'TIME', 0.999, '4h', 
-                                run_config=conf,
-                                use_surrogate=True)
+                                run_config=conf)
     #runner.with_pkl = True
     set_log_level('debug')
     print_trace()

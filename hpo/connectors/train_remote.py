@@ -14,7 +14,8 @@ from hpo.connectors.remote_ctrl import RemoteJobConnector
 
 def init(url, run_config, hp_config, hpvs, **kwargs):
     try:
-        rtc = RemoteTrainConnector(url, hp_config, **kwargs)
+        cred = run_config["credential"]
+        rtc = RemoteTrainConnector(url, hp_config, cred, **kwargs)
         if run_config and "auto_early_stop" in run_config:
             shaping_func = None
             if "log" in run_config and run_config["log"]["log_err"]:
@@ -33,9 +34,9 @@ def init(url, run_config, hp_config, hpvs, **kwargs):
 
 class RemoteTrainConnector(RemoteJobConnector):
     
-    def __init__(self, url, hp_config, **kwargs):
+    def __init__(self, url, hp_config, cred, **kwargs):
 
-        super(RemoteTrainConnector, self).__init__(url, **kwargs)
+        super(RemoteTrainConnector, self).__init__(url, cred, **kwargs)
         
         self.hp_config = hp_config
  

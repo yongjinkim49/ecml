@@ -26,7 +26,7 @@ class HyperparamVector(Resource):
         if samples == None:
             return "Sampling space {} is not available".format(space_id), 500
 
-        if id == 'all':
+        if sample_id == 'all':
             all_items =[]
             for c_id in range(samples.num_samples):
                 grid = {"id": c_id}
@@ -35,7 +35,7 @@ class HyperparamVector(Resource):
             
             return all_items, 200                
         
-        elif id == 'candidates':
+        elif sample_id == 'candidates':
             candidates = []
             for c_id in samples.get_candidates():
                 hpv = {"id": c_id}
@@ -44,7 +44,7 @@ class HyperparamVector(Resource):
             
             return candidates, 200
 
-        elif id == 'completes':
+        elif sample_id == 'completes':
             completes = []
             for c_id in samples.get_completes():
                 hpv = {"id": c_id}
@@ -54,9 +54,9 @@ class HyperparamVector(Resource):
             return completes, 200
         else:
             try:
-                hpv = {"id": id}
-                hpv["hparams"] = samples.get_hpv(int(id))
+                hpv = {"id": sample_id}
+                hpv["hparams"] = samples.get_hpv(int(sample_id))
                 return hpv, 200
 
             except Exception as ex:
-                return "Getting grid failed: {}".format(ex), 404
+                return "Getting vector failed: {}".format(ex), 404

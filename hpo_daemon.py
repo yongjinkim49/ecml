@@ -6,10 +6,10 @@ import sys
 import os
 
 import argparse
-from hpo.interface import *
-from hpo.workers.parallel_opt import *
+from interface import wait_hpo_request
+
 import hpo.bandit_config as bconf
-import hpo.hp_config as hconf
+import commons.hp_cfg as hconf
 
 RUN_CONF_PATH = './run_conf/'
 HP_CONF_PATH = './hp_conf/'

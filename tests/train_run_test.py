@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import hpo.bandit as bandit
 import hpo.bandit_config as run_config
-import hpo.hp_config as hp_config
+import commons.hp_cfg as hp_config
 import hpo.space_mgr as space
 
 from commons.logger import *

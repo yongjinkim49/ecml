@@ -1,28 +1,22 @@
+import multiprocessing as mp
 import traceback
-
 import atexit
 import inspect
 
-from flask import Flask
-from flask_restful import Api
-
-from wot.resources.billboard import Billboard
-from wot.resources.config import Config
-from wot.resources.jobs import Jobs
-from wot.resources.job import Job 
+from commons.logger import *
+from commons.ws_mgr import WebServiceManager
 
 from wot.job_mgr import TrainingJobManager
-from wot.workers.evaluator import *
 
-from commons.logger import *
-import multiprocessing as mp
+from hpo.workers.s_opt import SequentialModelBasedOptimizer
+from hpo.job_mgr import HPOJobManager
 
 DEFAULT_DEBUG_MODE = False
 JOB_MANAGER = None
-API_SERVER_PROCESS = None
+API_SERVER = None
 
 # Job handling APIs
-def wait_train_request(eval_worker, hp_cfg,
+def wait_train_request(eval_job, hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=5000,
                     device_type="cpu",
@@ -32,12 +26,9 @@ def wait_train_request(eval_worker, hp_cfg,
                     ):
     
     global JOB_MANAGER
-    global API_SERVER_PROCESS
+    global API_SERVER
 
-    if debug_mode:
-        set_log_level('debug')
-
-    ej = eval_worker()
+    ej = eval_job()
     ej.set_device_id(device_type, device_id)
     if JOB_MANAGER == None:
         JOB_MANAGER = TrainingJobManager(ej, 
@@ -46,27 +37,25 @@ def wait_train_request(eval_worker, hp_cfg,
     else:
         warn("Job manager already initialized.")
         return
+    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+    API_SERVER.run_service(port, debug_mode, with_process=True)
 
-    app = Flask(__name__)
-    api = Api(app)
 
-    api.add_resource(Billboard, "/", 
-                    resource_class_kwargs={'job_manager': JOB_MANAGER})
-    api.add_resource(Config, "/config", 
-                    resource_class_kwargs={'job_manager': JOB_MANAGER, "hp_config": hp_cfg})
-    api.add_resource(Jobs, "/jobs", 
-                    resource_class_kwargs={'job_manager': JOB_MANAGER})
-    api.add_resource(Job, "/jobs/<string:job_id>", 
-                    resource_class_kwargs={'job_manager': JOB_MANAGER})
-    kwargs = { 
-                'host': '0.0.0.0', 
-                'port':port, 
-                'debug' :debug_mode
-            }
-            
-    API_SERVER_PROCESS = mp.Process(target=app.run, kwargs=kwargs)
-    API_SERVER_PROCESS.start()
-    API_SERVER_PROCESS.join()
+def wait_hpo_request(run_cfg, hp_cfg,
+                    hp_dir="hp_conf/", 
+                    enable_debug=DEFAULT_DEBUG_MODE,
+                    port=5000, 
+                    enable_surrogate=False,
+                    threaded=False):
+    
+    global JOB_MANAGER
+    global API_SERVER
+
+    JOB_MANAGER = HPOJobManager(SequentialModelBasedOptimizer(run_cfg, hp_cfg, "seq_opt_{}".format(port)),
+                                use_surrogate=enable_surrogate)
+    
+    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+    API_SERVER.run_service(port, debug_mode)
 
 
 def stop_job_working():
@@ -96,6 +85,7 @@ def update_result_per_steps(cur_steps, cur_loss, run_time):
         warn("Job manager is not ready to serve.")
 
 
+#########################################################################
 # Decorator functions 
 # (Do NOT invoke it directly)
 def eval_task(eval_func):
@@ -121,15 +111,17 @@ def progressive_eval_task(eval_func):
 @atexit.register
 def exit():
     global JOB_MANAGER
-    global API_SERVER_PROCESS
-
-    if API_SERVER_PROCESS != None:
-        
-        API_SERVER_PROCESS.terminate()
-        API_SERVER_PROCESS.join()
-        debug("API server terminated properly.")
+    global API_SERVER
+    if JOB_MANAGER != None:
         JOB_MANAGER.__del__()
-        API_SERVER_PROCESS = None            
         JOB_MANAGER = None
+
+    if API_SERVER != None:
+        
+        API_SERVER.stop_service()
+        debug("API server terminated properly.")
+        
+        API_SERVER = None            
+        
 
     

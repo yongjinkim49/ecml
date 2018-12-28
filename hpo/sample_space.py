@@ -2,7 +2,7 @@ import numpy as np
 import time
 from commons.logger import *
 
-from hpo.hp_config import HyperparameterConfiguration
+from commons.hp_cfg import HyperparameterConfiguration
 from hpo.utils.converter import VectorGridConverter
 from hpo.utils.grid_gen import *
 

@@ -4,17 +4,15 @@ import copy
 import validators as valid
 
 from commons.logger import *
+import commons.hp_cfg as hconf
+from commons.worker import Worker 
 
-import hpo.bandit as bandit
-import hpo.hp_config as hconf
-
-from hpo.workers.worker import Worker 
 import hpo.utils.lookup as lookup
-
 from hpo.utils.grid_gen import *
+
 import hpo.connectors.remote_ctrl as remote
 
-
+import hpo.bandit as bandit
 
 class SequentialModelBasedOptimizer(Worker):
     
@@ -36,6 +34,17 @@ class SequentialModelBasedOptimizer(Worker):
         self.machine = None
         self.samples = None
 
+        self.reset()
+
+    def set_params(self, params, index=None):
+        if params:
+            self.params = params
+            
+            return True
+        else:
+            debug("invalid params: {}".format(params))
+            return False
+
     def get_sampling_space(self):
         if self.samples == None:
             warn("Sampling space is not initialized.")
@@ -47,6 +56,9 @@ class SequentialModelBasedOptimizer(Worker):
             return
         else:
             super(SequentialModelBasedOptimizer, self).start()
+
+    def reset(self):
+        self.results = []
 
     def get_cur_result(self):
         if len(self.results) == 0:
@@ -91,7 +103,6 @@ class SequentialModelBasedOptimizer(Worker):
 
         results = []
         s_name = None
-        
         self.samples = None
         
         if 'surrogate' in args:
@@ -102,7 +113,7 @@ class SequentialModelBasedOptimizer(Worker):
         
         if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):
             space_url = run_cfg['shared_space_url']
-            self.samples = remote.connect_remote_space(run_cfg['shared_space_url'])
+            self.samples = remote.connect_remote_space(run_cfg['shared_space_url'], run_cfg["credential"])
             if self.samples == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
                     debug("Create new grid space")

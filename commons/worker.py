@@ -9,7 +9,7 @@ import numpy as np
 from commons.logger import *
 
 class Worker(object):
-    def __init__(self, name):
+    def __init__(self, id=None):
         self.thread = None
         
         self.busy = False
@@ -19,11 +19,13 @@ class Worker(object):
         self.pause_cond = threading.Condition(threading.Lock())
         self.timer = None
         self.timeout = None
-
         self.type = 'prototype'
-        self.name = name
         
-                
+        if id != None:
+            self.id = id
+        else:
+            self.id = 'worker_proto'
+
     def get_cur_status(self):
         if self.busy:
             if self.paused:
@@ -46,9 +48,9 @@ class Worker(object):
             self.timer.cancel()
         
         self.stop_flag = False
-        #self.name += str(threading.current_thread().ident)
+        #self.id += str(threading.current_thread().ident)
         self.thread = threading.Thread(
-            target=self.execute, name='worker {} thread: {}'.format(self.name, threading.current_thread().ident))
+            target=self.execute, name='worker {} thread'.format(self.id))
         self.thread.daemon = True
         self.thread.start()
 
@@ -60,24 +62,28 @@ class Worker(object):
     def pause(self):
         self.paused = True
         self.pause_cond.acquire()
-        debug("pause request fired.")
+        #debug("Pause requested.")
 
     def resume(self):
         self.paused = False
         self.pause_cond.notify()
         self.pause_cond.release()
-        debug("resume request fired.")
+        #debug("Resume requested.")
 
     def stop(self):
         if not self.thread is None:
-            debug("stop request fired.")
+            #debug("Stop requested.")
             self.stop_flag = True
             if self.paused == True:
                 self.resume()
             self.thread.join()
 
     def execute(self):
-        ''' Execute a function by this worker.
+        ''' Execute target function and append an intermidiate result per epoch to self.results.
+        The result is a dictionary object which has following attributes: 
+          - "run_time" : float, run time (elapsed time for the given epoch) 
+          - "cur_loss": float, current loss value
+          - "cur_epoch": integer, number of current epochs
         '''
         raise NotImplementedError('execute() should be overrided.')
 

@@ -37,7 +37,7 @@ def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1):
 class SamplingSpaceManager(ManagerPrototype):
 
     def __init__(self, *args, **kwargs):
-        super(SamplingSpaceManager, self).__init__("space_manager")
+        super(SamplingSpaceManager, self).__init__(type(self).__name__)
         self.spaces = {} 
 
     def create(self, space_spec):
@@ -55,8 +55,8 @@ class SamplingSpaceManager(ManagerPrototype):
             hp_cfg = space_spec['hp_config']
             num_samples = 20000
             grid_seed = 1               
-            if "num_samples" in space_spec:
-                num_samples = space_spec["num_samples"]
+            if "num_samples" in hp_cfg:
+                num_samples = hp_cfg["num_samples"]
             if "grid_seed" in space_spec:
                 grid_seed = space_spec["grid_seed"]
 

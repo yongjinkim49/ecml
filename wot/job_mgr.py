@@ -39,7 +39,7 @@ class TrainingJobFactory(object):
 class TrainingJobManager(ManagerPrototype):
     def __init__(self, worker, use_surrogate=False, retrieve_func=None):
 
-        super(TrainingJobManager, self).__init__("job_manager")
+        super(TrainingJobManager, self).__init__(type(self).__name__)
         self.jobs =  self.database['jobs'] #[ dummy_item, ] # XXX:change to empty list in future
          
         self.worker = worker
@@ -68,10 +68,14 @@ class TrainingJobManager(ManagerPrototype):
             "device_type": self.worker.device_id }
         return id
 
-    def add(self, dataset, model, hpv, cfg):
+    def add(self, args):
         job_id = None
         # TODO: validate parameters
         try:
+            dataset = args['dataset'] # e.g. MNIST, CIFAR-10, 
+            model = args['model']  # LeNet, VGG, LSTM, ... 
+            hpv = args['hyperparams'] # refer to data*.json for keys
+            cfg = args['config'] # max_iter, ...            
             f = TrainingJobFactory(self.worker, self.jobs)
             job = f.create(dataset, model, hpv, cfg)
             job_id = job['job_id']
@@ -155,7 +159,7 @@ class TrainingJobManager(ManagerPrototype):
             j = self.get(id)
             if j['status'] == 'processing':
                 if self.retrieve_func != None:
-                    self.worker.update_result(self.retrieve_func)
+                    self.worker.sync_result(self.retrieve_func)
 
                 cur_result = w['worker'].get_cur_result()
                 if cur_result is not None:

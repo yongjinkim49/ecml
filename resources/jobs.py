@@ -31,7 +31,7 @@ class Jobs(Resource):
                 return {"job_id": job_id}, 201
 
         except Exception as ex:
-            return "job creation failed: {}".format(ex), 400
+            return "Job creation failed: {}".format(ex), 400
 
     def get(self):
         # TODO:add argument handling for windowing items

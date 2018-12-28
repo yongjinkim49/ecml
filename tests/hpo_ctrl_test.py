@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from commons.logger import *
 
-import hpo.hp_config as hp_cfg
+import commons.hp_cfg as hp_cfg
 from hpo.connectors.hpo_remote import *
 
 def test_hpo_main():
@@ -19,7 +19,7 @@ def test_hpo_main():
 
     set_log_level('debug')
 
-    rtc = RemoteOptimizerConnector(ip_addr)
+    rtc = RemoteOptimizerConnector(ip_addr, 5000, "jo2fulwkq")
     ro = RemoteSequentialOptimizer(rtc, surrogate="data10", worker_url=worker_url, polling_interval=10)
     
     opts = ro.create_job_description(exp_time='12h', spec="SEQ", num_trials=100)

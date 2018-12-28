@@ -5,23 +5,23 @@ import traceback
 import copy
 
 from commons.logger import *
-from wot.workers.worker import Worker
+from commons.worker import Worker
 
 class Trainer(Worker):
 
-    def __init__(self, name=None):
+    def __init__(self, id=None):
         self.config = {}
         self.reset()
-        if name == None:
-            name = 'trainer_proto'
+        if id == None:
+            id = 'trainer_proto'
 
-        return super(Trainer, self).__init__(name)
+        return super(Trainer, self).__init__(id)
 
     def reset(self):
         self.results = []
         #self.params = None
 
-    def update_result(self, retrieve_func):
+    def sync_result(self, retrieve_func):
         result = retrieve_func()
         # TODO: validate result contents
         if type(result) == list:

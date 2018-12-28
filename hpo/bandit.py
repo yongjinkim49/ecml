@@ -26,7 +26,7 @@ from hpo.utils.measurer import RankIntersectionMeasure
 from hpo.utils.converter import TimestringConverter
 
 from hpo.bandit_config import BanditConfigurator
-import hpo.hp_config as hp_cfg
+import commons.hp_cfg as hp_cfg
 
 import hpo.connectors.train_remote as train_remote
 import hpo.connectors.train_emul as train_emul
@@ -58,17 +58,13 @@ def create_runner(trainer_url, space,
                   run_mode, target_acc, time_expired, 
                   run_config, hp_config,
                   save_pkl=False,
-                  num_samples=20000,
-                  grid_seed=1,
                   num_resume=0,
                   use_surrogate=None,
                   id="HPO_runner"
                   ):
     
-    # FIXME:test auth key. It should be deleted before release.
-    kwargs = { "credential" : "jo2fulwkq" }  
-    
     try:
+        kwargs = {}
         if use_surrogate != None:            
             kwargs["surrogate"] = use_surrogate
             id += " with surrogate-{}".format(use_surrogate)

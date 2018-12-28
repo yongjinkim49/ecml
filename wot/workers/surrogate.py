@@ -11,7 +11,7 @@ from commons.logger import *
 import wot.utils.lookup as lookup
 
 from wot.workers.evaluator import IterativeFunctionEvaluator
-from wot.interface import *
+from interface import *
 
 class SurrogateEvaluator(IterativeFunctionEvaluator):
     def __init__(self, name, lookup, **kwargs):

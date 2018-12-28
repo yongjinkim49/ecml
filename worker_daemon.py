@@ -1,5 +1,5 @@
-from wot.interface import *
-import wot.utils.hp_cfg as hconf
+from interface import wait_train_request
+import commons.hp_cfg as hconf
 import random as rand
 import argparse
 

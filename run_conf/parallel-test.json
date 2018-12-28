@@ -1,6 +1,7 @@
 {
     "eta" : 0.01,
     "shared_space_url" : "http://127.0.0.1:5000/spaces/active",
+    "credential" : "jo2fulwkq",
     "arms": [
         {
             "model": "GP-HLE",

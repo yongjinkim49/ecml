@@ -9,10 +9,10 @@ from commons.logger import *
 from commons.proto import *
 
 
-def connect_remote_space(space_url):
+def connect_remote_space(space_url, cred):
     try:
         name = "grid-{}".format(space_url)
-        connector = RemoteSampleSpaceConnector(space_url)
+        connector = RemoteSampleSpaceConnector(space_url, credential=cred)
         return RemoteSamplingSpace(name, connector)
     except Exception as ex:
         warn("Fail to get remote samples: {}".format(ex))
@@ -21,10 +21,10 @@ def connect_remote_space(space_url):
 
 class RemoteJobConnector(RemoteConnectorPrototype):
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, credential, **kwargs):
         self.wait_time = 3
 
-        super(RemoteJobConnector, self).__init__(url, **kwargs)
+        super(RemoteJobConnector, self).__init__(url, credential, **kwargs)
 
     def get_profile(self):
         try:
@@ -210,9 +210,9 @@ class RemoteJobConnector(RemoteConnectorPrototype):
 
 class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
     
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, credential, **kwargs):
         
-        super(RemoteSampleSpaceConnector, self).__init__(url, **kwargs)
+        super(RemoteSampleSpaceConnector, self).__init__(url, credential, **kwargs)
 
         self.num_samples = None
         self.hp_config = None
