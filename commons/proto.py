@@ -1,5 +1,5 @@
 from commons.rest_client.restful_lib import Connection
-from commons.database import get_database_manager 
+from commons.db_mgr import get_database_manager 
 
 from commons.logger import * 
 

@@ -7,7 +7,7 @@ from future.utils import iteritems
 
 from commons.logger import * 
 from commons.proto import ManagerPrototype 
-
+from hpo.workers.s_opt import SequentialOptimizer
 
 class HPOJobFactory(object):
     def __init__(self, worker, n_jobs):
@@ -27,12 +27,12 @@ class HPOJobFactory(object):
 
 
 class HPOJobManager(ManagerPrototype):
-    def __init__(self, worker, use_surrogate=False):
+    def __init__(self, run_cfg, hp_cfg, port, use_surrogate=False):
 
         super(HPOJobManager, self).__init__(type(self).__name__)
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
          
-        self.worker = worker
+        self.worker = SequentialOptimizer(run_cfg, hp_cfg, "seq_opt-{}".format(port))
         self.prefix = worker.id
         self.device_id = worker.device_id
         
@@ -145,7 +145,7 @@ class HPOJobManager(ManagerPrototype):
             debug("No {} job is assigned yet.".format(job_id))
             return False
                 
-        if cmd == 'pause':
+        elif cmd == 'pause':
                 if aj == job_id:
                     w = self.get_to_do(job_id)
                     w['worker'].pause()

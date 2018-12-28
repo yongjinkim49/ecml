@@ -9,7 +9,7 @@ from commons.proto import ManagerPrototype
 import hpo.utils.lookup as lookup
 
 from hpo.sample_space import *
-from hpo.connectors.remote_ctrl import RemoteSampleSpaceConnector
+from hpo.connectors.remote_space import RemoteSampleSpaceConnector
 
 
 def create_surrogate_space(surrogate, grid_order=None):
@@ -48,6 +48,7 @@ class SamplingSpaceManager(ManagerPrototype):
             if "grid_order" in space_spec:
                 grid_order = space_spec["grid_order"]
             s = create_surrogate_space(surrogate, grid_order)
+            cfg = surrogate
         else:
             if not "hp_config" in space_spec:
                 raise ValueError("No hp_config in sampling space spec: {}".format(space_spec))
@@ -61,9 +62,10 @@ class SamplingSpaceManager(ManagerPrototype):
                 grid_seed = space_spec["grid_seed"]
 
             s = create_grid_space(hp_cfg, num_samples, grid_seed)
+            cfg = hp_cfg
         
         space_id = s.name
-        space_obj = {"id" : space_id, "samples": s }
+        space_obj = {"id" : space_id, "config": cfg, "samples": s }
         space_obj["created"] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
         space_obj["status"] = "created"    
         
@@ -95,5 +97,11 @@ class SamplingSpaceManager(ManagerPrototype):
             debug("No such named space {} existed".format(space_id))
             return None
 
+    def get_space_config(self, space_id):
+        if space_id in self.spaces:
+            return self.spaces[space_id]['config']
+        else:
+            debug("No such named space {} existed".format(space_id))
+            return None        
 
 

@@ -10,21 +10,20 @@ from commons.worker import Worker
 import hpo.utils.lookup as lookup
 from hpo.utils.grid_gen import *
 
-import hpo.connectors.remote_ctrl as remote
-
+import hpo.connectors.remote_space as remote
 import hpo.bandit as bandit
 
-class SequentialModelBasedOptimizer(Worker):
+class SequentialOptimizer(Worker):
     
     def __init__(self, run_config, hp_config, id, hp_dir="hp_conf/"):
         
-        super(SequentialModelBasedOptimizer, self).__init__()
+        super(SequentialOptimizer, self).__init__(id)
         self.rconf = run_config
         self.hconf = hp_config
         self.hp_dir = hp_dir
 
         self.type = 'smbo'
-        self.id = id
+
         
         #debug("Run configuration: {}".format(run_config))
         if 'title' in run_config:
@@ -55,7 +54,7 @@ class SequentialModelBasedOptimizer(Worker):
             error('Set configuration properly before starting.')
             return
         else:
-            super(SequentialModelBasedOptimizer, self).start()
+            super(SequentialOptimizer, self).start()
 
     def reset(self):
         self.results = []
@@ -90,7 +89,7 @@ class SequentialModelBasedOptimizer(Worker):
         if self.machine != None:
             self.machine.force_stop()
 
-        super(SequentialModelBasedOptimizer, self).stop()
+        super(SequentialOptimizer, self).stop()
  
     def run(self, run_cfg, hp_cfg, args, save_results=False):
             

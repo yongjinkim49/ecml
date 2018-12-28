@@ -21,11 +21,12 @@ from resources.hparams import HyperparamVector
 from resources.error import ObservedError
 from resources.spaces import Spaces
 from resources.space import Space 
+from resources.nodes import Nodes
+from resources.node import Node
 
 from flask import Flask
 from flask_restful import Api
 
-from hpo.space_mgr import SamplingSpaceManager
 
 class WebServiceManager(ManagerPrototype):
 
@@ -60,25 +61,29 @@ class WebServiceManager(ManagerPrototype):
         self.api.add_resource(Job, "/jobs/<string:job_id>", 
                         resource_class_kwargs={'job_manager': self.job_mgr})
 
-        if self.job_mgr.type == "HPOParallelizer":
-            self.space_manager = SamplingSpaceManager()
-            # For managing sampling space and history sharing
-            api.add_resource(Spaces, "/spaces", 
-                            resource_class_kwargs={'space_manager': self.space_manager})    
-            api.add_resource(Space, "/spaces/<string:space_id>", 
-                            resource_class_kwargs={'space_manager': self.space_manager})
-            api.add_resource(Grid, "/spaces/<string:space_id>/grids/<string:sample_id>", 
-                            resource_class_kwargs={'space_manager': self.space_manager})
-            api.add_resource(HyperparamVector, "/spaces/<string:space_id>/vectors/<string:sample_id>", 
-                            resource_class_kwargs={'space_manager': self.space_manager})
-            api.add_resource(Completes, "/spaces/<string:space_id>/completes", 
-                            resource_class_kwargs={'space_manager': self.space_manager})
-            api.add_resource(Candidates, "/spaces/<string:space_id>/candidates", 
-                            resource_class_kwargs={'space_manager': self.space_manager})                                         
-            api.add_resource(ObservedError, "/spaces/<string:space_id>/errors/<string:sample_id>", 
-                            resource_class_kwargs={'space_manager': self.space_manager})                    
+        if self.job_mgr.type == "ParallelHPOManager":
+            # For managing HPO nodes
+            self.api.add_resource(Nodes, "/nodes", 
+                            resource_class_kwargs={'node_manager': self.job_mgr})
+            self.api.add_resource(Node, "/nodes/<string:node_id>", 
+                            resource_class_kwargs={'node_manager': self.job_mgr})                                
 
-            # TODO: add nodes resources here
+            space_mgr = self.job_mgr.get_space_manager()
+            # For managing sampling space and history sharing
+            self.api.add_resource(Spaces, "/spaces", 
+                            resource_class_kwargs={'space_manager': space_mgr})    
+            self.api.add_resource(Space, "/spaces/<string:space_id>", 
+                            resource_class_kwargs={'space_manager': space_mgr})
+            self.api.add_resource(Grid, "/spaces/<string:space_id>/grids/<string:sample_id>", 
+                            resource_class_kwargs={'space_manager': space_mgr})
+            self.api.add_resource(HyperparamVector, "/spaces/<string:space_id>/vectors/<string:sample_id>", 
+                            resource_class_kwargs={'space_manager': space_mgr})
+            self.api.add_resource(Completes, "/spaces/<string:space_id>/completes", 
+                            resource_class_kwargs={'space_manager': space_mgr})
+            self.api.add_resource(Candidates, "/spaces/<string:space_id>/candidates", 
+                            resource_class_kwargs={'space_manager': space_mgr})                                         
+            self.api.add_resource(ObservedError, "/spaces/<string:space_id>/errors/<string:sample_id>", 
+                            resource_class_kwargs={'space_manager': space_mgr})                    
 
 
     def get_urls(self):
@@ -103,13 +108,13 @@ class WebServiceManager(ManagerPrototype):
         ]
 
         node_urls = [
-            {"/nodes": {"method": ['GET', 'POST', 'PUT']}},
+            {"/nodes": {"method": ['GET', 'POST', 'PUT', 'DELETE']}},
             {"/nodes/[node_id]": {"method": ['GET', 'PUT', 'DELETE']}}
         ] 
 
         if self.job_mgr.type == "TrainingJobManager" or self.job_mgr.type == "HPOJobManager":
             return urls + job_urls
-        elif self.job_mgr.type == "HPOParallelizer":
+        elif self.job_mgr.type == "ParallelHPOManager":
             return urls + job_urls + space_urls + node_urls
         else:
             raise ValueError("Invalid type: {}".format(self.type))

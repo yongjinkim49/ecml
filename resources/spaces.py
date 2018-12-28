@@ -10,7 +10,7 @@ from commons.logger import *
 class Spaces(Resource):
     def __init__(self, **kwargs):
         self.sm = kwargs['space_manager']
-        super(Spaces, self).__init__()
+        super(Samples, self).__init__()
 
     def post(self):
         try:
@@ -38,7 +38,7 @@ class Spaces(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("Authorization", location="headers") # for security reason
         args = parser.parse_args()
-        if args['Authorization'] != self.sm.credential:
+        if not self.sm.authorize(args['Authorization']):
             return "Unauthorized", 401
 
         return self.sm.get_available_spaces(), 200

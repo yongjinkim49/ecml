@@ -28,8 +28,8 @@ from hpo.utils.converter import TimestringConverter
 from hpo.bandit_config import BanditConfigurator
 import commons.hp_cfg as hp_cfg
 
-import hpo.connectors.train_remote as train_remote
-import hpo.connectors.train_emul as train_emul
+import hpo.trainers.train_remote as train_remote
+import hpo.trainers.train_emul as train_emul
 
 NUM_MAX_ITERATIONS = 10000
 

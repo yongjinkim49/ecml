@@ -7,22 +7,50 @@ from commons.logger import *
 from commons.ws_mgr import WebServiceManager
 
 from wot.job_mgr import TrainingJobManager
-
-from hpo.workers.s_opt import SequentialModelBasedOptimizer
 from hpo.job_mgr import HPOJobManager
+from hpo.node_mgr import ParallelHPOManager
 
 DEFAULT_DEBUG_MODE = False
 JOB_MANAGER = None
 API_SERVER = None
 
-# Job handling APIs
-def wait_train_request(eval_job, hp_cfg,
+
+####################################################################
+# Job request awaiting APIs
+def create_name_server(hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=5000,
+                    threaded=False):
+    global JOB_MANAGER
+    global API_SERVER
+    JOB_MANAGER = ParallelHPOManager(hp_cfg)
+    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+    API_SERVER.run_service(port, debug_mode, threaded)    
+
+def wait_hpo_request(run_cfg, hp_cfg,
+                    hp_dir="hp_conf/", 
+                    enable_debug=DEFAULT_DEBUG_MODE,
+                    port=5001, 
+                    enable_surrogate=False,
+                    threaded=False):
+    
+    global JOB_MANAGER
+    global API_SERVER
+
+    JOB_MANAGER = HPOJobManager(run_cfg, hp_cfg, port, use_surrogate=enable_surrogate)
+    
+    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+    API_SERVER.run_service(port, debug_mode, threaded)
+
+
+def wait_train_request(eval_job, hp_cfg,
+                    debug_mode=DEFAULT_DEBUG_MODE,
+                    port=6000,
                     device_type="cpu",
                     device_id=0,
                     retrieve_func=None, 
-                    enable_surrogate=False
+                    enable_surrogate=False,
+                    processed=True
                     ):
     
     global JOB_MANAGER
@@ -38,24 +66,7 @@ def wait_train_request(eval_job, hp_cfg,
         warn("Job manager already initialized.")
         return
     API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
-    API_SERVER.run_service(port, debug_mode, with_process=True)
-
-
-def wait_hpo_request(run_cfg, hp_cfg,
-                    hp_dir="hp_conf/", 
-                    enable_debug=DEFAULT_DEBUG_MODE,
-                    port=5000, 
-                    enable_surrogate=False,
-                    threaded=False):
-    
-    global JOB_MANAGER
-    global API_SERVER
-
-    JOB_MANAGER = HPOJobManager(SequentialModelBasedOptimizer(run_cfg, hp_cfg, "seq_opt_{}".format(port)),
-                                use_surrogate=enable_surrogate)
-    
-    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
-    API_SERVER.run_service(port, debug_mode)
+    API_SERVER.run_service(port, debug_mode, with_process=processed)
 
 
 def stop_job_working():
@@ -122,6 +133,3 @@ def exit():
         debug("API server terminated properly.")
         
         API_SERVER = None            
-        
-
-    

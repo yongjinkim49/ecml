@@ -195,8 +195,7 @@ class TrainingJobManager(ManagerPrototype):
                     return False
             debug("No {} job is assigned yet.".format(job_id))
             return False
-                
-        if cmd == 'pause':
+        elif cmd == 'pause':
                 if aj == job_id:
                     w = self.get_to_do(job_id)
                     w['worker'].pause()

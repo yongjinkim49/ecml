@@ -79,11 +79,5 @@ class Worker(object):
             self.thread.join()
 
     def execute(self):
-        ''' Execute target function and append an intermidiate result per epoch to self.results.
-        The result is a dictionary object which has following attributes: 
-          - "run_time" : float, run time (elapsed time for the given epoch) 
-          - "cur_loss": float, current loss value
-          - "cur_epoch": integer, number of current epochs
-        '''
         raise NotImplementedError('execute() should be overrided.')
 

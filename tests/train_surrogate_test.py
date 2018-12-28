@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import hpo.bandit as bandit
-import hpo.connectors.remote_ctrl as remote
+import hpo.connectors.remote_space as remote
 import hpo.bandit_config as run_config
 
 from commons.logger import *
