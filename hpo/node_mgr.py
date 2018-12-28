@@ -19,6 +19,16 @@ class ParallelHPOManager(ManagerPrototype):
         self.space_mgr = SamplingSpaceManager()
         return super(ParallelHPOManager, self).__init__(type(self).__name__)
 
+    def __del__(self):
+        self.stop_working_job()
+
+    def get_config(self):
+        cfg = { 
+            "hp_config" : self.hp_config,
+            "pairs" : self.pairs
+        }
+        return cfg
+
     def get_space_manager(self):
         return self.space_mgr
 

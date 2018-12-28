@@ -22,7 +22,7 @@ class Space(Resource):
 
         samples = self.sm.get_samples(space_id)
         if samples == None:
-            return "Sampling space {} is not available".format(space_id), 500
+            return "{} space is not available".format(space_id), 500
 
         space = {}
         if hasattr(samples, 'name'):
@@ -66,5 +66,5 @@ class Space(Resource):
             deleted_job = { "id": space_id }
             return deleted_job, 200
         else:
-            return "Job {} can not be terminated".format(space_id), 404
+            return "{} space can not be eliminated".format(space_id), 404
  

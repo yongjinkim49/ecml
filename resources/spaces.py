@@ -10,7 +10,7 @@ from commons.logger import *
 class Spaces(Resource):
     def __init__(self, **kwargs):
         self.sm = kwargs['space_manager']
-        super(Samples, self).__init__()
+        super(Spaces, self).__init__()
 
     def post(self):
         try:

@@ -37,7 +37,7 @@ class Node(Resource):
 
         node = self.nm.get_node(node_id)
         if node == None:
-            return "Node {} not found".format(node_id), 404    
+            return "{} node not found".format(node_id), 404    
 
         if "control" in args:           
             result = self.nm.control(args["control"], node_id)            
@@ -56,7 +56,7 @@ class Node(Resource):
 
         node = self.nm.get_node(node_id)
         if node == None:
-            return "Node {} not found".format(node_id), 404    
+            return "{} node not found".format(node_id), 404    
 
         result = self.nm.control("stop", node_id)            
         if result is True:
