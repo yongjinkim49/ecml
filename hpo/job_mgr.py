@@ -32,9 +32,9 @@ class HPOJobManager(ManagerPrototype):
         super(HPOJobManager, self).__init__(type(self).__name__)
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
          
-        self.worker = SequentialOptimizer(run_cfg, hp_cfg, "seq_opt-{}".format(port))
-        self.prefix = worker.id
-        self.device_id = worker.device_id
+        self.worker = SequentialOptimizer(run_cfg, hp_cfg, "s-opt_{}".format(port))
+        self.prefix = self.worker.id
+        self.device_id = self.worker.device_id
         
         self.use_surrogate = use_surrogate
         

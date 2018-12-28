@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import sys
 import os
-import traceback
-
 import argparse
 
 import hpo.bandit_config as bconf
@@ -79,7 +77,7 @@ def main():
         sys.exit(-1) 
 
     except Exception as ex:
-        error("Exception ocurred: {}\n{}".format(ex, traceback.print_exc()))
+        error("Exception ocurred: {}".format(ex))
 
 
 if __name__ == "__main__":
