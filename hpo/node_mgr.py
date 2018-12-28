@@ -119,7 +119,7 @@ class ParallelHPOManager(ManagerPrototype):
                         grid_seed=1,
                         surrogate=None):
         
-        space_spec = { 'hp_config' : self.hp_config,
+        space_spec = { 'hp_config' : self.hp_config.get_dict(),
                        "num_samples": num_samples,
                        "grid_seed": grid_seed}
         if surrogate != None:

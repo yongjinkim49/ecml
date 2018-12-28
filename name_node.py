@@ -51,7 +51,7 @@ def main():
             raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
 
         debug("HPO node will be ready to serve...")
-        create_name_server(hp_cfg, debug_mode=enable_debug, port=args.port)
+        create_name_server(hp_cfg.get_dict(), debug_mode=enable_debug, port=args.port)
     
     except KeyboardInterrupt as ki:
         warn("Terminated by Ctrl-C.")
