@@ -51,9 +51,12 @@ class ParallelHPOManager(ManagerPrototype):
             job_type = node_spec["job_type"]
         else:
             raise ValueError("No job type in specification")
-
-        if not self.check_duplicates(ip, port):
-            raise ValueError("Node already registered: {}:{}".format(ip, port))
+        
+        node_id = self.check_registered(ip, port)
+        
+        if node_id != None:
+            debug("Node already registered: {}:{}".format(ip, port))
+            return node_id, 200
 
         # Try handshaking with registered node to check it is healthy.
         url = "http://{}:{}".format(ip, port)
@@ -70,14 +73,14 @@ class ParallelHPOManager(ManagerPrototype):
         }
         
         self.nodes[node_id] = node_spec
-        return node_id
+        return node_id, 201
 
-    def check_duplicates(self, ip_addr, port):
+    def check_registered(self, ip_addr, port):
         for nk in self.nodes.keys():
             n = self.nodes[nk]
             if n["ip_address"] == ip_addr and n["port_num"] == port:
-                return False
-        return True
+                return n["id"]
+        return None
 
     def get_node(self, node_id):
         if node_id == "all":

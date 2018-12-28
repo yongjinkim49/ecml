@@ -22,11 +22,11 @@ class Nodes(Resource):
             
             node_req = request.get_json(force=True)
             # TODO:validate node_req
-            node_id = self.nm.register(node_req)
+            node_id, code = self.nm.register(node_req)
             if node_id is None:
                 return "Invalid node creation request: {}".format(node_req), 400
             else:                
-                return {"node_id": node_id}, 201
+                return {"node_id": node_id}, code
 
         except Exception as ex:
             return "HPO node creation failed: {}".format(ex), 400
