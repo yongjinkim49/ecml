@@ -38,7 +38,7 @@ class ParallelOptimizer(Worker):
         if surrogate != None:
             job_desc['surrogate'] = surrogate
         else:
-            job_desc['hp_cfg'] = self.hp_config
+            job_desc['hp_cfg'] = self.hp_config.get_dict()
         
         return job_desc
 

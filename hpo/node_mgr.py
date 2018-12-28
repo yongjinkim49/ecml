@@ -24,7 +24,7 @@ class ParallelHPOManager(ManagerPrototype):
 
     def get_config(self):
         cfg = { 
-            "hp_config" : self.hp_config,
+            "hp_config" : self.hp_config.get_dict(),
             "pairs" : self.pairs
         }
         return cfg
