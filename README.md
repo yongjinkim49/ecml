@@ -1,4 +1,4 @@
-# Unified Hyperparameter Optimization Framework of Deep Neural Networks at Scale
+# Web Scale Hyperparameter Optimization Framework of Deep Neural Networks
 
 ## Abstract
 
