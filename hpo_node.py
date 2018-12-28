@@ -45,7 +45,7 @@ def main():
 
         # Mandatory options
         parser.add_argument('hp_config', type=str, help='hyperparameter configuration name.')
-        parser.add_argument('port', type=int, help='Port number for this daemon.')
+        parser.add_argument('port', type=int, help='Port number.')
 
         args = parser.parse_args()
         set_log_level(args.log_level)
