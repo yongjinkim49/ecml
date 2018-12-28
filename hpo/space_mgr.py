@@ -6,7 +6,7 @@ import copy
 from commons.logger import * 
 from commons.proto import ManagerPrototype 
 
-import hpo.utils.lookup as lookup
+import commons.lookup as lookup
 
 from hpo.sample_space import *
 from hpo.connectors.remote_space import RemoteSampleSpaceConnector

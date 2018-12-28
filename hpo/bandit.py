@@ -13,20 +13,21 @@ import gzip
 import numpy as np
 
 from commons.logger import *
+import commons.lookup as lookup
+import commons.hp_cfg as hp_cfg
+from commons.saver import ResultSaver, TempSaver
+
 
 from hpo.sample_space import *
 import hpo.eval_time as eval_time
 
 from hpo.result import HPOResultFactory
 
-import hpo.utils.lookup as lookup
 from hpo.utils.grid_gen import *
-from hpo.utils.saver import ResultSaver, TempSaver
-from hpo.utils.measurer import RankIntersectionMeasure
+from hpo.utils.measures import RankIntersectionMeasure
 from hpo.utils.converter import TimestringConverter
 
 from hpo.bandit_config import BanditConfigurator
-import commons.hp_cfg as hp_cfg
 
 import hpo.trainers.train_remote as train_remote
 import hpo.trainers.train_emul as train_emul

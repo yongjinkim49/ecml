@@ -6,9 +6,9 @@ from future.utils import iteritems
 
 from commons.logger import * 
 from commons.proto import ManagerPrototype 
+import commons.lookup as lookup
 
-from wot.workers.surrogate import SurrogateEvaluator
-import wot.utils.lookup as lookup
+from wot.workers.surrogates import SurrogateEvaluator
 
 
 class TrainingJobFactory(object):

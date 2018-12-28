@@ -6,8 +6,8 @@ import validators as valid
 from commons.logger import *
 import commons.hp_cfg as hconf
 from commons.worker import Worker 
+import commons.lookup as lookup
 
-import hpo.utils.lookup as lookup
 from hpo.utils.grid_gen import *
 
 import hpo.connectors.remote_space as remote

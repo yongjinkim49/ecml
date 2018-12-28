@@ -7,11 +7,9 @@ import traceback
 import numpy as np
 
 from commons.logger import *
-
-import wot.utils.lookup as lookup
+import commons.lookup as lookup
 
 from wot.workers.evaluator import IterativeFunctionEvaluator
-from interface import *
 
 class SurrogateEvaluator(IterativeFunctionEvaluator):
     def __init__(self, name, lookup, **kwargs):
@@ -137,57 +135,3 @@ class SurrogateEvaluator(IterativeFunctionEvaluator):
 
         return np.asarray(l)
     
-
-def test_main():
-    set_log_level('debug')
-    surrogate = 'data20'
-    l = lookup.load(surrogate)
-    sw = SurrogateEvaluator(surrogate, l)
-    samples = sw.lookup.get_hyperparam_vectors()
-    cfg = sw.lookup.config
-    test_index = 1011
-    sample = samples[test_index]
-    sample = convert_to_dict(sample, cfg.param_order)
-
-    sw.set_job_description(sample)
-    sw.start()
-    print("after starting: {}".format(sw.get_cur_result()))
-    time.sleep(5)
-    print("after 5 secs: {}".format(sw.get_cur_result()))
-    sw.pause()
-    time.sleep(5)
-    print("after being paused: {}".format(sw.get_cur_result()))
-    sw.resume()
-    time.sleep(5)
-    print("after being resumed: {}".format(sw.get_cur_result()))
-    sw.stop()
-    print("after being stopped: {}".format(sw.get_cur_result()))    
-
-def test_find():
-    sw = SurrogateEvaluator('data20')
-    samples = sw.lookup.get_hyperparam_vectors()
-    cfg = sw.lookup.get_config()
-    test_index = 110
-    sample = samples[test_index]
-    print(sample)
-    sample = convert_to_dict(sample, cfg.param_order)
-    print(sample)
-
-    if sw.find(sample) == test_index:
-        print('works properly')
-    else:
-        print('something wrong')
-
-def convert_to_dict(vec, param_order):
-    convert = {}
-    index = 0
-    for p in param_order:
-        convert[p] = vec[index]
-        index += 1
-
-    return convert
-
-
-if __name__ == "__main__":
-    test_main()
-    #test_decorator()

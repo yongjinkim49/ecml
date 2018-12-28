@@ -8,7 +8,7 @@ import copy
 import numpy as np
 
 from commons.logger import *
-from hpo.utils.saver import BatchResultSaver
+from commons.saver import BatchResultSaver
 
 import hpo.bandit as bandit
 

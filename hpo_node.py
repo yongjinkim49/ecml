@@ -6,10 +6,14 @@ import sys
 import os
 
 import argparse
-from interface import wait_hpo_request
 
 import hpo.bandit_config as bconf
+
 import commons.hp_cfg as hconf
+from commons.logger import * 
+
+from interface import wait_hpo_request
+
 
 RUN_CONF_PATH = './run_conf/'
 HP_CONF_PATH = './hp_conf/'
@@ -20,7 +24,7 @@ def main():
     try:
         default_run_config = 'arms.json'
         default_log_level = 'warn'
-        default_port = 5000    
+        default_port = 5001    
         parser = argparse.ArgumentParser()
         
         # Optional argument configuration
@@ -61,7 +65,7 @@ def main():
         if hp_cfg is None:
             raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
 
-        debug("HPO daemon will be ready to serve...")
+        debug("HPO node will be ready to serve...")
         wait_hpo_request(run_cfg, hp_cfg, hp_dir=args.hconf_dir, enable_debug=enable_debug, port=args.port)
     
     except KeyboardInterrupt as ki:

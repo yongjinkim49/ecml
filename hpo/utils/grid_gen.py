@@ -2,8 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from sobol_lib import i4_sobol_generate
-
+from commons.sobol_lib import i4_sobol_generate
 from commons.logger import *
 from commons.hp_cfg import HyperparameterConfiguration
 
