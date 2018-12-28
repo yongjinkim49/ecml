@@ -141,7 +141,7 @@ class ParallelHPOManager(ManagerPrototype):
         for p in self.pairs:
             hpo = p["optimizer"]
             train = p["trainer"]
-            w = ParallelOptimizer(hpo, train, self.hp_config, self.credential)
+            w = ParallelOptimizer(hpo, train, self.hp_config, self.get_credential())
             if exp_time != None:
                 jr = w.create_job_request(exp_time=exp_time)
                 w.set_job_request(jr)

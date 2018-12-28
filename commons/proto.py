@@ -42,7 +42,9 @@ class ManagerPrototype(object):
         self.type = mgr_type
         self.dbm = get_database_manager()
         self.database = self.dbm.get_db()
-        self.credential = "Basic {}".format(self.database['credential'])
+
+    def get_credential(self):
+        return self.database['credential']
 
     def save_db(self, key, data):
         if key in self.database: 
@@ -53,7 +55,7 @@ class ManagerPrototype(object):
             warn("database can not be updated because it does not loaded yet.")
 
     def authorize(self, auth_key):
-        if auth_key == self.credential:
+        if auth_key == "Basic {}".format(self.database['credential']):
             return True
         else:
             return False
