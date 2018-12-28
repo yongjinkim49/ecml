@@ -25,7 +25,7 @@ def main():
         default_run_config = 'arms.json'
         default_log_level = 'warn'
         default_port = 5001
-        default_name_server = "http://127.0.0.1:5000/"    
+        default_name_server = "http://127.0.0.1:5000"    
         parser = argparse.ArgumentParser()
         
         # Optional argument configuration
