@@ -5,13 +5,12 @@ from __future__ import print_function
 import sys
 import os
 import argparse
-
 import validators as valid
+
 from commons.logger import *
-from hpo.eval_time import *
+import commons.hp_cfg as hconf
 
 import hpo.bandit_config as run_config
-import hpo.hp_config as hconf
 import hpo.bandit as bandit
 import hpo.batch_sim as batch
 import hpo.space_mgr as space
@@ -62,13 +61,6 @@ def validate_args(args):
         #valid['run_cfg'] = run_cfg
         
     valid['exp_time'] = args.exp_time
-#    valid['models'] = ALL_OPT_MODELS
-    
-#    if args.time_penalty != 'NONE':
-#        valid['eval_time_model'] = 'RF'
-#    else:
-#        valid['eval_time_model'] = 'None'
-#    valid['time_acq_funcs'] = get_time_penalties(args.time_penalty)
 
     for attr, value in vars(args).items():
         valid[str(attr)] = value        

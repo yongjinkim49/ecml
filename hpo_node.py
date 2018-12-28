@@ -22,9 +22,11 @@ ALL_LOG_LEVELS = ['debug', 'warn', 'error', 'log']
 
 def main():
     try:
+        
         default_run_config = 'arms.json'
         default_log_level = 'warn'
-        default_port = 5001    
+        default_port = 5001
+        default_name_server = "http://127.0.0.1:5000/"    
         parser = argparse.ArgumentParser()
         
         # Optional argument configuration
@@ -37,6 +39,8 @@ def main():
         parser.add_argument('-rc', '--rconf', default=default_run_config, type=str,
                             help='Run configuration file name existed in {}.\n'.format(RUN_CONF_PATH)+\
                             'Default setting is {}'.format(default_run_config))                                 
+        parser.add_argument('-ns', '--ns_url', default=default_name_server, type=str,
+                            help='Name server URL to register. Default setting is {}'.format(default_name_server))   
 
         # Debugging option
         parser.add_argument('-l', '--log_level', default=default_log_level, type=str,
@@ -66,7 +70,8 @@ def main():
             raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
 
         debug("HPO node will be ready to serve...")
-        wait_hpo_request(run_cfg, hp_cfg, debug_mode=enable_debug, port=args.port)
+        wait_hpo_request(run_cfg, hp_cfg, 
+                        debug_mode=enable_debug, port=args.port, register_url=args.ns_url)
     
     except KeyboardInterrupt as ki:
         warn("Terminated by Ctrl-C.")

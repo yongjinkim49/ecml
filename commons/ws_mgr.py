@@ -41,12 +41,6 @@ class WebServiceManager(ManagerPrototype):
         
         self.initialize()
 
-    def get_spec(self):
-        my_spec = {
-            "job_type": self.type
-        }
-        return my_spec
-
     def initialize(self):
         # For profile
         self.api.add_resource(Billboard, "/", # for profile and 

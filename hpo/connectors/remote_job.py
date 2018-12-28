@@ -1,12 +1,9 @@
 import json
-import copy
-import six
-import base64
 import time
 
 from commons.rest_client.restful_lib import Connection
 from commons.logger import *
-from commons.proto import *
+from commons.proto import RemoteConnectorPrototype
 
 
 class RemoteJobConnector(RemoteConnectorPrototype):

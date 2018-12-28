@@ -26,7 +26,7 @@ class Nodes(Resource):
             if node_id is None:
                 return "Invalid node creation request: {}".format(node_req), 400
             else:                
-                return {"space_id": node_id}, 201
+                return {"node_id": node_id}, 201
 
         except Exception as ex:
             return "HPO node creation failed: {}".format(ex), 400

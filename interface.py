@@ -1,10 +1,13 @@
-import multiprocessing as mp
 import traceback
 import atexit
 import inspect
 
+import validators as valid
+import multiprocessing as mp
+
 from commons.logger import *
 from commons.ws_mgr import WebServiceManager
+from commons.register import NameServerConnector
 
 from wot.job_mgr import TrainingJobManager
 from hpo.job_mgr import HPOJobManager
@@ -32,16 +35,23 @@ def wait_hpo_request(run_cfg, hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=5001, 
                     enable_surrogate=False,
+                    register_url=None,
                     threaded=False):
     
     global JOB_MANAGER
     global API_SERVER
 
-    JOB_MANAGER = HPOJobManager(run_cfg, hp_cfg, port, use_surrogate=enable_surrogate)
-    
-    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
-    API_SERVER.run_service(port, debug_mode, threaded)
+    if JOB_MANAGER == None:
+        JOB_MANAGER = HPOJobManager(run_cfg, hp_cfg, port, use_surrogate=enable_surrogate)
+        if register_url != None and valid.url(register_url):
+            ns = NameServerConnector(register_url, JOB_MANAGER.credential)
+            ns.register(port, "HPO_runner")
 
+        API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+        API_SERVER.run_service(port, debug_mode, threaded)
+    else:
+        warn("Job manager already initialized.")
+        return
 
 def wait_train_request(eval_job, hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
@@ -50,23 +60,28 @@ def wait_train_request(eval_job, hp_cfg,
                     device_id=0,
                     retrieve_func=None, 
                     enable_surrogate=False,
+                    register_url=None,
                     processed=True
                     ):
     
     global JOB_MANAGER
     global API_SERVER
 
-    ej = eval_job()
-    ej.set_device_id(device_type, device_id)
     if JOB_MANAGER == None:
+        ej = eval_job()
+        ej.set_device_id(device_type, device_id)        
         JOB_MANAGER = TrainingJobManager(ej, 
-                                use_surrogate=enable_surrogate, 
-                                retrieve_func=retrieve_func)
+                                        use_surrogate=enable_surrogate, 
+                                        retrieve_func=retrieve_func)
+        if register_url != None and valid.url(register_url):
+            ns = NameServerConnector(register_url, JOB_MANAGER.credential)
+            ns.register(port, "ML_trainer")
+        API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
+        API_SERVER.run_service(port, debug_mode, with_process=processed)
     else:
         warn("Job manager already initialized.")
         return
-    API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
-    API_SERVER.run_service(port, debug_mode, with_process=processed)
+
 
 
 def stop_job_working():
