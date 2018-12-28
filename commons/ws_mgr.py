@@ -134,7 +134,7 @@ class WebServiceManager(ManagerPrototype):
         else:
             if debug_mode:
                 set_log_level('debug')
-            app.run(host='0.0.0.0', port=port, debug=debug_mode, threaded=threaded) 
+            self.app.run(host='0.0.0.0', port=port, debug=debug_mode, threaded=threaded) 
     
     def stop_service(self):
         if self.my_process != None:
