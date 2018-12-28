@@ -30,6 +30,10 @@ class NameServerConnector(RemoteConnectorPrototype):
             js = json.loads(resp['body'])
             debug("Node {} registered properly.".format(js['node_id']))
             return js['node_id'] 
+        elif status == '200':
+            js = json.loads(resp['body'])
+            debug("Node {} already registered.".format(js['node_id']))
+            return js['node_id']             
         else:
             raise ValueError("Registeration error. status code: {}".format(status))
         
