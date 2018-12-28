@@ -79,8 +79,7 @@ def main():
         sys.exit(-1) 
 
     except Exception as ex:
-        errror("Exception ocurred: {}\n{}".format(ex))
-
+        error("Exception ocurred: {}\n{}".format(ex, traceback.print_exc()))
 
 
 if __name__ == "__main__":
