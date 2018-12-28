@@ -54,14 +54,18 @@ class ConsoleLogger(Singleton):
     def warn(self, msg):
         if self.levels.index(self.cur_level) <= self.levels.index('warn'):
             print("[{}:W] {}".format(os.getpid(), msg))
-        if self.trace:
-            traceback.print_exc()
+            self.print_trace()
 
     def error(self, msg):
         if self.levels.index(self.cur_level) <= self.levels.index('error'):
             print("[{}:E] {}".format(os.getpid(), msg))
+            self.print_trace()
+
+    def print_trace(self):
         if self.trace:
-            traceback.print_stack()        
+            exception_log = traceback.format_exc()
+            if exception_log != None:
+                print(exception_log) 
 
     def log(self, msg):
         print("[{}:L] {}".format(os.getpid(), msg))

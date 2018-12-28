@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys
 import os
+import traceback
 
 import argparse
 
@@ -78,7 +79,8 @@ def main():
         sys.exit(-1) 
 
     except Exception as ex:
-        error("Exception ocurred: {}".format(ex))
+        errror("Exception ocurred: {}\n{}".format(ex))
+
 
 
 if __name__ == "__main__":
