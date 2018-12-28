@@ -29,7 +29,7 @@ def create_name_server(hp_cfg,
 
 
 def wait_hpo_request(run_cfg, hp_cfg,
-                    enable_debug=DEFAULT_DEBUG_MODE,
+                    debug_mode=DEFAULT_DEBUG_MODE,
                     port=5001, 
                     enable_surrogate=False,
                     threaded=False):
