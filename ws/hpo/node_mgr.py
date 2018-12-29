@@ -82,6 +82,9 @@ class ParallelHPOManager(ManagerPrototype):
                 return n["id"]
         return None
 
+    def get_pairs(self):
+        return self.pairs
+
     def get_node(self, node_id):
         if node_id == "all":
             nodes = [ n for n in self.nodes]

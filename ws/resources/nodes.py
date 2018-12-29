@@ -61,7 +61,7 @@ class Nodes(Resource):
 
             result = self.nm.control(args["control"], space_id, args["exp_time"])            
             if result is True:
-                return self.nm.get_node("all"), 202
+                return self.nm.get_pairs(), 202
             else:
                 return "Failed to control:{}".format(args["control"]), 400   
 
