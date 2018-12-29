@@ -115,8 +115,11 @@ class SequentialOptimizer(Worker):
             if hp_cfg == None:
                 ValueError("Surrogate {} configuration not found.".format(s_name))
         
-        if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):
+        if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):            
             space_url = run_cfg['shared_space_url']
+            if space_url.endswith('/'):
+                space_url = space_url[:-1]
+                
             self.samples = remote.connect_remote_space(run_cfg['shared_space_url'], run_cfg["credential"])
             if self.samples == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
