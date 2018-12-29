@@ -71,7 +71,7 @@ class ParallelOptimizer(Worker):
         # TODO: validate job request
         self.job_req = job_req
 
-    def optimize(job_req):
+    def optimize(self, job_req):
         if self.connector.validate():
             job_id = self.connector.create_job(job_req)
             if job_id is not None:                
