@@ -27,7 +27,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
         self.num_samples = None
         self.hp_config = None
-        
+        debug("Getting sampling space status...")
         self.get_status()
 
     def get_status(self):
