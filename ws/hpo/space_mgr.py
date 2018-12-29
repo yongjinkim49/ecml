@@ -78,8 +78,8 @@ class SamplingSpaceManager(ManagerPrototype):
 
     def set_space_status(self, space_id, status):
         if space_id in self.spaces:
-            self.spaces['space_id']['status'] = status
-            self.spaces['space_id']['updated'] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
+            self.spaces[space_id]['status'] = status
+            self.spaces[space_id]['updated'] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
             return True
         else:
             debug("No such space {} existed".format(space_id))
