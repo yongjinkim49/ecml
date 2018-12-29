@@ -28,11 +28,14 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         self.num_samples = None
         self.hp_config = None
         debug("Getting sampling space status...")
-        self.get_status()
+        space = self.get_status()
+        while space != None:
+            space = self.get_status()
+            time.sleep(3)
 
     def get_status(self):
         try:
-            resp = self.conn.request_get("/", args={}, headers=self.headers)
+            resp = self.conn.request_get("", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -51,9 +54,9 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_num_samples(self):
         if self.num_samples != None:
-            return self.num_samples
-        else:
-            raise ValueError("Handshaking failed!")
+            self.get_status()
+        
+        return self.num_samples
 
     def get_candidates(self):
         resp = self.conn.request_get("/candidates", args={}, headers=self.headers)
