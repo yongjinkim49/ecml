@@ -53,8 +53,9 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             return None
 
     def get_num_samples(self):
-        if self.num_samples != None:
-            self.get_status()
+        if self.num_samples == None:
+            while self.get_status() == None:
+                time.sleep(3)            
         
         return self.num_samples
 
