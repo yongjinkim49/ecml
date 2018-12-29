@@ -6,12 +6,12 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from multiprocessing import Process, current_process
 
-from commons.logger import *
+from ws.shared.logger import *
 
-from hpo.connectors.multi_ctrl import *
+from ws.hpo.connectors.multi_ctrl import *
 
-import hpo.bandit_config as bconf
-import commons.hp_cfg as hconf
+import ws.hpo.bandit_config as bconf
+import ws.shared.hp_cfg as hconf
 
 if __name__ == '__main__':    
     set_log_level('debug')

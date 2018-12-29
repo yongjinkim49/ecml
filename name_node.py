@@ -6,10 +6,10 @@ import sys
 import os
 import argparse
 
-import commons.hp_cfg as hconf
-from commons.logger import * 
+import ws.shared.hp_cfg as hconf
+from ws.shared.logger import * 
 
-from interface import create_name_server
+from ws.apis import create_name_server
 
 
 HP_CONF_PATH = './hp_conf/'

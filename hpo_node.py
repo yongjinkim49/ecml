@@ -6,12 +6,12 @@ import sys
 import os
 import argparse
 
-import hpo.bandit_config as bconf
+import ws.hpo.bandit_config as bconf
 
-import commons.hp_cfg as hconf
-from commons.logger import * 
+import ws.shared.hp_cfg as hconf
+from ws.shared.logger import * 
 
-from interface import wait_hpo_request
+from ws.apis import wait_hpo_request
 
 
 RUN_CONF_PATH = './run_conf/'

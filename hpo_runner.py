@@ -7,13 +7,13 @@ import os
 import argparse
 import validators as valid
 
-from commons.logger import *
-import commons.hp_cfg as hconf
+from ws.shared.logger import *
+import ws.shared.hp_cfg as hconf
 
-import hpo.bandit_config as run_config
-import hpo.bandit as bandit
-import hpo.batch_sim as batch
-import hpo.space_mgr as space
+import ws.hpo.bandit_config as run_config
+import ws.hpo.bandit as bandit
+import ws.hpo.batch_sim as batch
+import ws.hpo.space_mgr as space
 
 
 ALL_OPT_MODELS = ['RANDOM', 'GP', 'GP-NM', 'RF', 'HO', 'GP-HLE', 'RF-HLE', 'HO-HLE']

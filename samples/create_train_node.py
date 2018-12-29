@@ -5,8 +5,8 @@ import random as rand
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import commons.hp_cfg as hconf
-from interface import wait_train_request, eval_task
+import ws.shared.hp_cfg as hconf
+from ws.apis import wait_train_request, eval_task
 
 
 @eval_task

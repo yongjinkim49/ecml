@@ -5,10 +5,10 @@ import time
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import commons.hp_cfg as hp_cfg
+import ws.shared.hp_cfg as hp_cfg
 
-from commons.logger import *
-from hpo.connectors.remote_train import RemoteTrainConnector
+from ws.shared.logger import *
+from ws.hpo.connectors.remote_train import RemoteTrainConnector
 
 def test_train_main():
     # XXX: You should start add_task.py of worker first.

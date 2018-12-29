@@ -4,11 +4,11 @@ import sys
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import hpo.bandit as bandit
-import hpo.connectors.remote_space as remote
-import hpo.bandit_config as run_config
+import ws.hpo.bandit as bandit
+import ws.hpo.connectors.remote_space as remote
+import ws.hpo.bandit_config as run_config
 
-from commons.logger import *
+from ws.shared.logger import *
 
 
 def test_run_main():
