@@ -143,7 +143,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             if not id in self.get_completes():
                 raise ValueError("Invalid id: {}".format(id))
 
-        resp = self.conn.request_get("/errors/{}".format(id), args={}, headers=self.headers)
+        resp = self.conn.request_get("/errors/{}/".format(id), args={}, headers=self.headers)
         status = resp['headers']['status']
 
         if status == '200':
@@ -165,7 +165,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             raise ValueError("Invalid id: {}".format(id))
     
         args = {"value": error}
-        resp = self.conn.request_put("/errors/{}".format(id), args=args, headers=self.headers)
+        resp = self.conn.request_put("/errors/{}/".format(id), args=args, headers=self.headers)
         status = resp['headers']['status']
         
         if status == '202':
