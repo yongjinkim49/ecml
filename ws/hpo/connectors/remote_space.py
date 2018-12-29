@@ -35,7 +35,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_status(self):
         try:
-            resp = self.conn.request_get(None, args={}, headers=self.headers)
+            resp = self.conn.request_get("", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
