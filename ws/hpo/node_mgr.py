@@ -94,7 +94,8 @@ class ParallelHPOManager(ManagerPrototype):
     def match_nodes(self):
         optimizers = []
         trainers = []
-        for n in self.nodes:
+        for k in self.nodes.keys():
+            n = self.nodes[k]
             if n["status"] != "paired":
                 if n["job_type"] == "HPO_runner":
                     optimizers.append(n["id"])
