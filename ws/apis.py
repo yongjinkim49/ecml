@@ -9,9 +9,6 @@ from ws.shared.logger import *
 from ws.ws_mgr import WebServiceManager
 from ws.shared.register import NameServerConnector
 
-from ws.wot.job_mgr import TrainingJobManager
-from ws.hpo.job_mgr import HPOJobManager
-from ws.hpo.node_mgr import ParallelHPOManager
 
 DEFAULT_DEBUG_MODE = False
 JOB_MANAGER = None
@@ -24,6 +21,9 @@ def create_name_server(hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=5000,
                     threaded=False):
+    
+    from ws.hpo.node_mgr import ParallelHPOManager
+    
     global JOB_MANAGER
     global API_SERVER
     JOB_MANAGER = ParallelHPOManager(hp_cfg)
@@ -38,6 +38,8 @@ def wait_hpo_request(run_cfg, hp_cfg,
                     register_url=None,
                     threaded=False):
     
+    from ws.hpo.job_mgr import HPOJobManager
+
     global JOB_MANAGER
     global API_SERVER
 
@@ -65,6 +67,8 @@ def wait_train_request(eval_job, hp_cfg,
                     processed=True
                     ):
     
+    from ws.wot.job_mgr import TrainingJobManager
+
     global JOB_MANAGER
     global API_SERVER
 
@@ -115,7 +119,9 @@ def update_result_per_steps(cur_steps, cur_loss, run_time):
 # Decorator functions 
 # (Do NOT invoke it directly)
 def eval_task(eval_func):
-    def wrapper_function():        
+    def wrapper_function():
+        from ws.wot.workers.evaluator import IterativeFunctionEvaluator
+
         argspec = inspect.getargspec(eval_func)
         fe = IterativeFunctionEvaluator("{}_evaluator".format(eval_func.__name__))
         fe.set_exec_func(eval_func, argspec.args)
@@ -125,7 +131,9 @@ def eval_task(eval_func):
 
 
 def progressive_eval_task(eval_func):
-    def wrapper_function():        
+    def wrapper_function():
+        from ws.wot.workers.evaluator import IterativeFunctionEvaluator
+                
         argspec = inspect.getargspec(eval_func)
         fe = IterativeFunctionEvaluator("{}_evaluator".format(eval_func.__name__), progressive=True)
         fe.set_exec_func(eval_func, argspec.args)

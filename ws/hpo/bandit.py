@@ -19,8 +19,6 @@ from ws.shared.saver import ResultSaver, TempSaver
 
 
 from ws.hpo.sample_space import *
-import ws.hpo.eval_time as eval_time
-
 from ws.hpo.result import HPOResultFactory
 
 from ws.hpo.utils.grid_gen import *
@@ -146,8 +144,8 @@ class HPOBanditMachine(object):
         self.stop_flag = True
     
     def estimate_eval_time(self, cand_index, model):
-        ''' Experimental function. - more evaluation will be required for future use. '''        
-        
+        ''' Experimental feature. Not suggested to use now. '''        
+        import ws.hpo.eval_time as eval_time
         samples = self.samples
         cand_est_times = None
 
@@ -155,7 +153,6 @@ class HPOBanditMachine(object):
             et = eval_time.get_estimator(samples, self.eval_time_model)
             
             if et is not None:
-                
                 success, cand_est_times = et.estimate(samples.get_candidates(), 
                                                     samples.get_completes())
                 if success:

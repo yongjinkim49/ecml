@@ -131,7 +131,7 @@ class ParallelHPOManager(ManagerPrototype):
         space_id = self.space_mgr.create(space_spec)
         return space_id
 
-    def validate_space(space_id):
+    def validate_space(self, space_id):
         if space_id in self.space_mgr.get_available_spaces():
             return True
         else:
