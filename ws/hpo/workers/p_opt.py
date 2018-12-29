@@ -34,7 +34,7 @@ class ParallelOptimizer(Worker):
         job_desc['mode'] = mode
         job_desc['spec'] = spec
 
-        worker_url = "http://{}:{}".format(self.train_node["ip_address"], self.train_node["port_number"])
+        worker_url = "http://{}:{}".format(self.train_node["ip_address"], self.train_node["port_num"])
         job_desc['worker_url'] = worker_url
 
         if surrogate != None:
