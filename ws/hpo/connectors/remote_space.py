@@ -77,7 +77,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         else:
             raise ValueError("Connection failed: {}".format(status))
 
-    def validate(self, id,):
+    def validate(self, id):
         if id == 'all':
             return True
         elif id == 'candidates':

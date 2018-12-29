@@ -79,6 +79,8 @@ class WebServiceManager(ManagerPrototype):
             self.api.add_resource(ObservedError, "/spaces/<string:space_id>/errors/<string:sample_id>", 
                             resource_class_kwargs={'space_manager': space_mgr})                    
 
+    def get_spec(self):
+        return self.job_mgr.get_spec()
 
     def get_urls(self):
         urls = [

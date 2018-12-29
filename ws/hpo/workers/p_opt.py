@@ -94,7 +94,7 @@ class ParallelOptimizer(Worker):
             else:
                 error("Creating job failed") 
         else:
-            raise NotImplementedError("No such waiting method implemented")  
+            raise TypeError("Trainer validation failed")  
 
     def get_results(self):
         results = []
