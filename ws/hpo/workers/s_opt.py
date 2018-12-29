@@ -32,6 +32,9 @@ class SequentialOptimizer(Worker):
 
         self.reset()
 
+    def get_device_id(self):
+        return self.device_id
+
     def get_config(self):
         return self.rconf
 
