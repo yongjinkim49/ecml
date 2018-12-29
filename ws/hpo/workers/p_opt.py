@@ -9,7 +9,6 @@ from ws.shared.proto import ManagerPrototype
 class ParallelOptimizer(Worker):
     def __init__(self, hpo_node, train_node, hp_config, credential,   
                 id=None, polling_interval=3):
-        self.connector = RemoteOptimizerConnector(self.hpo_node["ip_address"], self.hpo_node["port_number"], self.credential)
         self.hpo_node = hpo_node
         self.train_node = train_node
         self.hp_config = hp_config
@@ -18,7 +17,8 @@ class ParallelOptimizer(Worker):
         self.polling_interval = polling_interval
         self.in_progress = False
 
-        self.connector = None
+        self.connector = RemoteOptimizerConnector(self.hpo_node["ip_address"], self.hpo_node["port_number"], self.credential)
+
         return super(ParallelOptimizer, self).__init__(id=id)
 
     def create_job_request(self, mode="DIV", spec="RANDOM", 
