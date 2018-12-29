@@ -11,6 +11,8 @@ import ws.shared.lookup as lookup
 from ws.hpo.utils.grid_gen import *
 
 import ws.hpo.connectors.remote_space as remote
+import ws.hpo.space_mgr as space
+
 import ws.hpo.bandit as bandit
 
 class SequentialOptimizer(Worker):
