@@ -17,7 +17,9 @@ class ParallelOptimizer(Worker):
         self.polling_interval = polling_interval
         self.in_progress = False
 
-        self.connector = RemoteOptimizerConnector(self.hpo_node["ip_address"], self.hpo_node["port_number"], self.credential)
+        self.connector = RemoteOptimizerConnector(self.hpo_node["ip_address"], 
+                                                  self.hpo_node["port_num"], 
+                                                  self.credential)
 
         return super(ParallelOptimizer, self).__init__(id=id)
 
