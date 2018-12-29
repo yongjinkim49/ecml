@@ -29,13 +29,13 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         self.hp_config = None
         debug("Getting sampling space status...")
         space = self.get_status()
-        while space != None:
+        while space == None:
             space = self.get_status()
             time.sleep(3)
 
     def get_status(self):
         try:
-            resp = self.conn.request_get("", args={}, headers=self.headers)
+            resp = self.conn.request_get(args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
