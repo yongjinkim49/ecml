@@ -108,7 +108,7 @@ class ParallelHPOManager(ManagerPrototype):
         for i in range(len(optimizers)):
             if i < len(trainers):
                 opt = self.nodes[optimizers[i]]
-                train = self.nodes[trainer[i]]
+                train = self.nodes[trainers[i]]
                 pair = {"optimizer" : opt, 
                         "trainer" : train
                 }
