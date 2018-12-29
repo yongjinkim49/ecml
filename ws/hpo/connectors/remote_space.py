@@ -11,8 +11,9 @@ from ws.hpo.sample_space import RemoteSamplingSpace
 def connect_remote_space(space_url, cred):
     try:
         debug("Connecting remote space: {}".format(space_url))
-        name = "grid-{}".format(space_url)
+        
         connector = RemoteSampleSpaceConnector(space_url, credential=cred)
+        name = connector.get_space_id()
         return RemoteSamplingSpace(name, connector)
     except Exception as ex:
         warn("Fail to get remote samples: {}".format(ex))
@@ -27,6 +28,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
         self.num_samples = None
         self.hp_config = None
+        self.space_id = None
         debug("Getting sampling space status...")
         space = self.get_status()
         while space == None:
@@ -43,6 +45,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
                 
                 self.num_samples = space['num_samples']
                 self.hp_config = space["hp_config"]
+                self.space_id = space['space_id']
 
                 return space
             else:
@@ -51,6 +54,13 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         except Exception as ex:
             debug("Getting remote space: {}".format(ex))
             return None
+
+    def get_space_id(self):
+        if self.space_id == None:
+            while self.get_status() == None:
+                time.sleep(3)            
+        
+        return self.space_id        
 
     def get_num_samples(self):
         if self.num_samples == None:

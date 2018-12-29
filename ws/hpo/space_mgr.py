@@ -76,8 +76,18 @@ class SamplingSpaceManager(ManagerPrototype):
     def get_available_spaces(self):
         return list(self.spaces.keys())
 
+    def get_active_space_id(self):
+        for s in self.spaces:
+            if self.spaces[s]['status'] == "active":
+                return s
+        debug("No active space id now")
+        return None                  
+
     def set_space_status(self, space_id, status):
-        if space_id in self.spaces:
+        if space_id == "active":
+            space_id = get_active_space_id()
+                                
+        elif space_id in self.spaces:
             self.spaces[space_id]['status'] = status
             self.spaces[space_id]['updated'] = time.strftime('%Y%m%dT%H:%M:%SZ',time.gmtime())
             return True
@@ -98,6 +108,9 @@ class SamplingSpaceManager(ManagerPrototype):
             return None
 
     def get_space_config(self, space_id):
+        if space_id == "active":
+            space_id = get_active_space_id()
+                    
         if space_id in self.spaces:
             return self.spaces[space_id]['config']
         else:

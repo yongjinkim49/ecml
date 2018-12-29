@@ -26,7 +26,7 @@ class Space(Resource):
 
         space = {}
         if hasattr(samples, 'name'):
-            space["name"] = samples.get_name()            
+            space["space_id"] = samples.get_name()            
         space["num_samples"] = samples.num_samples
         space["hp_config"] = samples.get_hp_config().get_dict()
 
