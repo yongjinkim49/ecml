@@ -150,10 +150,6 @@ class ParallelHPOManager(ManagerPrototype):
                 jr = w.create_job_request(exp_time=exp_time)
                 w.set_job_request(jr)
             self.workers.append(w)
-        if len(self.workers) > 0:
-            return True
-        else:
-            return False
 
     def control(self, cmd, space_id, exp_time=None, node_id="all"):
         if node_id == "all":
@@ -161,8 +157,8 @@ class ParallelHPOManager(ManagerPrototype):
                 debug("Not enough the registered nodes")
                 return False
             else:
-                return self.prepare(exp_time)
-            
+                self.prepare(exp_time)
+
         elif node_id in self.nodes:
             # TODO: control single node
             raise NotImplementedError("Controlling each node is not supported yet.")
@@ -173,6 +169,7 @@ class ParallelHPOManager(ManagerPrototype):
 
         if cmd == 'start':
             if len(self.workers) == 0:
+                debug("No worker is prepared.")
                 return False
             
             for w in self.workers:
