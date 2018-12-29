@@ -6,7 +6,7 @@ import pandas as pd
 from ws.shared.logger import *
 from ws.shared.hp_cfg import HyperparameterConfiguration
 
-from ws.hpo.sobol_lib import i4_sobol_generate
+from ws.hpo.utils.sobol_lib import i4_sobol_generate
 
 class GridGenerator(object):
     def __init__(self, num_dim, num_samples):
