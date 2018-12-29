@@ -1,13 +1,15 @@
-# Scaliable Unified Hyperparameter Optimization Framework of Deep Neural Networks
+# Scalable Unified Hyperparameter Optimization Framework of Deep Neural Networks
 
 ## Abstract
 
 TBD
-* Easily Expandable HPO algorithms
-* HPO as Multi-armed Bandits
-* Diversification for Robust and Effective HPO
-* Large scale HPO adapting by microservices architecture
-  * Resource Oriented Architecture with RESTful Web API
+
+**Key features**
+  * Easily Expandable HPO algorithms
+  * HPO as Multi-armed Bandits
+  * Diversification for Robust and Effective HPO
+  * Large scale HPO adapting by microservices architecture
+    * Resource Oriented Architecture with RESTful Web API
 
 TODO:System architecture diagram required
 
