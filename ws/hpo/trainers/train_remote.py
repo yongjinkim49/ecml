@@ -113,12 +113,22 @@ class RemoteTrainer(TrainerPrototype):
 
     def train(self, space, cand_index, estimates=None):
         hpv = {}
-        cfg = { 'cand_index' : cand_index }
+        cfg = {'cand_index' : cand_index}
         param_names = self.hp_config.get_hyperparams()
-        debug("Training HPV: {}".format(self.hpvs[cand_index]))
-        for param in param_names:
-            value = self.hpvs[cand_index][param]
-            hpv[param] = value
+        param_values = self.hpvs[cand_index]
+        debug("Training HPV: {}".format(param_values))
+        
+        if type(param_values) == dict:
+            for param in param_names:
+                value = param_values[param]
+                hpv[param] = value
+        elif type(param_values) == list and len(param_names) == len(param_values):
+            for i in range(len(param_names)):
+                param = param_names[i]
+                value = param_values[i]
+                hpv[param] = value
+        else:
+            raise TypeError("Invalid hyperparams: {}/{}".format(param_names, param_values))
 
         if self.controller.validate():
             job_id = self.controller.create_job(hpv, cfg)
