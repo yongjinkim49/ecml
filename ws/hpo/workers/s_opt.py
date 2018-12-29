@@ -97,7 +97,7 @@ class SequentialOptimizer(Worker):
         super(SequentialOptimizer, self).stop()
  
     def run(self, run_cfg, hp_cfg, args, save_results=False):
-            
+        debug("Run sequential optimization with {}".format(run_cfg))    
         num_resume = 0
         save_pkl = False
         if 'rerun' in args:
@@ -119,8 +119,9 @@ class SequentialOptimizer(Worker):
             space_url = run_cfg['shared_space_url']
             if space_url.endswith('/'):
                 space_url = space_url[:-1]
-                
-            self.samples = remote.connect_remote_space(run_cfg['shared_space_url'], run_cfg["credential"])
+
+            self.samples = remote.connect_remote_space(run_cfg['shared_space_url'], 
+                                                        run_cfg["credential"])
             if self.samples == None:
                 if "127.0.0.1" in space_url or "0.0.0.0" in space_url or "localhost" in space_url:
                     debug("Create new grid space")
