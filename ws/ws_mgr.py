@@ -6,7 +6,7 @@ import copy
 import multiprocessing as mp
 
 from ws.shared.logger import * 
-from wsshared.proto import ManagerPrototype 
+from ws.shared.proto import ManagerPrototype 
 
 from ws.resources.billboard import Billboard
 from ws.resources.config import Config

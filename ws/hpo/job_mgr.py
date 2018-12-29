@@ -6,7 +6,7 @@ import copy
 from future.utils import iteritems
 
 from ws.shared.logger import * 
-from wsshared.proto import ManagerPrototype 
+from ws.shared.proto import ManagerPrototype 
 from ws.hpo.workers.s_opt import SequentialOptimizer
 
 class HPOJobFactory(object):

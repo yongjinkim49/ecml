@@ -8,7 +8,7 @@ import math
 
 from ws.shared.logger import *
 
-from wsshared.proto import TrainerPrototype
+from ws.shared.proto import TrainerPrototype
 from ws.hpo.connectors.remote_train import RemoteTrainConnector
 
 def init(url, run_config, hp_config, hpvs, **kwargs):

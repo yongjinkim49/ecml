@@ -8,7 +8,7 @@ import math
 from sklearn import linear_model
 from sklearn.preprocessing import PolynomialFeatures
 
-from wsshared.proto import TrainerPrototype
+from ws.shared.proto import TrainerPrototype
 from ws.shared.logger import *
 
 def init(space, run_config):

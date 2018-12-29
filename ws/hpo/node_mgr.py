@@ -4,7 +4,7 @@ import json
 import copy
 
 from ws.shared.logger import * 
-from wsshared.proto import ManagerPrototype 
+from ws.shared.proto import ManagerPrototype 
 
 from ws.hpo.space_mgr import SamplingSpaceManager
 from ws.hpo.workers.p_opt import ParallelOptimizer

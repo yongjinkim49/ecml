@@ -4,7 +4,7 @@ import copy
 from ws.shared.logger import * 
 from ws.shared.worker import Worker 
 from ws.hpo.connectors.remote_hpo import RemoteOptimizerConnector
-from wsshared.proto import ManagerPrototype 
+from ws.shared.proto import ManagerPrototype 
 
 class ParallelOptimizer(Worker):
     def __init__(self, hpo_node, train_node, hp_config, credential,   

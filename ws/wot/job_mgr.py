@@ -5,7 +5,7 @@ import json
 from future.utils import iteritems
 
 from ws.shared.logger import * 
-from wsshared.proto import ManagerPrototype 
+from ws.shared.proto import ManagerPrototype 
 import ws.shared.lookup as lookup
 
 from ws.wot.workers.surrogates import SurrogateEvaluator

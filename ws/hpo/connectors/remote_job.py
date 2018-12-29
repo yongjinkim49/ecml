@@ -3,7 +3,7 @@ import time
 
 from ws.rest_client.restful_lib import Connection
 from ws.shared.logger import *
-from wsshared.proto import RemoteConnectorPrototype
+from ws.shared.proto import RemoteConnectorPrototype
 
 
 class RemoteJobConnector(RemoteConnectorPrototype):
