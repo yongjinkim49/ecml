@@ -1,5 +1,5 @@
 import math
-
+import random
 import numpy        as np
 import numpy.random as npr
 import scipy.stats  as sps
@@ -78,7 +78,7 @@ class RFChooser:
         
         # Don't bother using fancy RF stuff at first.
         if completes.shape[0] < 2:
-            return int(candidates[0])
+            return int(random.choice(candidates))
 
         # Grab out the relevant sets.
         

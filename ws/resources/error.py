@@ -53,7 +53,8 @@ class ObservedError(Resource):
             return "Space {} not found".format(space_id), 404
         else:
             try:
-                self.sm.set_space_status(space_id, "active")
+                if space_id != "active":
+                    self.sm.set_space_status(space_id, "active")
                 samples.update(int(sample_id), float(args["value"]))
                 error = {"id": sample_id}
                 error["error"] = samples.get_errors(int(sample_id))
@@ -61,5 +62,6 @@ class ObservedError(Resource):
                 return error, 202
 
             except Exception as ex:
+                warn("Error update exception: {}".format(ex))
                 return "Invalid request:{}".format(ex), 400         
 

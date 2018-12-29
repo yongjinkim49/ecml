@@ -183,5 +183,5 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             
             return True
         else:
-            raise ValueError("Invalid worker status: {}".format(status))                
+            raise ValueError("Invalid space status: {}".format(status))                
      

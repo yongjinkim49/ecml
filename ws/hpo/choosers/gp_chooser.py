@@ -25,7 +25,7 @@ from __future__ import print_function
 import math
 import numpy as np
 import scipy.linalg as spla
-
+import random
 
 import gp_util
 from acq_func import *
@@ -133,7 +133,7 @@ class GPChooser:
         
         # Don't bother using fancy GP stuff at first.
         if completes.shape[0] < 2:
-            return int(candidates[0])
+            return int(random.choice(candidates))
 
         # Perform the real initialization.
         if self.D == -1:
