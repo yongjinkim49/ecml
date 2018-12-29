@@ -4,13 +4,13 @@ import six
 import base64
 import time
 
-from ws.rest_client.restful_lib import Connection
 from ws.shared.logger import *
-from ws.shared.proto import *
-
+from ws.shared.proto import RemoteConnectorPrototype
+from ws.hpo.sample_space import RemoteSamplingSpace
 
 def connect_remote_space(space_url, cred):
     try:
+        debug("Connecting remote space: {}".format(space_url))
         name = "grid-{}".format(space_url)
         connector = RemoteSampleSpaceConnector(space_url, credential=cred)
         return RemoteSamplingSpace(name, connector)
@@ -32,7 +32,7 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
 
     def get_status(self):
         try:
-            resp = self.conn.request_get("", args={}, headers=self.headers)
+            resp = self.conn.request_get("/", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -112,7 +112,6 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             return returns
         else:
             raise ValueError("Connection failed: {}".format(status))
-
 
     def get_vector(self, id):
         if self.validate(id) == False:
