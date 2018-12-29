@@ -60,7 +60,7 @@ def wait_train_request(eval_job, hp_cfg,
                     debug_mode=DEFAULT_DEBUG_MODE,
                     port=6000,
                     device_type="cpu",
-                    device_id=0,
+                    device_index=0,
                     retrieve_func=None, 
                     enable_surrogate=False,
                     register_url=None,
@@ -74,7 +74,7 @@ def wait_train_request(eval_job, hp_cfg,
 
     if JOB_MANAGER == None:
         ej = eval_job()
-        ej.set_device_id(device_type, device_id)        
+        ej.set_device_id(device_type, device_index)        
         JOB_MANAGER = TrainingJobManager(ej, 
                                         use_surrogate=enable_surrogate, 
                                         retrieve_func=retrieve_func)
@@ -133,7 +133,7 @@ def eval_task(eval_func):
 def progressive_eval_task(eval_func):
     def wrapper_function():
         from ws.wot.workers.evaluator import IterativeFunctionEvaluator
-                
+
         argspec = inspect.getargspec(eval_func)
         fe = IterativeFunctionEvaluator("{}_evaluator".format(eval_func.__name__), progressive=True)
         fe.set_exec_func(eval_func, argspec.args)

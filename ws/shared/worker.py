@@ -26,6 +26,9 @@ class Worker(object):
         else:
             self.id = 'worker_proto'
 
+    def get_id(self):
+        return self.id
+
     def get_cur_status(self):
         if self.busy:
             if self.paused:

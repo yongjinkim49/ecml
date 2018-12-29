@@ -16,7 +16,7 @@ class HPOJobFactory(object):
 
     def create(self, jr):
         job = {}
-        job['job_id'] = "{}_{}-{}".format(self.worker.id, self.worker.device_id, self.n_jobs)
+        job['job_id'] = "{}_{}-{}".format(self.worker.get_id(), self.worker.get_device_id(), self.n_jobs)
         job['created'] = time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
         job['status'] = "not assigned"
         job['result'] = None
@@ -33,8 +33,8 @@ class HPOJobManager(ManagerPrototype):
         self.jobs = [] # self.database['jobs'] # XXX:for debug only
          
         self.worker = SequentialOptimizer(run_cfg, hp_cfg, "s-opt_{}".format(port))
-        self.prefix = self.worker.id
-        self.device_id = self.worker.device_id
+        self.prefix = self.worker.get_id()
+        self.device_id = self.worker.get_device_id()
         
         self.use_surrogate = use_surrogate
         
@@ -52,13 +52,13 @@ class HPOJobManager(ManagerPrototype):
         # This returns run config
         if self.use_surrogate:
             return {"target_func": "surrogate", "param_order": []}
-        return self.worker.config 
+        return self.worker.get_config() 
 
     def get_spec(self):
         my_spec = {
             "job_type": "HPO_runner",
             "id": self.worker.id,
-            "device_type": self.worker.device_id }
+            "device_id": self.worker.get_device_id() }
         return my_spec
 
     def add(self, args):

@@ -17,7 +17,7 @@ class TrainingJobFactory(object):
         self.worker = worker
 
     def create(self, dataset, model, hpv, cfg):
-        job_id = "{}_{}-{}".format(self.worker.name, self.worker.device_id, len(self.jobs))
+        job_id = "{}_{}-{}".format(self.worker.get_id(), self.worker.get_device_id(), len(self.jobs))
 
         job = {
             "job_id" : job_id, 
@@ -59,13 +59,13 @@ class TrainingJobManager(ManagerPrototype):
     def get_config(self):
         if self.use_surrogate:
             return {"target_func": "surrogate", "param_order": []}
-        return self.worker.config
+        return self.worker.get_config()
         
     def get_spec(self):
         id = {
             "job_type": "ML_trainer",
-            "id": self.worker.name,
-            "device_type": self.worker.device_id }
+            "id": self.worker.get_id(),
+            "device_id": self.worker.get_device_id() }
         return id
 
     def add(self, args):

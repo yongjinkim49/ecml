@@ -22,6 +22,10 @@ class IterativeFunctionEvaluator(Trainer):
         self.max_iters = 1
         self.iter_unit = "epoch"
         self.progressive = progressive
+        self.config = {}
+
+    def get_config(self):
+        return self.config
 
     def set_max_iters(self, num_max_iters, iter_unit="epoch"):
         self.max_iters = num_max_iters
@@ -31,8 +35,11 @@ class IterativeFunctionEvaluator(Trainer):
         self.config = {"target_func": eval_func.__name__,
                         "arguments" : args}
 
-    def set_device_id(self, device_type, device_id):
-        self.device_id = "{}{}".format(device_type, device_id)
+    def set_device_id(self, device_type, device_index):
+        self.device_id = "{}{}".format(device_type, device_index)
+
+    def get_device_id(self):
+        return self.device_id
 
     def get_cur_result(self):
         if len(self.results) > 0:

@@ -23,9 +23,6 @@ class SequentialOptimizer(Worker):
         self.hp_dir = hp_dir
 
         self.type = 'smbo'
-
-        
-        #debug("Run configuration: {}".format(run_config))
         if 'title' in run_config:
             self.id = run_config['title']
 
@@ -34,6 +31,9 @@ class SequentialOptimizer(Worker):
         self.samples = None
 
         self.reset()
+
+    def get_config(self):
+        return self.rconf
 
     def set_params(self, params, index=None):
         if params:
