@@ -117,8 +117,8 @@ class SequentialOptimizer(Worker):
         
         if 'shared_space_url' in run_cfg and valid.url(run_cfg['shared_space_url']):            
             space_url = run_cfg['shared_space_url']
-            if space_url.endswith('/'):
-                space_url = space_url[:-1]
+            if not space_url.endswith('/'):
+                space_url = space_url + "/"
 
             self.samples = remote.connect_remote_space(run_cfg['shared_space_url'], 
                                                         run_cfg["credential"])

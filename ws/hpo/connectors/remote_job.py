@@ -30,7 +30,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
 
     def get_config(self):
         try:
-            resp = self.conn.request_get("/config", args={}, headers=self.headers)
+            resp = self.conn.request_get("/config/", args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -44,7 +44,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
             return None
 
     def get_all_jobs(self):
-        resp = self.conn.request_get("/jobs", args={}, headers=self.headers)
+        resp = self.conn.request_get("/jobs/", args={}, headers=self.headers)
         status = resp['headers']['status']
 
         if status == '200':
@@ -56,7 +56,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
     def get_job(self, job_id):
         retry_count = 0
         while True:
-            resp = self.conn.request_get("/jobs/{}".format(job_id), args={}, headers=self.headers)
+            resp = self.conn.request_get("/jobs/{}/".format(job_id), args={}, headers=self.headers)
             status = resp['headers']['status']
 
             if status == '200':
@@ -77,7 +77,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
     def create_job(self, job_desc):
 
         body = json.dumps(job_desc)
-        resp = self.conn.request_post("/jobs", args={}, body=body, headers=self.headers)
+        resp = self.conn.request_post("/jobs/", args={}, body=body, headers=self.headers)
         status = resp['headers']['status']
         
         if status == '201':
@@ -107,7 +107,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                         continue
                 else:
                     ctrl = {"control": "start"}
-                    resp = self.conn.request_put("/jobs/{}".format(job_id), args=ctrl, headers=self.headers)
+                    resp = self.conn.request_put("/jobs/{}/".format(job_id), args=ctrl, headers=self.headers)
                     status = resp['headers']['status']
                     
                     if status == '202':
@@ -140,7 +140,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 return False 
             else:
                 ctrl = {"control": "pause"}                
-                resp = self.conn.request_put("/jobs/{}".format(job_id), args=ctrl, headers=self.headers)
+                resp = self.conn.request_put("/jobs/{}/".format(job_id), args=ctrl, headers=self.headers)
                 status = resp['headers']['status']
                 
                 if status == '202':
@@ -161,7 +161,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 return False 
             else:
                 ctrl = {"control": "resume"}
-                resp = self.conn.request_put("/jobs/{}".format(job_id), args=ctrl, headers=self.headers)
+                resp = self.conn.request_put("/jobs/{}/".format(job_id), args=ctrl, headers=self.headers)
                 status = resp['headers']['status']
                 
                 if status == '202':
@@ -181,7 +181,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 warn("Job {} can not be stopped.".format(job_id))
                 return False 
             else:
-                resp = self.conn.request_delete("/jobs/{}".format(job_id), args={}, headers=self.headers)
+                resp = self.conn.request_delete("/jobs/{}/".format(job_id), args={}, headers=self.headers)
                 status = resp['headers']['status']
                 
                 if status == '200':

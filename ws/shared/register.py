@@ -23,7 +23,7 @@ class NameServerConnector(RemoteConnectorPrototype):
                         "job_type" : job_type
                         }
         body = json.dumps(register_doc)
-        resp = self.conn.request_post("/nodes", args={}, body=body, headers=self.headers)
+        resp = self.conn.request_post("/nodes/", args={}, body=body, headers=self.headers)
         status = resp['headers']['status']
         
         if status == '201':

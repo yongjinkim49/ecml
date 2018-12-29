@@ -46,37 +46,37 @@ class WebServiceManager(ManagerPrototype):
         self.api.add_resource(Billboard, "/", # for profile and 
                         resource_class_kwargs={'resource_manager': self})
         
-        self.api.add_resource(Config, "/config", # for run spec
+        self.api.add_resource(Config, "/config/", # for run spec
                         resource_class_kwargs={'job_manager': self.job_mgr, "hp_config": self.hp_cfg})
         
         # For job handling
-        self.api.add_resource(Jobs, "/jobs", 
+        self.api.add_resource(Jobs, "/jobs/", 
                         resource_class_kwargs={'job_manager': self.job_mgr})
-        self.api.add_resource(Job, "/jobs/<string:job_id>", 
+        self.api.add_resource(Job, "/jobs/<string:job_id>/", 
                         resource_class_kwargs={'job_manager': self.job_mgr})
 
         if self.job_mgr.type == "ParallelHPOManager":
             # For managing HPO nodes
-            self.api.add_resource(Nodes, "/nodes", 
+            self.api.add_resource(Nodes, "/nodes/", 
                             resource_class_kwargs={'node_manager': self.job_mgr})
-            self.api.add_resource(Node, "/nodes/<string:node_id>", 
+            self.api.add_resource(Node, "/nodes/<string:node_id>/", 
                             resource_class_kwargs={'node_manager': self.job_mgr})                                
 
             space_mgr = self.job_mgr.get_space_manager()
             # For managing sampling space and history sharing
-            self.api.add_resource(Spaces, "/spaces", 
+            self.api.add_resource(Spaces, "/spaces/", 
                             resource_class_kwargs={'space_manager': space_mgr})    
-            self.api.add_resource(Space, "/spaces/<string:space_id>", 
+            self.api.add_resource(Space, "/spaces/<string:space_id>/", 
                             resource_class_kwargs={'space_manager': space_mgr})
-            self.api.add_resource(Grid, "/spaces/<string:space_id>/grids/<string:sample_id>", 
+            self.api.add_resource(Grid, "/spaces/<string:space_id>/grids/<string:sample_id>/", 
                             resource_class_kwargs={'space_manager': space_mgr})
-            self.api.add_resource(HyperparamVector, "/spaces/<string:space_id>/vectors/<string:sample_id>", 
+            self.api.add_resource(HyperparamVector, "/spaces/<string:space_id>/vectors/<string:sample_id>/", 
                             resource_class_kwargs={'space_manager': space_mgr})
-            self.api.add_resource(Completes, "/spaces/<string:space_id>/completes", 
+            self.api.add_resource(Completes, "/spaces/<string:space_id>/completes/", 
                             resource_class_kwargs={'space_manager': space_mgr})
-            self.api.add_resource(Candidates, "/spaces/<string:space_id>/candidates", 
+            self.api.add_resource(Candidates, "/spaces/<string:space_id>/candidates/", 
                             resource_class_kwargs={'space_manager': space_mgr})                                         
-            self.api.add_resource(ObservedError, "/spaces/<string:space_id>/errors/<string:sample_id>", 
+            self.api.add_resource(ObservedError, "/spaces/<string:space_id>/errors/<string:sample_id>/", 
                             resource_class_kwargs={'space_manager': space_mgr})                    
 
     def get_spec(self):
@@ -85,27 +85,27 @@ class WebServiceManager(ManagerPrototype):
     def get_urls(self):
         urls = [
             {"/": {"method": ['GET']}},
-            {"/config": {"method": ['GET']}}
+            {"/config/": {"method": ['GET']}}
         ]
         
         job_urls = [
-            {"/jobs": {"method": ['GET', 'POST']}},
-            {"/jobs/active": {"method": ['GET']}},
-            {"/jobs/[job_id]": {"method": ['GET', 'PUT', 'DELETE']}}
+            {"/jobs/": {"method": ['GET', 'POST']}},
+            {"/jobs/active/": {"method": ['GET']}},
+            {"/jobs/[job_id]/": {"method": ['GET', 'PUT', 'DELETE']}}
         ] 
 
         space_urls = [ 
-            {"/space": {"method": ['GET']}},
-            {"/space/completes": {"method": ['GET']}},
-            {"/space/candidates": {"method": ['GET']}},
-            {"/space/grids/[id]": {"method": ['GET']}},
-            {"/space/vectors/[id]": {"method": ['GET']}},
-            {"/space/errors/[id]": {"method": ['GET', 'PUT']}}
+            {"/spaces/[space_id]/": {"method": ['GET']}},
+            {"/spaces/[space_id]/completes/": {"method": ['GET']}},
+            {"/spaces/[space_id]/candidates/": {"method": ['GET']}},
+            {"/spaces/[space_id]/grids/[id]/": {"method": ['GET']}},
+            {"/spaces/[space_id]/vectors/[id]/": {"method": ['GET']}},
+            {"/spaces/[space_id]/errors/[id]/": {"method": ['GET', 'PUT']}}
         ]
 
         node_urls = [
-            {"/nodes": {"method": ['GET', 'POST', 'PUT', 'DELETE']}},
-            {"/nodes/[node_id]": {"method": ['GET', 'PUT', 'DELETE']}}
+            {"/nodes/": {"method": ['GET', 'POST', 'PUT', 'DELETE']}},
+            {"/nodes/[node_id]/": {"method": ['GET', 'PUT', 'DELETE']}}
         ] 
 
         if self.job_mgr.type == "TrainingJobManager" or self.job_mgr.type == "HPOJobManager":
