@@ -130,6 +130,7 @@ class ParallelHPOManager(ManagerPrototype):
             space_spec = { "surrogate" : surrogate }
 
         space_id = self.space_mgr.create(space_spec)
+        
         return space_id
 
     def validate_space(self, space_id):
@@ -171,12 +172,13 @@ class ParallelHPOManager(ManagerPrototype):
             if len(self.workers) == 0:
                 debug("No worker is prepared.")
                 return False
-            
+            self.space_mgr.set_space_status(space_id, "active")
             for w in self.workers:
                 w.start()
             return True
 
         elif cmd == 'stop':
+            self.space_mgr.set_space_status(space_id, "inactive")
             self.stop_working_job()
             return True
 
