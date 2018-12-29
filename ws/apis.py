@@ -46,8 +46,11 @@ def wait_hpo_request(run_cfg, hp_cfg,
     if JOB_MANAGER == None:
         JOB_MANAGER = HPOJobManager(run_cfg, hp_cfg, port, use_surrogate=enable_surrogate)
         if register_url != None and valid.url(register_url):
-            ns = NameServerConnector(register_url, JOB_MANAGER.get_credential())
-            ns.register(port, "HPO_runner")
+            try:
+                ns = NameServerConnector(register_url, JOB_MANAGER.get_credential())
+                ns.register(port, "HPO_runner")
+            except Exception as ex:
+                warn("Registering myself to name server failed: {}".format(ex))
 
         API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
         API_SERVER.run_service(port, debug_mode, threaded)
@@ -79,8 +82,12 @@ def wait_train_request(eval_job, hp_cfg,
                                         use_surrogate=enable_surrogate, 
                                         retrieve_func=retrieve_func)
         if register_url != None and valid.url(register_url):
-            ns = NameServerConnector(register_url, JOB_MANAGER.get_credential())
-            ns.register(port, "ML_trainer")
+            try:
+                ns = NameServerConnector(register_url, JOB_MANAGER.get_credential())
+                ns.register(port, "ML_trainer")
+            except Exception as ex:
+                warn("Registering myself to name server failed: {}".format(ex))
+
         API_SERVER = WebServiceManager(JOB_MANAGER, hp_cfg)
         API_SERVER.run_service(port, debug_mode, with_process=processed)
     else:
