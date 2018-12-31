@@ -193,10 +193,11 @@ class HPOBanditMachine(object):
         
         eval_start_time = time.time()
         exec_time = 0.0
+        test_error = 1.0
         chooser = self.bandit.choosers[model]
 
         # set initial error for avoiding duplicate
-        test_error = self.trainer.get_interim_error(cand_index, 0)
+        interim_error = self.trainer.get_interim_error(cand_index, 0)
         self.samples.update(cand_index, test_error)
         
         try:
@@ -204,6 +205,8 @@ class HPOBanditMachine(object):
         except Exception as ex:
             warn("Evaluation failed with exception {}".format(ex))
         finally:
+            if test_error == None:
+                test_error = interim_error
             if exec_time == None:
                 # return interim error for avoiding stopping
                 exec_time = time.time() - eval_start_time
