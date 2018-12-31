@@ -17,7 +17,10 @@ class TrainingJobFactory(object):
         self.worker = worker
 
     def create(self, dataset, model, hpv, cfg):
-        job_id = "{}_{}-{}".format(self.worker.get_id(), self.worker.get_device_id(), len(self.jobs))
+        job['job_id'] = "{}-{}-{}{}".format(self.worker.get_id(), 
+                                        self.worker.get_device_id(), 
+                                        time.strftime('%Y%m%d',time.gmtime()),
+                                        len(self.jobs))
 
         job = {
             "job_id" : job_id, 
