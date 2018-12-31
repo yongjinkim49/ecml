@@ -49,6 +49,7 @@ class ManagerPrototype(object):
     def save_db(self, key, data):
         if key in self.database: 
             self.database[key] = data
+        
         if self.dbm:
             self.dbm.save(self.database)
         else:

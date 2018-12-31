@@ -200,18 +200,15 @@ class HPOBanditMachine(object):
         interim_error = self.trainer.get_interim_error(cand_index, 0)
         self.samples.update(cand_index, test_error)
         
-        try:
-            test_error, exec_time = self.trainer.train(samples, cand_index, chooser.estimates)
-        except Exception as ex:
-            warn("Evaluation failed with exception {}".format(ex))
-        finally:
-            if test_error == None:
-                test_error = interim_error
-            if exec_time == None:
-                # return interim error for avoiding stopping
-                exec_time = time.time() - eval_start_time
+        test_error, exec_time = self.trainer.train(samples, cand_index, chooser.estimates)
+        
+        if test_error == None:
+            test_error = interim_error
+        if exec_time == None:
+            # return interim error for avoiding stopping
+            exec_time = time.time() - eval_start_time
 
-            return test_error, exec_time
+        return test_error, exec_time
 
     def pull(self, model, acq_func, repo, select_opt_time=0):
 
