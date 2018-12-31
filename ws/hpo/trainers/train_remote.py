@@ -76,7 +76,7 @@ class RemoteTrainer(TrainerPrototype):
                             space.update(model_index, interim_err)
                         
                         prev_interim_err = interim_err
-                        
+                        time_out_count = 0 # XXX:reset time out count
                         # Early stopping check
                         if self.min_train_epoch < len(acc_curve) and \
                             self.stop_early(acc_curve, estimates):                        
