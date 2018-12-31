@@ -3,7 +3,6 @@ import atexit
 import inspect
 
 import validators as valid
-import multiprocessing as mp
 
 from ws.shared.logger import *
 from ws.ws_mgr import WebServiceManager

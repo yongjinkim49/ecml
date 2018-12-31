@@ -190,16 +190,25 @@ class HPOBanditMachine(object):
     def evaluate(self, cand_index, model, samples=None):
         if samples is None:
             samples = self.samples
-
+        
+        eval_start_time = time.time()
+        exec_time = 0.0
         chooser = self.bandit.choosers[model]
 
         # set initial error for avoiding duplicate
-        interim_err = self.trainer.get_interim_error(cand_index, 0)
-        self.samples.update(cand_index, interim_err)
+        test_error = self.trainer.get_interim_error(cand_index, 0)
+        self.samples.update(cand_index, test_error)
+        
+        try:
+            test_error, exec_time = self.trainer.train(samples, cand_index, chooser.estimates)
+        except Exception as ex:
+            warn("Evaluation failed with exception {}".format(ex))
+        finally:
+            if exec_time == None:
+                # return interim error for avoiding stopping
+                exec_time = time.time() - eval_start_time
 
-        test_error, exec_time = self.trainer.train(samples, cand_index, chooser.estimates)
-        #debug("index: {}, error: {}, time: {}".format(cand_index, test_error, exec_time))
-        return test_error, exec_time
+            return test_error, exec_time
 
     def pull(self, model, acq_func, repo, select_opt_time=0):
 
