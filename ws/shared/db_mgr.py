@@ -45,7 +45,7 @@ class JsonDBManager(object):
     def save(self, database):
         if self.file_name != None:
             with open(self.file_name, 'w') as json_db:
-                json.dump(self.database, json_db)             
+                json.dump(database, json_db)             
 
     def get_db(self):
         return self.database

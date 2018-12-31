@@ -54,7 +54,7 @@ class TrainingJobManager(ManagerPrototype):
         for j in self.jobs:
             j["status"] = 'terminated'
 
-        self.save_db('jobs', self.jobs)
+        #self.save_db('jobs', self.jobs)
 
     def get_config(self):
         if self.use_surrogate:
