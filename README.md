@@ -1,21 +1,25 @@
-# Web Scale Hyperparameter Optimization Framework of Deep Neural Networks
+# Scalable Unified Hyperparameter Optimization Framework of Deep Neural Networks
 
 ## Abstract
 
 TBD
-* Easily Expandable HPO algorithms
-* HPO as Multi-armed Bandits
-* Diversification for Robust and Effective HPO
-* Large scale HPO by building microservices
-  * Resource Oriented Architecture with RESTful Web API
+
+**Key features**
+  * Pluggable structure which can easily expand HPO algorithms
+  * HPO as Multi-armed Bandits
+  * Diversification for robust and effective HPO
+  * Large scale HPO by building a microservices architecture
+    * Resource Oriented Architecture with RESTful Web API
 
 TODO:System architecture diagram required
 
-We unified three practical ML HPO frameworks:
+We firstly unified all three practical ML HPO frameworks:
 
 * [Spearmint](https://github.com/JasperSnoek/spearmint) 
 * [SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/)
 * [Hyperopt](https://github.com/hyperopt/hyperopt)
+
+We diversify these regression modelling algorithms (along with their acquisition functions) to achieve robust and excellent performance. 
 
 ## Installation
 
