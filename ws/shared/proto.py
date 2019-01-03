@@ -2,6 +2,7 @@ from ws.rest_client.restful_lib import Connection
 from ws.shared.db_mgr import get_database_manager 
 
 from ws.shared.logger import * 
+from ws.shared.resp_shape import *
 
 class RemoteConnectorPrototype(object):
     def __init__(self, target_url, credential, **kwargs):
@@ -25,6 +26,17 @@ class RemoteConnectorPrototype(object):
 
 
 class TrainerPrototype(object):
+
+    def __init__(self, *args, **kwargs):
+        self.shaping_func = apply_no_shaping
+
+    def set_response_shaping(self, shape_func_type):
+        if shape_func_type == "hybrid_log":
+            self.shaping_func = apply_hybrid_log
+        elif shape_func_type == "log_err":
+            self.shaping_func = apply_log_err
+        else:
+            self.shaping_func = apply_no_shaping
 
     def reset(self):
         raise NotImplementedError("This should override to reset the accumulated result.")

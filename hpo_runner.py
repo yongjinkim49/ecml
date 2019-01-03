@@ -10,7 +10,7 @@ import validators as valid
 from ws.shared.logger import *
 import ws.shared.hp_cfg as hconf
 
-import ws.hpo.bandit_config as run_config
+import ws.hpo.bandit_config as rconf
 import ws.hpo.bandit as bandit
 import ws.hpo.batch_sim as batch
 import ws.hpo.space_mgr as space
@@ -29,13 +29,14 @@ ALL_LOG_LEVELS = ['debug', 'warn', 'error', 'log']
 LOOKUP_PATH = './lookup/'
 RUN_CONF_PATH = './run_conf/'
 HP_CONF_PATH = './hp_conf/'
+ALL_OPT_MODELS = ['RANDOM', 'GP', 'RF', 'HYPEROPT', 'GP-NM', 'GP-HLE', 'RF-HLE']
 
 
 def validate_args(args):
 
     surrogate = None
     valid = {}
-    #debug(os.getcwd())
+    
     hp_cfg_path = args.hconf_dir
     if args.hp_config.endswith('.json'):
         # hp_config is a json file
@@ -43,38 +44,37 @@ def validate_args(args):
     else:
         # hp_config is surrogate name, check whether same csv file exists in lookup folder.
         if not check_lookup_existed(args.hp_config):
-            raise ValueError('Invaild arguments.')            
-        surrogate = args.hp_config
-        hp_cfg_path += (args.hp_config + ".json")
+            debug('Invaild arguments: No {} in {}'.format(args.hp_config, LOOKUP_PATH))            
+        else:
+            surrogate = args.hp_config
+            hp_cfg_path += (args.hp_config + ".json")
     
     hp_cfg = hconf.read_config(hp_cfg_path)
     if hp_cfg is None:
-            raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
+        raise ValueError('Invaild hyperparam config : {}'.format(hp_cfg_path))
               
-    run_cfg = run_config.read(args.rconf, path=args.rconf_dir)
-    if not run_config.validate(run_cfg):
+    run_cfg = rconf.read(args.rconf, path=args.rconf_dir)
+    if not rconf.validate(run_cfg):
         error("Invalid run configuration. see {}".format(args.rconf))
         raise ValueError('invaild run configuration.')    
-    else:
-        valid['surrogate'] = surrogate
-        valid['hp_cfg'] = hp_cfg
-        #valid['run_cfg'] = run_cfg
-        
+    
+    valid['surrogate'] = surrogate
+    valid['hp_cfg'] = hp_cfg
+    #valid['run_cfg'] = run_cfg
+    
     valid['exp_time'] = args.exp_time
 
     for attr, value in vars(args).items():
         valid[str(attr)] = value        
-        
+           
     return run_cfg, valid
 
 
 def check_lookup_existed(name):
     for csv in os.listdir(LOOKUP_PATH):
-        if csv == '{}.csv'.format(name):
+        if str(csv) == '{}.csv'.format(name):
             return True
     return False
-
-ALL_OPT_MODELS = ['RANDOM', 'GP', 'RF', 'HYPEROPT', 'GP-NM', 'GP-HLE', 'RF-HLE']
 
 
 def execute(run_cfg, args, save_results=False):
@@ -101,35 +101,44 @@ def execute(run_cfg, args, save_results=False):
             trainer = None
             samples = None
 
+            if 'surrogate' in args and args['surrogate'] != None:
+                debug("Create surrogate space")
+                use_surrogate = args['surrogate']
+                path = "{}{}.json".format(args['hp_config'], args['surrogate'])
+                
+                hp_cfg = hconf.read_config(path)
+                grid_order = None 
+                
+                if 'grid' in run_cfg and 'order' in run_cfg['grid']:
+                    grid_order = run_cfg['grid']['order']                     
+                
+                samples = space.create_surrogate_space(args['surrogate'], grid_order)
+                
+            elif 'hp_cfg' in args and args['hp_cfg'] != None:
+                hp_cfg = args['hp_cfg']
+                samples = space.create_grid_space(hp_cfg.get_dict())
+            else:
+                raise ValueError("Invalid arguments: {}".format(args))
+
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
-                if 'surrogate' in args and args['surrogate'] != None:
-                    use_surrogate = args['surrogate']
-                    path = "{}{}.json".format(args['hp_conf'], args['surrogate'])
-                    hp_cfg = hconf.read_config(path)
-                    grid_order = None 
-                    if 'grid' in run_cfg and 'order' in run_cfg['grid']:
-                        grid_order = run_cfg['grid']['order']                     
-                    samples = space.create_surrogate_space(args['surrogate'], grid_order)
                     
-                elif 'hp_cfg' in args and args['hp_cfg'] != None:
-                    hp_cfg = args['hp_cfg']
-                    samples = space.create_grid_space(hp_cfg.get_dict())
-                else:
-                    raise ValueError("Invalid arguments: {}".format(args))
-                
                 m = bandit.create_runner(trainer, samples,
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl,
                             run_config=run_cfg,
                             hp_config=hp_cfg,
+                            early_term_rule=args["early_term_rule"],
+                            response_shaping=args["resp_shaping"],
                             use_surrogate=use_surrogate)
             else:
                 m = bandit.create_emulator(samples, 
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
-                            save_pkl=save_pkl, 
+                            save_pkl=save_pkl,
+                            early_term_rule=args["early_term_rule"],
+                            response_shaping=args["resp_shaping"], 
                             run_config=run_cfg)
 
             if args['mode'] == 'DIV' or args['mode'] == 'ADA':
@@ -156,6 +165,8 @@ def main():
 
     default_target_goal = 0.9999
     default_expired_time = 24 * 60 * 60
+    default_early_term_rule = "No"
+    default_resp_shaping = "No"
     
     exp_criteria = ['TIME', 'GOAL']
     default_exp_criteria = 'TIME'
@@ -189,9 +200,10 @@ def main():
     parser.add_argument('-et', '--exp_time', default=default_expired_time, type=str,
                         help='The time each trial expires. When the time is up, '+\
                         'it is automatically terminated. Default setting is {}.'.format(default_expired_time))
+    parser.add_argument('-etr', '--early_term_rule', default=default_early_term_rule, type=str,
+                        help='Early termination rule. Default setting is {}.'.format(default_early_term_rule))
     
     # Configurations
-
     parser.add_argument('-rd', '--rconf_dir', default=RUN_CONF_PATH, type=str,
                         help='Run configuration directory.\n'+\
                         'Default setting is {}'.format(RUN_CONF_PATH))                        
@@ -200,10 +212,12 @@ def main():
                         'Default setting is {}'.format(HP_CONF_PATH))
     parser.add_argument('-rc', '--rconf', default=default_run_config, type=str,
                         help='Run configuration file in {}.\n'.format(RUN_CONF_PATH)+\
-                        'Default setting is {}'.format(default_run_config))    
+                        'Default setting is {}'.format(default_run_config))
+    parser.add_argument('-rs', '--resp_shaping', default=default_resp_shaping, type=str,
+                        help='Respose shaping. Default setting is {}'.format(default_resp_shaping))                              
     parser.add_argument('-w', '--worker_url', default='none', type=str,
-                        help='Remote training worker URL.\n'+\
-                        'Set the valid URL for remote training.') 
+                        help='Remote training worker node URL.\n'+\
+                        'Set the valid URL if remote training required.') 
 
     # Debugging option
     parser.add_argument('-l', '--log_level', default=default_log_level, type=str,

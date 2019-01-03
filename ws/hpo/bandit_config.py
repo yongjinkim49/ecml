@@ -90,14 +90,13 @@ class BanditConfigurator(object):
         if not 'RF' in opts:
             opts.append('RF')
 
-        log_options = ''
-        if self.config is not None and 'log' in self.config:
-            for key in self.config['log'].keys():
-                val = self.config['log'][key]
-                log_options += ',{}={}'.format(key, val)
+        shaping_options = ''
+        if self.config is not None:
+            if 'response_shaping' in self.config:
+                shaping_options += 'response_shaping=True,shaping_func={}'.format(self.config['response_shaping'])
 
         # for global GP options
-        gp_options = 'noiseless=0' + log_options
+        gp_options = 'noiseless=0' + shaping_options
 
         if self.config is not None and 'gp' in self.config:
             for gk in self.config['gp'].keys():
@@ -135,14 +134,14 @@ class BanditConfigurator(object):
             choosers['GP-NM'] = gp
 
         if 'GP-LE' in opts:
-            gp_options = 'noiseless=0,log_err=True'
+            gp_options = 'noiseless=0,response_shaping=True'
             gp = gpc.init('.', gp_options)
             if len(self.time_acq_funcs) > 0:
                 gp.add_time_acq_funcs(self.time_acq_funcs)
             choosers['GP-LE'] = gp
 
         if 'GP-HLE' in opts:
-            gp_options = 'noiseless=0,log_err=True,log_err_func=ada_log_3'
+            gp_options = 'noiseless=0,response_shaping=True,shaping_func=hybrid_log'
             gp = gpc.init('.', gp_options)
             if len(self.time_acq_funcs) > 0:
                 gp.add_time_acq_funcs(self.time_acq_funcs)
@@ -152,7 +151,7 @@ class BanditConfigurator(object):
             choosers['RANDOM'] = RandomChooser.init('.', '')
 
         # for global RF options
-        rf_options = "max_features=auto" + log_options
+        rf_options = "max_features=auto" + shaping_options
         if self.config is not None and 'rf' in self.config:
             for rk in self.config['rf'].keys():
                 rv = self.config['rf'][rk]
@@ -164,11 +163,11 @@ class BanditConfigurator(object):
             choosers['RF'] = rfc.init('.', rf_options)
 
         if 'RF-LE' in opts:
-            rf_options = 'log_err=True'
+            rf_options = 'response_shaping=True'
             choosers['RF-LE'] = rfc.init('.', rf_options)
 
         if 'RF-HLE' in opts:
-            rf_options = 'log_err=True,log_err_func=ada_log_3'
+            rf_options = 'response_shaping=True,shaping_func=hybrid_log'
             choosers['RF-HLE'] = rfc.init('.', rf_options)
 
         if 'HO' in opts:

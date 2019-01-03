@@ -30,7 +30,9 @@ class HyperOptChooser(object):
         self.mean_value = None
         self.estimates = None
         self.last_params = None
-        
+        self.response_shaping = False
+        self.shaping_func = None
+
     def set_eval_time_penalty(self, est_eval_time):
         # TODO:We can not apply the evaluation time penalty now. 
         pass

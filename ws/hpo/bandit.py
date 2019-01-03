@@ -27,8 +27,8 @@ from ws.hpo.utils.converter import TimestringConverter
 
 from ws.hpo.bandit_config import BanditConfigurator
 
-import ws.hpo.trainers.train_remote as train_remote
-import ws.hpo.trainers.train_emul as train_emul
+from ws.hpo.connectors.remote_train import RemoteTrainConnector
+import ws.hpo.trainers.trainer as trainer
 
 NUM_MAX_ITERATIONS = 10000
 
@@ -38,12 +38,16 @@ def create_emulator(space,
                     run_config=None,
                     save_pkl=False,
                     num_resume=0,
-                    id="HPO_emulator"
-                    ):
+                    early_term_rule=None,
+                    response_shaping=None,
+                    id="HPO_emulator"):
 
-    trainer = train_emul.init(space, run_config)
+    if run_config and "early_term_rule" in run_config:
+        early_term_rule = run_config["early_term_rule"]
+
+    t = trainer.get_simulator(space, early_term_rule)
     machine = HPOBanditMachine(
-        space, trainer, 
+        space, t, 
         run_mode, target_acc, time_expired, run_config, 
         num_resume=num_resume, 
         with_pkl=save_pkl,
@@ -59,6 +63,8 @@ def create_runner(trainer_url, space,
                   save_pkl=False,
                   num_resume=0,
                   use_surrogate=None,
+                  early_term_rule=None,
+                  response_shaping=None,                  
                   id="HPO_runner"
                   ):
     
@@ -74,10 +80,23 @@ def create_runner(trainer_url, space,
             cfg = hp_config
 
         hpvs = space.get_hpv()
-        trainer = train_remote.init(trainer_url, run_config, cfg, hpvs, **kwargs)
+        cred = ""
+        if "credential" in run_config:
+            cred = run_config["credential"]
+        
+        rtc = RemoteTrainConnector(url, cfg, cred, **kwargs)
+        etr = None
+        shaping = None
+        
+        if run_config and "early_term_rule" in run_config:
+            etr = run_config["early_term_rule"]
+        if run_config and "response_shaping" in run_config:
+            shaping = run_config["response_shaping"]
+        
+        t = trainer.get_remote_trainer(rtc, hpvs, etr, shaping)
         
         machine = HPOBanditMachine(
-            space, trainer, run_mode, target_acc, time_expired, run_config,
+            space, t, run_mode, target_acc, time_expired, run_config,
             num_resume=num_resume, 
             with_pkl=save_pkl, 
             id=id)
@@ -85,7 +104,7 @@ def create_runner(trainer_url, space,
         return machine
 
     except Exception as ex:
-        warn("runner creation failed: {}".format(ex))
+        warn("Runner creation failed: {}".format(ex))
 
 
 class HPOBanditMachine(object):
@@ -196,6 +215,9 @@ class HPOBanditMachine(object):
         test_error = 1.0
         chooser = self.bandit.choosers[model]
 
+        if chooser.response_shaping == True:
+            self.trainer.set_response_shaping(chooser.shaping_func)
+        
         # set initial error for avoiding duplicate
         interim_error = self.trainer.get_interim_error(cand_index, 0)
         self.samples.update(cand_index, test_error)

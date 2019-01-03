@@ -10,6 +10,7 @@ from util import *
 from acq_func import *
 
 from ws.shared.logger import *
+from ws.shared.resp_shape import *
 
 from sklearn.externals.joblib import Parallel, delayed
 
@@ -44,16 +45,16 @@ class RFChooser:
                  max_features="auto",
                  n_jobs=1,
                  random_state=None,
-                 log_err=False,
-                 log_err_func="scale_log_err"):
+                 response_shaping=False,
+                 shaping_func="log_err"):
         self.n_trees = float(n_trees)
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.max_features = max_features
         self.n_jobs = float(n_jobs)
         self.random_state = random_state
-        self.log_err = bool(log_err)
-        self.log_err_func = log_err_func
+        self.response_shaping = bool(response_shaping)
+        self.shaping_func = shaping_func
         self.rf = RandomForestRegressorWithVariance(n_estimators=n_trees,
                                                     max_depth=max_depth,
                                                     min_samples_split=min_samples_split,
@@ -88,16 +89,16 @@ class RFChooser:
 
         #debug("[RF] shape of completes: {}, cands: {}, errs: {}".format(comp.shape, cand.shape, errs.shape))
 
-        if self.log_err is True:
+        if self.response_shaping is True:
             # transform errors to log10(errors) for enhancing optimization performance
-            if self.log_err_func == "scale_log_err":
+            if self.shaping_func == "log_err":
                 
                 debug("before scaling: {}".format(errs))
                 errs = np.log10(errs)
-                v_func = np.vectorize(scale_log_err)
+                v_func = np.vectorize(apply_log_err)
                 errs = v_func(errs)
-            elif self.log_err_func == "ada_log_3":
-                v_func = np.vectorize(hybrid_log_err)
+            elif self.shaping_func == "hybrid_log":
+                v_func = np.vectorize(apply_hybrid_log)
                 errs = v_func(errs, threshold=.3)
             else:
                 errs = np.log10(errs)

@@ -32,7 +32,7 @@ from acq_func import *
 from util import *
 
 from ws.shared.logger import *
-
+from ws.shared.resp_shape import *
 
 def init(expt_dir, arg_string):
     args = unpack_args(arg_string)
@@ -50,7 +50,7 @@ is used to sample Gaussian process hyperparameters for the GP.
 class GPChooser:
     def __init__(self, expt_dir, covar="Matern52", mcmc_iters=10,
                  pending_samples=100, noiseless=False, 
-                 log_err=False, log_err_func="scale_log_err", trade_off=0, v=1.0):
+                 response_shaping=False, shaping_func="hybrid_log", trade_off=0, v=1.0):
         
         self.cov_func = getattr(gp_util, covar)
 
@@ -64,11 +64,11 @@ class GPChooser:
         
         # convert string 'True' or 'False' to boolean
         try:
-            self.log_err = eval(log_err)
+            self.response_shaping = eval(response_shaping)
         except:
-            self.log_err = False
+            self.response_shaping = False
 
-        self.log_err_func = log_err_func
+        self.shaping_func = shaping_func
 
         self.noise_scale = 0.1  # horseshoe prior
         self.amp2_scale = 1  # zero-mean log normal prior
@@ -145,16 +145,15 @@ class GPChooser:
 
         #debug("[GP] shape of completes: {}, cands: {}, errs: {}".format(comp.shape, cand.shape, errs.shape))
 
-        if self.log_err is True:
+        if self.response_shaping is True:
             # transform errors to log10(errors) for enhancing optimization performance
-            if self.log_err_func == "scale_log_err":
-                
+            if self.shaping_func == "log_err":
                 debug("before scaling: {}".format(errs))
                 errs = np.log10(errs)
-                v_func = np.vectorize(scale_log_err)
+                v_func = np.vectorize(apply_log_err)
                 errs = v_func(errs)
-            elif self.log_err_func == "ada_log_3":
-                v_func = np.vectorize(hybrid_log_err)
+            elif self.shaping_func == "hybrid_log":
+                v_func = np.vectorize(apply_hybrid_log)
                 errs = v_func(errs, threshold=.3)
             else:
                 errs = np.log10(errs)

@@ -32,7 +32,7 @@ class ResultSaver(object):
         if self.run_mode == 'GOAL':
             directory += "/goal_" + str(self.target_accuracy)
         elif self.run_mode == 'TIME':
-            directory += "/" + str(int(self.time_expired)) + "_secs"
+            directory += "/" + str(int(self.time_expired))
 
         if not os.path.exists(directory):
             debug('Creating ' + directory)

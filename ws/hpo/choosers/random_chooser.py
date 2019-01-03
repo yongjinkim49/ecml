@@ -31,7 +31,8 @@ class RandomChooser:
         self.acquisition_functions = ['RANDOM']
         self.mean_value = None
         self.estimates = None
-        
+        self.response_shaping = False
+        self.shaping_func = None
 
     def set_eval_time_penalty(self, est_eval_time):
         pass

@@ -94,30 +94,3 @@ def slice_sample(init_x, logprob,
         direction = direction / np.sqrt(np.sum(direction**2))
         return direction_slice(direction, init_x)
 
-
-##
-# Functions to apply log to error
-
-LOG_ERR_LOWER_BOUND = -5.0
-
-def scale_log_err(x):    
-
-    if x < LOG_ERR_LOWER_BOUND:
-        x = LOG_ERR_LOWER_BOUND
-    
-    scale_x = (x - LOG_ERR_LOWER_BOUND) / abs(LOG_ERR_LOWER_BOUND)
-    return scale_x
-
-
-def hybrid_log_err(err, threshold=0.3, err_lower_bound=0.00001):    
-    log_th = math.log10(threshold)
-    beta = threshold - log_th
-
-    if err > threshold:
-        return err  # linear scale
-    else:
-        if err > 0:
-            log_applied = math.log10(err)
-        else:
-            log_applied = math.log10(err_lower_bound)
-        return  log_applied + beta # log scale
