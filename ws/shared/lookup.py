@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 import ws.shared.hp_cfg as hp_cfg
+from ws.shared.logger import *
 
 def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=None):
     grid_shuffle = False
@@ -14,6 +15,7 @@ def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=
     csv_data = pd.read_csv(csv_path)
 
     cfg_path = config_folder + str(data_type) + '.json'
+    debug("lookup load: {} config path: {}".format(data_type, cfg_path))
     cfg = hp_cfg.read_config(cfg_path)
 
     num_epochs = 15

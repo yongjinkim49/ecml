@@ -104,7 +104,7 @@ def execute(run_cfg, args, save_results=False):
             if 'surrogate' in args and args['surrogate'] != None:
                 debug("Create surrogate space")
                 use_surrogate = args['surrogate']
-                path = "{}{}.json".format(args['hp_config'], args['surrogate'])
+                path = "{}{}.json".format(args['hconf_dir'], args['surrogate'])
                 
                 hp_cfg = hconf.read_config(path)
                 grid_order = None 
@@ -130,7 +130,6 @@ def execute(run_cfg, args, save_results=False):
                             run_config=run_cfg,
                             hp_config=hp_cfg,
                             early_term_rule=args["early_term_rule"],
-                            response_shaping=args["resp_shaping"],
                             use_surrogate=use_surrogate)
             else:
                 m = bandit.create_emulator(samples, 
@@ -138,7 +137,6 @@ def execute(run_cfg, args, save_results=False):
                             num_resume=num_resume,
                             save_pkl=save_pkl,
                             early_term_rule=args["early_term_rule"],
-                            response_shaping=args["resp_shaping"], 
                             run_config=run_cfg)
 
             if args['mode'] == 'DIV' or args['mode'] == 'ADA':
@@ -165,8 +163,7 @@ def main():
 
     default_target_goal = 0.9999
     default_expired_time = 24 * 60 * 60
-    default_early_term_rule = "No"
-    default_resp_shaping = "No"
+    default_early_term_rule = "None"
     
     exp_criteria = ['TIME', 'GOAL']
     default_exp_criteria = 'TIME'
@@ -213,8 +210,6 @@ def main():
     parser.add_argument('-rc', '--rconf', default=default_run_config, type=str,
                         help='Run configuration file in {}.\n'.format(RUN_CONF_PATH)+\
                         'Default setting is {}'.format(default_run_config))
-    parser.add_argument('-rs', '--resp_shaping', default=default_resp_shaping, type=str,
-                        help='Respose shaping. Default setting is {}'.format(default_resp_shaping))                              
     parser.add_argument('-w', '--worker_url', default='none', type=str,
                         help='Remote training worker node URL.\n'+\
                         'Set the valid URL if remote training required.') 

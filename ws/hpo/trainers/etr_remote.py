@@ -55,15 +55,17 @@ class RemoteTrainer(TrainerPrototype):
                         interim_err = j["losses"][-1]
                         if prev_interim_err == None or prev_interim_err != interim_err:
                             debug("Interim error {} will be updated".format(interim_err))
-                            space.update(model_index, interim_err)
+                            if space != None:
+                                space.update(model_index, interim_err)
                         
                         prev_interim_err = interim_err
                         time_out_count = 0 # XXX:reset time out count
-                        # Early stopping check
+                        
+                        # Early termination check
                         if self.min_train_epoch < len(acc_curve) and \
-                            self.stop_early(acc_curve, estimates):                        
+                            self.check_termination_condition(acc_curve, estimates):                        
                             job_id = j['job_id']
-                            debug("This job will be early stopped")
+                            debug("This job will be terminated early as expected")
                             self.controller.stop(job_id)
                             break
 
@@ -92,7 +94,7 @@ class RemoteTrainer(TrainerPrototype):
                 warn("Something goes wrong in remote worker: {}".format(ex))
                 break
 
-    def train(self, space, cand_index, estimates=None):
+    def train(self, cand_index, estimates=None, space=None):
         hpv = {}
         cfg = {'cand_index' : cand_index}
         param_names = self.hp_config.get_hyperparams()
@@ -163,17 +165,17 @@ class RemoteTrainer(TrainerPrototype):
         return self.base_error
 
 
-class EarlyStopTrainer(RemoteTrainer):
+class EarlyTerminateTrainer(RemoteTrainer):
     
     def __init__(self, controller, hpvs):
-        self.early_stopped = []
-        super(EarlyStopTrainer, self).__init__(controller, hpvs)
+        self.early_terminated = []
+        super(EarlyTerminateTrainer, self).__init__(controller, hpvs)
 
         self.history = []
-        self.early_stopped = []
+        self.early_terminated = []
 
     def reset(self):
         # reset history
         self.history = []
-        self.early_stopped = []
+        self.early_terminated = []
 

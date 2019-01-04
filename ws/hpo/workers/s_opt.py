@@ -111,7 +111,8 @@ class SequentialOptimizer(Worker):
         
         if 'surrogate' in args:
             s_name = args['surrogate']
-            hp_cfg = hconf.read_config("{}{}.json".format(self.hp_dir, s_name)) # FIXME:rewrite here
+            hp_path = "{}{}.json".format(self.hp_dir, s_name)            
+            hp_cfg = hconf.read_config(hp_path) # FIXME:rewrite here
             if hp_cfg == None:
                 ValueError("Surrogate {} configuration not found.".format(s_name))
         

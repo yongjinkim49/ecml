@@ -7,10 +7,10 @@ import numpy as np
 import math
 
 from ws.shared.logger import *
-from ws.hpo.trainers.etr_remote import EarlyStopTrainer
+from ws.hpo.trainers.etr_remote import EarlyTerminateTrainer
 
 
-class GradientETRTrainer(EarlyStopTrainer):
+class GradientETRTrainer(EarlyTerminateTrainer):
     
     def __init__(self, controller, hpvs):
         
@@ -31,9 +31,9 @@ class GradientETRTrainer(EarlyStopTrainer):
         #debug("delta average: {:.5f}, delta list: {}".format(avg_deltas, [round(d, 5) for d in acc_delta]))         
         return avg_deltas
 
-    def stop_early(self, acc_curve, estimates):
+    def check_termination_condition(self, acc_curve, estimates):
         if estimates is None:
-            self.early_stopped.append(False)
+            self.early_terminated.append(False)
             return False
         else:
             candidates = estimates['candidates']
@@ -73,9 +73,9 @@ class GradientETRTrainer(EarlyStopTrainer):
                 #debug("est. mean acc: {:.4f}, min delta: {:.4f}".format(est_acc_mean - acc, min_delta))
                 if acc < lower_bound and min_delta > self.get_gradient_average(acc_curve, i):
                     debug("Early stopped curve: {}".format( [round(acc, 5) for acc in acc_curve]))
-                    self.early_stopped.append(True)
+                    self.early_terminated.append(True)
                     return True
         
-        self.early_stopped.append(False)
+        self.early_terminated.append(False)
         return False                     
 

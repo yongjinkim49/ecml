@@ -39,13 +39,16 @@ def create_emulator(space,
                     save_pkl=False,
                     num_resume=0,
                     early_term_rule=None,
-                    response_shaping=None,
                     id="HPO_emulator"):
 
     if run_config and "early_term_rule" in run_config:
         early_term_rule = run_config["early_term_rule"]
-
+    
     t = trainer.get_simulator(space, early_term_rule)
+
+    if early_term_rule != None and early_term_rule != "None":
+        id = "{}.ETR-{}".format(id, early_term_rule) 
+
     machine = HPOBanditMachine(
         space, t, 
         run_mode, target_acc, time_expired, run_config, 
@@ -64,7 +67,6 @@ def create_runner(trainer_url, space,
                   num_resume=0,
                   use_surrogate=None,
                   early_term_rule=None,
-                  response_shaping=None,                  
                   id="HPO_runner"
                   ):
     
@@ -72,7 +74,7 @@ def create_runner(trainer_url, space,
         kwargs = {}
         if use_surrogate != None:            
             kwargs["surrogate"] = use_surrogate
-            id += " with surrogate-{}".format(use_surrogate)
+            id += "-S{}".format(use_surrogate)
         
         if isinstance(hp_config, dict):
             cfg = hp_cfg.HyperparameterConfiguration(hp_config)
@@ -85,16 +87,15 @@ def create_runner(trainer_url, space,
             cred = run_config["credential"]
         
         rtc = RemoteTrainConnector(url, cfg, cred, **kwargs)
-        etr = None
-        shaping = None
         
         if run_config and "early_term_rule" in run_config:
-            etr = run_config["early_term_rule"]
-        if run_config and "response_shaping" in run_config:
-            shaping = run_config["response_shaping"]
+            early_term_rule = run_config["early_term_rule"]
         
-        t = trainer.get_remote_trainer(rtc, hpvs, etr, shaping)
+        t = trainer.get_remote_trainer(rtc, hpvs, early_term_rule)
         
+        if early_term_rule != None and early_term_rule != "None":
+            id = "{}.ETR-{}".format(id, early_term_rule)
+
         machine = HPOBanditMachine(
             space, t, run_mode, target_acc, time_expired, run_config,
             num_resume=num_resume, 
@@ -150,7 +151,8 @@ class HPOBanditMachine(object):
         self.print_exception_trace = False
 
         self.saver = ResultSaver(self.save_name, self.run_mode, self.target_accuracy,
-                                 self.time_expired, self.run_config, postfix=".{}".format(self.id))
+                                 self.time_expired, self.run_config, 
+                                 postfix=".{}".format(self.id))
 
     def init_bandit(self, config=None):
         if config is None:
@@ -222,7 +224,9 @@ class HPOBanditMachine(object):
         interim_error = self.trainer.get_interim_error(cand_index, 0)
         self.samples.update(cand_index, test_error)
         
-        test_error, exec_time = self.trainer.train(samples, cand_index, chooser.estimates)
+        test_error, exec_time = self.trainer.train(cand_index, 
+                                                    estimates=chooser.estimates,
+                                                    space=samples)
         
         if test_error == None:
             test_error = interim_error
@@ -424,7 +428,7 @@ class HPOBanditMachine(object):
             max_model_index = result['model_idx'][acc_max_index]
             #debug(max_model_index)
             max_hpv = self.samples.get_hpv(max_model_index)
-            log("Achieved {:.4f} at run #{} by\n{}".format(result['accuracy'][acc_max_index], k, max_hpv))
+            log("Achieved {:.4f} at run #{} by {}".format(result['accuracy'][acc_max_index], k, max_hpv))
             #accs = [ round(acc, 4) for acc in result['accuracy'] ]
             #log("selected accuracies: {}".format(accs))        
 

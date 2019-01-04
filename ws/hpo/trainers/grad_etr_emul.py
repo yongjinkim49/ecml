@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from ws.hpo.trainers.etr_emul import EarlyStopTrainer
+from ws.hpo.trainers.etr_emul import EarlyTerminateTrainer
 from ws.shared.logger import *
 
 import numpy as np
@@ -11,7 +11,7 @@ from ws.hpo.choosers.util import *
 from ws.shared.resp_shape import *
 
 
-class GradientETRTrainer(EarlyStopTrainer):
+class GradientETRTrainer(EarlyTerminateTrainer):
     
     def __init__(self, lookup, shape_func_type=None):
 
@@ -27,13 +27,13 @@ class GradientETRTrainer(EarlyStopTrainer):
         else:
             self.shaping_func = apply_no_shaping
         
-    def early_stop_time(self, cand_index, stop_epoch):
+    def get_time_saving(self, cand_index, stop_epoch):
         # XXX: consider preparation time later
         total_time = self.total_times[cand_index]
         acc_curve = self.acc_curves.loc[cand_index].values
         epoch_length = len(acc_curve)
         est_time = stop_epoch * (total_time / epoch_length)
-        log("Evaluation time saving by early stopping: {:.1f} sec".format(total_time - est_time))
+        log("Evaluation time saving by early termination: {:.1f} sec".format(total_time - est_time))
         return est_time
 
     def get_gradient_average(self, cand_index, num_step):
@@ -51,7 +51,7 @@ class GradientETRTrainer(EarlyStopTrainer):
     def apply_no_shaping(self, errs):
         return err
 
-    def train(self, space, cand_index, estimates=None):
+    def train(self, cand_index, estimates=None, space=None):
         acc_curve = self.acc_curves.loc[cand_index].values
         self.history.append(acc_curve)
 
@@ -59,8 +59,8 @@ class GradientETRTrainer(EarlyStopTrainer):
         min_train_epoch = self.get_min_train_epoch()
         
         if estimates is None:
-            self.early_stopped.append(False)
-            return super(GradientETRTrainer, self).train(space, cand_index)
+            self.early_terminated.append(False)
+            return super(GradientETRTrainer, self).train(cand_index, space=space)
         else:
             candidates = estimates['candidates']
             acq_funcs = estimates['acq_funcs']
@@ -103,21 +103,10 @@ class GradientETRTrainer(EarlyStopTrainer):
                         warn("Large difference: true {:.4f}, current max {:.4f}".format(max(acc_curve), cur_max_acc))
                     
                     # stop early
-                    self.early_stopped.append(True)
-                    return 1.0 - cur_max_acc, self.early_stop_time(cand_index, i+1)
+                    self.early_terminated.append(True)
+                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
             
-            self.early_stopped.append(False)
+            self.early_terminated.append(False)
             return 1.0 - max(acc_curve), self.total_times[cand_index]    
-
-
-class LogGradientETRTrainer(GradientETRTrainer):
-
-    def __init__(self, lookup, shape_func_type="hybrid_log"):
-        if shape_func_type == "hybrid_log":
-            shape_func = self.transform_response
-            super(LogGradientETRTrainer, self).__init__(lookup, shape_func)
-        else:
-            raise NotImplementedError()
-
 
 

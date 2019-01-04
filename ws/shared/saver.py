@@ -26,25 +26,24 @@ class ResultSaver(object):
 
     def save(self, name1, name2, trials, results, est_records=None):
     
-        directory = self.path + str(self.data_type) +\
-            "/" + str(trials) + "_trials"
+        directory = self.path + str(self.data_type)
 
         if self.run_mode == 'GOAL':
-            directory += "/goal_" + str(self.target_accuracy)
+            directory += "/G" + str(self.target_accuracy)
         elif self.run_mode == 'TIME':
-            directory += "/" + str(int(self.time_expired))
+            directory += "/T" + str(int(self.time_expired)) + "S"
 
         if not os.path.exists(directory):
             debug('Creating ' + directory)
             os.makedirs(directory)
 
         file_path = directory + '/' +\
-            name1 + '_' + name2
+            name1 + '-' + name2
 
         if 'title' in self.config:
             file_path = "{}-{}".format(file_path, self.config['title'])
 
-        file_path += self.postfix
+        file_path = "{}{}({})".format(file_path, self.postfix, str(trials))
         
         log("The results will be saved as {}.json".format(file_path))
         with open(file_path + '.json', 'w') as json_file:
@@ -56,19 +55,18 @@ class ResultSaver(object):
 
     def load(self, optimizer, aquisition_func, num_trials):
         
-        directory = self.path + str(self.data_type) +\
-            "/" + str(num_trials) + "_trials"
-
+        directory = self.path + str(self.data_type) 
         if self.run_mode == 'GOAL':
-            directory += "/goal_" + str(self.target_accuracy)
+            directory += "/G" + str(self.target_accuracy)
         elif self.run_mode == 'TIME':
-            directory += "/" + str(int(self.time_expired)) + "_secs"
+            directory += "/T" + str(int(self.time_expired)) + "S"
 
         if not os.path.exists(directory):
             debug('Creating ' + directory)
             os.makedirs(directory)
-        file_path = directory + '/' +\
-            optimizer + '_' + aquisition_func + ".json"
+        file_name = "{}-{}.{}({}).json".format(optimizer, aquisition_func, self.postfix, num_trials)
+        file_path = directory + '/' + file_name
+
         if os.path.isfile(file_path):
             with open(file_path) as json_temp:
                 temp_results = json.load(json_temp)
@@ -76,6 +74,7 @@ class ResultSaver(object):
                 sorted_iters = sorted(iters)
                 return temp_results, sorted_iters[-1] + 1
         else:
+            warn("File not found: {}".format(file_path))
             return {}, 0
 
 
@@ -95,13 +94,12 @@ class BatchResultSaver(object):
     def save(self, sync_type, trials, results,
                 path='./results/'):
 
-        directory = path + str(self.data_type) +\
-            "/" + str(trials) + "_trials"
+        directory = path + str(self.data_type)
 
         if self.run_mode == 'GOAL':
-            directory += "/goal_" + str(self.target_acc)
+            directory += "/G" + str(self.target_acc)
         elif self.run_mode == 'TIME':
-            directory += "/" + str(int(self.time_expired)) + "_secs"
+            directory += "/T" + str(int(self.time_expired)) + "S"
 
         if not os.path.exists(directory):
             debug('Creating ' + directory)
@@ -111,7 +109,7 @@ class BatchResultSaver(object):
             sync_type.upper() + '_BATCH'
 
         if 'title' in self.config:
-            file_path = "{}-{}".format(file_path, self.config['title'])
+            file_path = "{}-{}({})".format(file_path, self.config['title'], trials)
 
         log("The results will be saved as {}.json".format(file_path))
         with open(file_path + '.json', 'w') as json_file:
@@ -121,22 +119,25 @@ class BatchResultSaver(object):
 class TempSaver(object):
     
     def __init__(self, data_type, optimizer, aquisition_func, num_trials, config,
-                path='./'):
+                path='./temp/'):
         
-        self.temp_name = "{}-{}_{}-{}".format(data_type, 
+        self.temp_name = "{}.{}-{}.({})".format(data_type, 
                         optimizer, aquisition_func, num_trials)
-        if 'title' in config:
-            self.temp_name = "{}-{}".format(self.temp_name, config['title'])
+
         self.path = path
+        if not os.path.exists(self.path):
+            debug('Creating ' + self.path)
+            os.makedirs(self.path)        
+        
         self.temp_file_path = None
 
     def save(self, results):
-        self.temp_file_path = self.path + self.temp_name + '.temp.json'
+        self.temp_file_path = self.path + self.temp_name + '.json'
         with open(self.temp_file_path, 'w') as json_file:
             json_file.write(json.dumps(results))
 
     def restore(self):
-        self.temp_file_path = self.path + self.temp_name + '.temp.json'
+        self.temp_file_path = self.path + self.temp_name + '.json'
         if os.path.isfile(self.temp_file_path):
             with open(self.temp_file_path) as json_temp:
                 temp_results = json.load(json_temp)

@@ -26,9 +26,10 @@ class TrainEmulator(TrainerPrototype):
         else:
             return 4  
 
-    def train(self, space, cand_index, estimates=None):
+    def train(self, cand_index, estimates=None, space=None):
         acc_curve = self.acc_curves.loc[cand_index].values
         total_time = self.total_times[cand_index]
+
         return 1.0 - max(acc_curve), total_time         
 
     def get_interim_error(self, model_index, cur_dur):
@@ -48,22 +49,22 @@ class TrainEmulator(TrainerPrototype):
         return error
 
 
-class EarlyStopTrainer(TrainEmulator):
+class EarlyTerminateTrainer(TrainEmulator):
 
     def __init__(self, lookup):
 
-        super(EarlyStopTrainer, self).__init__(lookup)
+        super(EarlyTerminateTrainer, self).__init__(lookup)
 
         self.history = []
-        self.early_stopped = []
+        self.early_terminated = []
 
     def reset(self):
         # reset history
         self.history = []
-        self.early_stopped = []
+        self.early_terminated = []
 
 
-class EarlyStopTrainerBoilerplate(EarlyStopTrainer):
+class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
     ''' Sample code for your ETR logic. 
         You will implement the following methods:   
     
@@ -72,8 +73,7 @@ class EarlyStopTrainerBoilerplate(EarlyStopTrainer):
         # TODO: you can add more attributes here (if required)       
         super(EarlyStopTrainerBoilerplate, self).__init__(lookup)
 
-    def train(self, space, cand_index, 
-            estimates=None):
+    def train(self, cand_index, estimates=None, space=None):
         # Firstly, you should add current candidate index to 
         
         # You can access the accuracy curve as below
@@ -84,16 +84,16 @@ class EarlyStopTrainerBoilerplate(EarlyStopTrainer):
             print(acc_curve) 
 
         # TODO: Your algorithm here
-        early_stopped = True # if your algorithm fires, append the result as below:
-        if early_stopped:
-            self.early_stopped.append(True)
+        early_termination = True # if your algorithm fires, append the result as below:
+        if early_termination:
+            self.early_terminated.append(True)
             stopped_error = 0.1
             eval_time = 100
 
             # TODO: you should return the error when it stopped and time to execute here.
             return stopped_error, eval_time
         else:
-            self.early_stopped.append(False)
+            self.early_terminated.append(False)
 
             return 1.0 - max(acc_curve), self.total_times[cand_index] 
 

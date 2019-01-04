@@ -114,4 +114,8 @@ venv.bak/
 *.pkl
 *.bak
 tests/test_run_log_analysis.txt
+
+# For excluding experimental results
 lookup/
+results/
+
