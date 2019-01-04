@@ -48,13 +48,13 @@ class BatchHPOSimulator(object):
         self.config = config
         self.early_term_rule = early_term_rule
 
-        self.failover = None # can be 'random', 'premature' or 'next_candidate'
+        self.failover = 'premature' # can be 'random', 'premature' or 'next_candidate'
 
         if 'failover' in config:
             self.failover = config['failover']
-
+        postfix = "{}.{}".format(self.failover, early_term_rule)
         self.saver = BatchResultSaver(self.data_type, self.run_mode, self.target_acc,
-                                    self.time_expired, self.config, postfix=early_term_rule)
+                                    self.time_expired, self.config, postfix=postfix)
         
         self.bandits = self.create_bandits(config)
 
