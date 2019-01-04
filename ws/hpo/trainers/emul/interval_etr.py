@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 import math
 
-from ws.hpo.trainers.etr_emul import EarlyTerminateTrainer
+from ws.hpo.trainers.emul.trainer import EarlyTerminateTrainer
 from ws.shared.logger import *
 
 

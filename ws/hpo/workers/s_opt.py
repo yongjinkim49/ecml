@@ -66,7 +66,7 @@ class SequentialOptimizer(Worker):
 
     def get_cur_result(self):
         if len(self.results) == 0:
-            if self.machine != None and self.machine.result != None:
+            if self.machine != None and self.machine.get_working_result() != None:
                 latest = self.machine.get_current_results()
                 #debug("current result: {}".format(latest))
             else:

@@ -139,8 +139,8 @@ class HPOBanditMachine(object):
 
         self.stop_flag = False
 
-        self.result = None
-        self.results = None
+        self.working_result = None
+        self.total_results = None
 
         self.run_config = run_config
         self.min_train_epoch = min_train_epoch
@@ -236,7 +236,7 @@ class HPOBanditMachine(object):
 
         return test_error, exec_time
 
-    def pull(self, model, acq_func, repo, select_opt_time=0):
+    def pull(self, model, acq_func, result_repo, select_opt_time=0):
 
         exception_raised = False
         try:
@@ -260,7 +260,7 @@ class HPOBanditMachine(object):
         # evaluate the candidate
         test_error, exec_time = self.evaluate(next_index, model)
         total_opt_time = select_opt_time + opt_time
-        repo.append(next_index, test_error,
+        result_repo.append(next_index, test_error,
                     total_opt_time, exec_time, metrics)
         self.samples.update(next_index, test_error)
         
@@ -277,23 +277,23 @@ class HPOBanditMachine(object):
                                     model, acq_func, num_trials, self.run_config)
 
         if self.num_resume > 0:
-            self.results, start_idx = self.saver.load(
+            self.total_results, start_idx = self.saver.load(
                 model, acq_func, self.num_resume)
         else:
-            self.results, start_idx = self.temp_saver.restore()
+            self.total_results, start_idx = self.temp_saver.restore()
 
         self.est_records = {}
         for i in range(start_idx, num_trials):
             trial_start_time = time.time()
             self.init_bandit()
-            self.result = HPOResultFactory()
+            wr = self.get_working_result()
             best_acc = 0.0
             self.est_records[str(i)] = []
             for j in range(NUM_MAX_ITERATIONS):
 
-                curr_acc, opt_log = self.pull(model, acq_func, self.result)
+                curr_acc, opt_log = self.pull(model, acq_func, wr)
                 if self.stop_flag == True:
-                    return self.results
+                    return self.total_results
 
                 self.est_records[str(i)].append(opt_log)
 
@@ -303,7 +303,7 @@ class HPOBanditMachine(object):
                     if best_acc >= self.target_accuracy:
                         break
                 elif self.run_mode == 'TIME':
-                    duration = self.result.get_elapsed_time()
+                    duration = wr.get_elapsed_time()
                     #debug("current time: {} - {}".format(duration, self.time_expired))
                     if duration >= self.time_expired:
                         break
@@ -313,10 +313,11 @@ class HPOBanditMachine(object):
                 self.id, best_acc * 100, i, trial_sim_time))
             
             if best_acc < self.target_accuracy:
-                self.result.force_terminated()
+                wr.force_terminated()
 
-            self.results[i] = self.result.get_current_status()
-            self.temp_saver.save(self.results)
+            self.total_results[i] = wr.get_current_status()
+            self.temp_saver.save(self.total_results)
+            self.working_result = None
 
         if save_results is True:
             
@@ -324,13 +325,13 @@ class HPOBanditMachine(object):
             if self.with_pkl is True:
                 est_records = self.est_records
             self.saver.save(model, acq_func,
-                            num_trials, self.results, est_records)
+                            num_trials, self.total_results, est_records)
 
         self.temp_saver.remove()
 
         self.show_best_hyperparams()
 
-        return self.results
+        return self.total_results
 
     def mix(self, strategy, num_trials, save_results=True):
         ''' executing the bandit with many arms by given mixing strategy '''
@@ -339,10 +340,10 @@ class HPOBanditMachine(object):
                                     model, strategy, num_trials, self.run_config)
 
         if self.num_resume > 0:
-            self.results, start_idx = self.saver.load(
+            self.total_results, start_idx = self.saver.load(
                 model, strategy, self.num_resume)
         else:
-            self.results, start_idx = self.temp_saver.restore()
+            self.total_results, start_idx = self.temp_saver.restore()
 
         self.est_records = {}
         for i in range(start_idx, num_trials):
@@ -350,7 +351,7 @@ class HPOBanditMachine(object):
             trial_start_time = time.time()
             self.init_bandit()
             arm = self.bandit.get_arm(strategy)
-            self.result = HPOResultFactory()
+            wr = self.get_working_result()
             best_acc = 0.0
 
             self.est_records[str(i)] = []
@@ -361,15 +362,15 @@ class HPOBanditMachine(object):
                 model, acq_func, _ = arm.select(j)
                 select_opt_time = time.time() - start_time
 
-                curr_acc, opt_log = self.pull(model, acq_func, self.result, select_opt_time)
+                curr_acc, opt_log = self.pull(model, acq_func, wr, select_opt_time)
                 if self.stop_flag == True:
-                    return self.results
+                    return self.total_results
                 
                 if opt_log['exception_raised']:
                     model = 'RANDOM'
                     acq_func = 'RANDOM'
 
-                self.result.update_trace(model, acq_func)
+                wr.update_trace(model, acq_func)
                 arm.update(j, curr_acc, opt_log)
 
                 self.est_records[str(i)].append(opt_log)
@@ -381,7 +382,7 @@ class HPOBanditMachine(object):
                     if best_acc >= self.target_accuracy:
                         break
                 elif self.run_mode == 'TIME':
-                    duration = self.result.get_elapsed_time()
+                    duration = wr.get_elapsed_time()
                     #debug("current time: {} - {}".format(duration, self.time_expired))
                     if duration >= self.time_expired:
                         break
@@ -390,39 +391,45 @@ class HPOBanditMachine(object):
             log("{} found best accuracy {:.2f}% at run #{}. ({:.1f} sec)".format(
                 self.id, best_acc * 100, i, trial_sim_time))
             if best_acc < self.target_accuracy:
-                self.result.force_terminated()
+                wr.force_terminated()
 
-            self.result.feed_arm_selection(arm)
-            self.results[i] = self.result.get_current_status()
-
-            self.temp_saver.save(self.results)
+            wr.feed_arm_selection(arm)
+            self.total_results[i] = wr.get_current_status()
+            self.working_result = None # reset working result
+            self.temp_saver.save(self.total_results)
 
         if save_results is True:
             est_records = None
             if self.with_pkl is True:
                 est_records = self.est_records
             self.saver.save('DIV', strategy,
-                            num_trials, self.results, est_records)
+                            num_trials, self.total_results, est_records)
 
             self.temp_saver.remove()
+            
         
         self.show_best_hyperparams()
 
-        return self.results
+        return self.total_results
 
     def get_current_results(self):
         results = []
-        if self.results:
-            results += self.results
+        if self.total_results:
+            results += self.total_results
 
-        if self.result != None:
-            results.append(self.result.get_current_status())
+        if self.working_result != None:
+            results.append(self.working_result.get_current_status())
 
         return results
 
+    def get_working_result(self):
+        if self.working_result == None:
+            self.working_result = HPOResultFactory() 
+        return self.working_result
+
     def show_best_hyperparams(self):
-        for k in self.results.keys():
-            result = self.results[k]
+        for k in self.total_results.keys():
+            result = self.total_results[k]
             
             acc_max_index = np.argmax(result['accuracy'])
             max_model_index = result['model_idx'][acc_max_index]

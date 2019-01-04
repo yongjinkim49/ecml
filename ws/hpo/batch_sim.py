@@ -100,7 +100,7 @@ class BatchHPOSimulator(object):
             b['mode'] = bandits[i]['mode']
             b['spec'] = bandits[i]['spec']
             b['config'] = conf
-            b['local_result'] = emulator.repo
+            b['local_result'] = emulator.get_working_result()
             b['local_time'] = 0.0
             b['cur_work_index'] = None
 
@@ -258,7 +258,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
             # the count how many times the optimizer selects working items.
             b['num_duplicates'] = 0
 
-            b['local_result'] = m.repo
+            b['local_result'] = m.get_working_result()
 
             b['samples'] = m.samples  # reset sampling space
 
@@ -292,7 +292,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
 
                 b['num_duplicates'] = 0
                 if repo is None:
-                    repo = m.repo
+                    repo = m.get_current_results()
                     self.cur_samples = m.samples
                     debug('initialized for new trial.')
 

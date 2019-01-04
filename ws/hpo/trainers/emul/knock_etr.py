@@ -2,29 +2,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
 from itertools import compress
 
-import numpy as np
-
-from ws.hpo.trainers.etr_emul import EarlyTerminateTrainer
+from ws.hpo.trainers.emul.trainer import EarlyTerminateTrainer
 from ws.shared.logger import *
 
 
-class IntervalBarrierETRTrainer(EarlyTerminateTrainer): # 
+class KnockETRTrainer(EarlyTerminateTrainer):
 
     def __init__(self, lookup):
+              
+        super(KnockETRTrainer, self).__init__(lookup)
 
-        super(IntervalBarrierETRTrainer, self).__init__(lookup)
-        
         self.epoch_length = lookup.num_epochs
         self.lcs = self.history
         self.eval_epoch = int(self.epoch_length/3)
         self.satisfy_epochs = int(self.epoch_length/4)
         self.percentile = 75 # percentile X 100
-        self.acc_min = 0.0
-        self.acc_max = 0.2
-
-
+        
     def get_time_saving(self, cand_index, stop_epoch):
         # XXX: consider preparation time later
         total_time = self.total_times[cand_index]
@@ -90,10 +86,6 @@ class IntervalBarrierETRTrainer(EarlyTerminateTrainer): #
             debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
             if len(self.lcs) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
-                if self.acc_min < acc < self.acc_max:
-                    debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
-                    self.early_terminated.append(True)
-                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
                 if i <= self.eval_epoch-1:
                     if acc > knock_in_barriers[i]:
                         debug("acc knocked into above {} at epoch{}".format(knock_in_barriers[i],i+1))
@@ -104,7 +96,7 @@ class IntervalBarrierETRTrainer(EarlyTerminateTrainer): #
                         debug("terminated at epoch{} with {} less knock_ins".format(i+1, self.satisfy_epochs - knocked_in_count))
                         # stop early
                         self.early_terminated.append(True)
-                        return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
+                        return 1.0 - cur_max_acc, self.get_time_saving(cand_index,i+1)
 
                 if self.epoch_length-1 > i > self.eval_epoch-1:
                     if knocked_in_count > self.satisfy_epochs:
@@ -112,6 +104,7 @@ class IntervalBarrierETRTrainer(EarlyTerminateTrainer): #
                             #stop early
                             self.early_terminated.append(True)
                             debug("terminated at epoch{} by knocking out below {}".format(i+1, knock_out_barrier))
-                            return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
+                            return 1.0 - cur_max_acc, self.get_time_saving(cand_index,i+1)
 
+        self.early_terminated.append(False)
         return 1.0 - max(acc_curve), self.total_times[cand_index]

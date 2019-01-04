@@ -28,11 +28,11 @@
         }
     ],
     "bandits" : [
-        { "mode": "GP-HLE", "spec": "EI" },
-        { "mode": "GP-HLE", "spec": "PI" },
-        { "mode": "GP-HLE", "spec": "UCB" },
-        { "mode": "RF-HLE", "spec": "EI" },
-        { "mode": "RF-HLE", "spec": "PI" },
-        { "mode": "RF-HLE", "spec": "UCB" }        
+        { "mode": "DIV", "spec": "RANDOM" },
+        { "mode": "DIV", "spec": "RANDOM" },
+        { "mode": "DIV", "spec": "RANDOM" },
+        { "mode": "DIV", "spec": "RANDOM" },
+        { "mode": "DIV", "spec": "RANDOM" },
+        { "mode": "DIV", "spec": "RANDOM" }
     ]
 }

@@ -6,12 +6,12 @@ from ws.shared.logger import *
 
 def get_simulator(space, etr):
     
-    from ws.hpo.trainers.etr_emul import TrainEmulator
-    from ws.hpo.trainers.grad_etr_emul import GradientETRTrainer
-    from ws.hpo.trainers.median_etr_emul import VizMedianETRTrainer
-    from ws.hpo.trainers.barrier_etr_emul import BarrierETRTrainer
-    from ws.hpo.trainers.interval_etr_emul import IntervalETRTrainer
-    from ws.hpo.trainers.hybrid_etr_emul import IntervalBarrierETRTrainer
+    from ws.hpo.trainers.emul.trainer import TrainEmulator
+    from ws.hpo.trainers.emul.grad_etr import GradientETRTrainer
+    from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer
+    from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
+    from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
+    from ws.hpo.trainers.emul.hybrid_etr import *
 
     try:
         if not hasattr(space, 'lookup'):
@@ -24,12 +24,14 @@ def get_simulator(space, etr):
             return GradientETRTrainer(lookup)
         elif etr == "VizMedian":
             return VizMedianETRTrainer(lookup)                
-        elif etr == "Barrier":
-            return BarrierETRTrainer(lookup)
+        elif etr == "Knock":
+            return KnockETRTrainer(lookup)
         elif etr == "Interval":
             return IntervalETRTrainer(lookup)
-        elif etr == "IntervalBarrier":
-            return IntervalBarrierETRTrainer(lookup)
+        elif etr == "IntervalKnock":
+            return IntervalKnockETRTrainer(lookup)
+        elif etr == "IntervalMultiKnock":
+            return IntervalKnockETRTrainer(lookup)            
         else:
             debug("Invalid ETR: {}".format(etr))
             return TrainEmulator(lookup)
@@ -40,8 +42,8 @@ def get_simulator(space, etr):
 
 
 def get_remote_trainer(rtc, hpvs, etr):
-    from ws.hpo.trainers.grad_etr_remote import GradientETRTrainer
-    from ws.hpo.trainers.etr_remote import RemoteTrainer
+    from ws.hpo.trainers.remote.trainer import RemoteTrainer    
+    from ws.hpo.trainers.remote.grad_etr import GradientETRTrainer
 
     try:
         if etr == None:

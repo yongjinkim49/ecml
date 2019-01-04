@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 from ws.shared.logger import *
-from ws.hpo.trainers.etr_remote import EarlyTerminateTrainer
+from ws.hpo.trainers.remote.trainer import EarlyTerminateTrainer
 
 
 class GradientETRTrainer(EarlyTerminateTrainer):

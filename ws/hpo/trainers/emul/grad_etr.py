@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from ws.hpo.trainers.etr_emul import EarlyTerminateTrainer
+from ws.hpo.trainers.emul.trainer import EarlyTerminateTrainer
 from ws.shared.logger import *
 
 import numpy as np
