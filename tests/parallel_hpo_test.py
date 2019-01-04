@@ -17,17 +17,19 @@ def data207_test(etr):
     hp_cfg = hconf.read_config("hp_conf/data207.json")
     samples = space.create_surrogate_space('data207')
     
-    set_log_level('debug')
+    #set_log_level('debug')
     
     run_cfg = bconf.read("arms.json", path="run_conf/")
 
     c = batch.get_simulator("ASYNC", "data207",
                         "TIME", 0.9999, 
-                        "4h", run_cfg)
+                        "2h",                         
+                        run_cfg,
+                        early_term_rule=etr)
     results = c.run(1)
     for i in range(len(results)):
         result = results[i]
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), result["select_trace"]))
 
 if __name__ == "__main__":
-    data207_test("None")
+    data207_test("IntervalMultiKnock")

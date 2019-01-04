@@ -17,19 +17,22 @@ from ws.hpo.batch_cand import CandidateSelector
 import ws.hpo.space_mgr as space
 
 
-def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, config):
+def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, config,
+                early_term_rule=None):
     sim = None
     if sync_mode == 'ASYNC':
         sim = AsynchronusBatchSimulator
     else:
         sim = SynchronusBatchSimulator
-    cluster = sim(run_mode, config, dataset_name, target_acc, time_expired)
+    cluster = sim(run_mode, config, dataset_name, target_acc, time_expired,
+                 early_term_rule=early_term_rule)
     return cluster
 
 
 class BatchHPOSimulator(object):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
+                 early_term_rule=None):
         
         self.target_acc = target_acc
         self.time_expired = time_expired
@@ -41,6 +44,7 @@ class BatchHPOSimulator(object):
         self.cur_iters = 0
         self.data_type = dataset
         self.config = config
+        self.early_term_rule = early_term_rule
 
         self.failover = None # can be 'random', 'premature' or 'next_candidate'
 
@@ -94,7 +98,8 @@ class BatchHPOSimulator(object):
             
             samples = space.create_surrogate_space(self.data_type, grid_order)
             emulator = bandit.create_emulator(samples, self.run_mode, self.target_acc, self.time_expired, 
-                                 run_config=conf, save_pkl=save_pkl)
+                                 run_config=conf, save_pkl=save_pkl,
+                                 early_term_rule=self.early_term_rule)
             b['m_id'] = i
             b['machine'] = emulator
             b['mode'] = bandits[i]['mode']
@@ -141,9 +146,10 @@ class BatchHPOSimulator(object):
 
 class AsynchronusBatchSimulator(BatchHPOSimulator):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
+                 early_term_rule=None):
         super(AsynchronusBatchSimulator, self).__init__(
-            run_mode, config, dataset, target_acc, time_expired)
+            run_mode, config, dataset, target_acc, time_expired, early_term_rule=early_term_rule)
         
     def run(self, num_trials, save_results=True):
         start_idx = 0
