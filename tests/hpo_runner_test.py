@@ -1,6 +1,6 @@
 import os
 import sys
-
+from collections import Counter
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -26,7 +26,7 @@ def data207_test(etr):
     results = m.mix('RANDOM', 1)
     for i in range(len(results)):
         result = results[i]
-        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), result["select_trace"]))
+        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
 if __name__ == "__main__":
     data207_test("None")
