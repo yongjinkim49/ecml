@@ -1,6 +1,6 @@
 import os
 import sys
-
+from collections import Counter
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -23,13 +23,23 @@ def data207_test(etr):
 
     c = batch.get_simulator("ASYNC", "data207",
                         "TIME", 0.9999, 
-                        "2h",                         
+                        "12h",                         
                         run_cfg,
                         early_term_rule=etr)
     results = c.run(1)
     for i in range(len(results)):
         result = results[i]
-        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), result["select_trace"]))
+        attempts = []
+        for st in result["select_trace"]:
+            for t in st:
+                attempts.append(t)
+        log("At trial {}, {} HPO attempts: {}".format(i, len(attempts), Counter(attempts)))
 
 if __name__ == "__main__":
+    data207_test("None")
+    data207_test("Gradient")
+    data207_test("VizMedian")
+    data207_test("Interval")
+    data207_test("Knock")
+    data207_test("IntervalKnock")
     data207_test("IntervalMultiKnock")

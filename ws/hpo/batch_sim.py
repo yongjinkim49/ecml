@@ -9,6 +9,7 @@ import numpy as np
 
 from ws.shared.logger import *
 from ws.shared.saver import BatchResultSaver
+from ws.hpo.utils.converter import TimestringConverter
 
 import ws.hpo.bandit as bandit
 
@@ -24,6 +25,7 @@ def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, c
         sim = AsynchronusBatchSimulator
     else:
         sim = SynchronusBatchSimulator
+    time_expired = TimestringConverter().convert(time_expired)
     cluster = sim(run_mode, config, dataset_name, target_acc, time_expired,
                  early_term_rule=early_term_rule)
     return cluster
@@ -52,7 +54,7 @@ class BatchHPOSimulator(object):
             self.failover = config['failover']
 
         self.saver = BatchResultSaver(self.data_type, self.run_mode, self.target_acc,
-                                    self.time_expired, self.config)
+                                    self.time_expired, self.config, postfix=early_term_rule)
         
         self.bandits = self.create_bandits(config)
 
@@ -408,16 +410,3 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             return False
 
 
-def test_main():
-    import ws.hpo.bandit_config as run_config
-    
-    conf = run_config.read('arms-alet-np.json') 
-    simulator = get_simulator('ASYNC', 'data10', 0.999, 14400, 'TIME', conf)
-    set_log_level('debug')
-    print_trace()
-
-    simulator.run(1)
-
-
-if __name__ == '__main__':
-    test_main()

@@ -82,7 +82,8 @@ class BatchResultSaver(object):
     
     def __init__(self, data_type, run_mode, 
                 target_accuracy, time_expired, config, 
-                path='./results/'):
+                path='./results/',
+                postfix=None):
 
         self.data_type = data_type
         self.run_mode = run_mode
@@ -90,6 +91,9 @@ class BatchResultSaver(object):
         self.time_expired = time_expired
         self.path = path
         self.config = config
+        if postfix == None:
+            postfix = ""
+        self.postfix = postfix
 
     def save(self, sync_type, trials, results,
                 path='./results/'):
@@ -105,12 +109,11 @@ class BatchResultSaver(object):
             debug('Creating ' + directory)
             os.makedirs(directory)
 
-        file_path = directory + '/' +\
-            sync_type.upper() + '_BATCH'
+        size = len(self.config["bandits"]) 
 
-        if 'title' in self.config:
-            file_path = "{}-{}({})".format(file_path, self.config['title'], trials)
-
+        file_path = "{}/{}-BATCH.M{}.{}({})".format(directory, sync_type.upper(), 
+                        size, self.postfix, trials)
+        
         log("The results will be saved as {}.json".format(file_path))
         with open(file_path + '.json', 'w') as json_file:
             json_file.write(json.dumps(results))    

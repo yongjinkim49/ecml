@@ -20,7 +20,7 @@ def data207_test(etr):
     
     run_cfg = bconf.read("arms.json", path="run_conf/")
     m = bandit.create_emulator(samples, 
-                'TIME', 0.9999, '24h',
+                'TIME', 0.9999, '3d',
                 early_term_rule=etr,
                 run_config=run_cfg)
     results = m.mix('RANDOM', 1)
@@ -29,10 +29,10 @@ def data207_test(etr):
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), result["select_trace"]))
 
 if __name__ == "__main__":
-#    data207_test("None")
-#    data207_test("Gradient")
-#    data207_test("VizMedian")
-#    data207_test("Interval")
+    data207_test("None")
+    data207_test("Gradient")
+    data207_test("VizMedian")
+    data207_test("Interval")
     data207_test("Knock")
     data207_test("IntervalKnock")
     data207_test("IntervalMultiKnock")

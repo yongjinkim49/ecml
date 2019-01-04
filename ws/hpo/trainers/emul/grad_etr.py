@@ -97,10 +97,10 @@ class GradientETRTrainer(EarlyTerminateTrainer):
                     min_delta > self.get_gradient_average(cand_index, i):
 
                     diff = max(acc_curve) - acc                
-                    debug("Early stopping at {} epochs. (accuracy difference {:.3f})".format(i + 1, diff))
+                    debug("Early terminated at {} epochs. (accuracy diff. {:.3f})".format(i + 1, diff))
                     
                     if diff > self.diff_threshold:
-                        warn("Large difference: true {:.4f}, current max {:.4f}".format(max(acc_curve), cur_max_acc))
+                        warn("Inaccurate reporting: {:.4f} - ground truth {:.4f},".format(cur_max_acc, max(acc_curve)))
                     
                     # stop early
                     self.early_terminated.append(True)
