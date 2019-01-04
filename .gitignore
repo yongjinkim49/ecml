@@ -108,14 +108,15 @@ venv.bak/
 .cache/
 .vscode/
 
-*.xlsx
+
 *.temp.json
 *.pkl.gz
 *.pkl
 *.bak
 tests/test_run_log_analysis.txt
+~$*
 
 # For excluding experimental results
-lookup/
-results/
-
+#lookup/
+#results/
+#*.xlsx
