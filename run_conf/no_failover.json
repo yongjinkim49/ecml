@@ -27,6 +27,7 @@
             "acq_func": "UCB"
         }
     ],
+    "failover": "None",
     "bandits" : [
         { "mode": "DIV", "spec": "RANDOM" },
         { "mode": "DIV", "spec": "RANDOM" },

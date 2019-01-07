@@ -1,29 +1,29 @@
-{    
+{
     "credential" : "jo2fulwkq",
-    "title": "hybrid",
+    "title": "log",
     "arms": [
         {
-            "model": "GP-HLE",
+            "model": "GP-LE",
             "acq_func": "EI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP-LE",
             "acq_func": "PI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP-LE",
             "acq_func": "UCB"
         },        
         {
-            "model": "RF-HLE",
+            "model": "RF-LE",
             "acq_func": "EI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF-LE",
             "acq_func": "PI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF-LE",
             "acq_func": "UCB"
         }
     ],

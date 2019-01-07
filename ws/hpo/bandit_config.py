@@ -174,12 +174,9 @@ class BanditConfigurator(object):
             # XXX: This TPE is a suspicious optimizer due to using lookup. carefully use it.
             choosers['HO'] = hoc.init(self.samples)
 
-        if 'HO-HLE' in opts:
-            # XXX: This TPE is a suspicious optimizer due to using lookup. carefully use it.
-            choosers['HO-HLE'] = hoc.init(self.samples)
         return choosers
 
-    def get_arm(self, spec, ):
+    def get_arm(self, spec):
         return ArmSelector(spec, self.config, self.samples, self.choosers)
          
 

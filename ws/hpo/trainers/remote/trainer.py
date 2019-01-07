@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import json
 import time
-import sys
 import copy
 
 import numpy as np

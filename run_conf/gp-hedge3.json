@@ -1,0 +1,18 @@
+{
+    "credential" : "jo2fulwkq",
+    "title": "hedge3",
+    "arms": [
+        {
+            "model": "GP",
+            "acq_func": "EI"
+        },
+        {
+            "model": "GP",
+            "acq_func": "PI"
+        },
+        {
+            "model": "GP",
+            "acq_func": "UCB"
+        }
+    ]
+}

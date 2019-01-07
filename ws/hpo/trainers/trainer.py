@@ -18,7 +18,7 @@ def get_simulator(space, etr):
             raise ValueError("Invalid surrogate space")
         lookup = space.lookup
                 
-        if etr == None or etr == "No":
+        if etr == None or etr == "None":
             return TrainEmulator(lookup)
         elif etr == 'Gradient':
             return GradientETRTrainer(lookup)

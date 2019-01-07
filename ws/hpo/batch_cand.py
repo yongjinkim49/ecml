@@ -146,6 +146,6 @@ class CandidateSelector(object):
             return self.get_by_rank
         elif failover == 'premature':
             return self.get_by_premature            
-        elif failover != None:
+        elif failover != None or failove != "None":
             warn("invalid failover method: {}. a default selection method is used.".format(self.failover))
         return self.get_any   

@@ -1,0 +1,19 @@
+{    
+    "credential" : "jo2fulwkq",
+    "title": "6EI",
+    "arms": [
+        {
+            "model": "GP",
+            "acq_func": "EI"
+        }
+    ],
+    "failover": "None",
+    "bandits" : [
+        { "mode": "GP", "spec": "EI" },
+        { "mode": "GP", "spec": "EI" },
+        { "mode": "GP", "spec": "EI" },
+        { "mode": "GP", "spec": "EI" },
+        { "mode": "GP", "spec": "EI" },
+        { "mode": "GP", "spec": "EI" }
+    ]
+}
