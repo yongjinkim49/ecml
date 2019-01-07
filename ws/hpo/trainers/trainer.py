@@ -11,8 +11,8 @@ def get_simulator(space, etr):
     from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer
     from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
-    from ws.hpo.trainers.emul.hybrid_etr import *
-
+    from ws.hpo.trainers.emul.hybrid_etr import IntervalKnockETRTrainer
+    from ws.hpo.trainers.emul.hybrid_etr import IntervalMultiKnockETRTrainer
     try:
         if not hasattr(space, 'lookup'):
             raise ValueError("Invalid surrogate space")
@@ -31,7 +31,7 @@ def get_simulator(space, etr):
         elif etr == "IntervalKnock":
             return IntervalKnockETRTrainer(lookup)
         elif etr == "IntervalMultiKnock":
-            return IntervalKnockETRTrainer(lookup)            
+            return IntervalMultiKnockETRTrainer(lookup)            
         else:
             debug("Invalid ETR: {}".format(etr))
             return TrainEmulator(lookup)
