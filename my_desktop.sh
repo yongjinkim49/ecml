@@ -17,7 +17,7 @@
 #python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 5d data207 100
 
 # parallel diversification
-python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 20h data207 100
+#python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 20h data207 100
 python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 20h data207 100
 python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 20h data207 100
 #python hpo_runner.py -m BATCH -s ASYNC -et 20h data207 100

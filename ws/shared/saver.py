@@ -110,7 +110,9 @@ class BatchResultSaver(object):
             os.makedirs(directory)
 
         size = len(self.config["bandits"]) 
-
+        if "title" in self.config:
+            self.postfix = "{}.{}".format(self.postfix, self.config['title'])
+        
         file_path = "{}/{}-BATCH.M{}.{}({})".format(directory, sync_type.upper(), 
                         size, self.postfix, trials)
         
