@@ -57,7 +57,7 @@ class CandidateSelector(object):
             # update working results
             working_model = w['model_idx']
             duration = cur_time - w['start_time']
-            debug("training model: {}, current duration: {:.1f}".format(working_model, duration))
+            #debug("bandit: {} - training model: {}, current duration: {:.1f}".format(bandit["m_id"], working_model, duration))
             pre_error = bandit['machine'].trainer.get_interim_error(working_model, duration)
             pre_samples.update(working_model, pre_error)
 

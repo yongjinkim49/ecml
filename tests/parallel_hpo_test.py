@@ -17,16 +17,16 @@ def data207_test(etr):
     hp_cfg = hconf.read_config("hp_conf/data207.json")
     samples = space.create_surrogate_space('data207')
     
-    #set_log_level('debug')
+    set_log_level('debug')
     
     run_cfg = bconf.read("arms.json", path="run_conf/")
 
     c = batch.get_simulator("ASYNC", "data207",
                         "TIME", 0.9999, 
-                        "12h",                         
+                        "24h",                         
                         run_cfg,
                         early_term_rule=etr)
-    results = c.run(1)
+    results = c.run(4)
     for i in range(len(results)):
         result = results[i]
         attempts = []
@@ -37,9 +37,9 @@ def data207_test(etr):
 
 if __name__ == "__main__":
     data207_test("None")
-    data207_test("Gradient")
-    data207_test("VizMedian")
-    data207_test("Interval")
-    data207_test("Knock")
-    data207_test("IntervalKnock")
-    data207_test("IntervalMultiKnock")
+#    data207_test("Gradient")
+#    data207_test("VizMedian")
+#    data207_test("Interval")
+#    data207_test("Knock")
+#    data207_test("IntervalKnock")
+#    data207_test("IntervalMultiKnock")

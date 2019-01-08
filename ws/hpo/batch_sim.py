@@ -48,7 +48,7 @@ class BatchHPOSimulator(object):
         self.config = config
         self.early_term_rule = early_term_rule
 
-        self.failover = 'premature' # can be 'random', 'premature' or 'next_candidate'
+        self.failover = 'premature' # can be 'None', 'random', 'premature' or 'next_candidate'
 
         if 'failover' in config:
             self.failover = config['failover']
@@ -143,6 +143,39 @@ class BatchHPOSimulator(object):
 
     def run(self, num_trials, save_results=True):
         raise NotImplementedError("Chlid class should be implemented.")
+
+    def reset_bandits(self):
+        # initialize all bandits
+        for b in self.bandits:
+            m = b['machine']
+            conf = None
+            if hasattr(m, 'config'):
+                conf = m.config
+            elif 'config' in b:
+                conf = b['config']
+            else:
+                raise ValueError("Invaild configuration")
+            m.init_bandit(conf)
+
+            if b['mode'] == 'DIV':
+                b['arm'] = m.bandit.get_arm(b['spec'])
+
+            b['opt_time'] = 0.0
+            b['eval_time'] = 0.0
+            b['cur_start_time'] = 0
+            b['cur_end_time'] = 0
+            b['cur_iters'] = 0
+            # the count how many times the optimizer selects working items.
+            b['num_duplicates'] = 0
+
+            b['local_result'] = m.get_working_result()
+
+            b['samples'] = m.samples  # reset sampling space
+
+            if self.cur_samples is None:
+                self.cur_samples = copy.deepcopy(b['samples'])
+
+        debug('initialized for new trial.')
 
 
 class AsynchronusBatchSimulator(BatchHPOSimulator):
@@ -242,39 +275,6 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
 
         return acc, next_index
 
-    def reset_bandits(self):
-        # initialize all bandits
-        for b in self.bandits:
-            m = b['machine']
-            conf = None
-            if hasattr(m, 'config'):
-                conf = m.config
-            elif 'config' in b:
-                conf = b['config']
-            else:
-                raise ValueError("Invaild configuration")
-            m.init_bandit(conf)
-
-            if b['mode'] == 'DIV':
-                b['arm'] = m.bandit.get_arm(b['spec'])
-
-            b['opt_time'] = 0.0
-            b['eval_time'] = 0.0
-            b['cur_start_time'] = 0
-            b['cur_end_time'] = 0
-            b['cur_iters'] = 0
-            # the count how many times the optimizer selects working items.
-            b['num_duplicates'] = 0
-
-            b['local_result'] = m.get_working_result()
-
-            b['samples'] = m.samples  # reset sampling space
-
-            if self.cur_samples is None:
-                self.cur_samples = copy.deepcopy(b['samples'])
-
-        debug('initialized for new trial.')
-
 
 class SynchronusBatchSimulator(BatchHPOSimulator):
 
@@ -292,6 +292,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             trial_start_time = time.time()
             self.cur_iters = 0
             self.cur_sync_time = 0.0
+            self.reset_bandits()
             repo = None
             for b in self.bandits:
                 m = b['machine']
@@ -303,8 +304,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 if repo is None:
                     repo = m.get_working_result()
                     self.cur_samples = m.samples
-                    debug('initialized for new trial.')
-
+                    
             while self.sync_next(repo):
                 cur_iter_acc = repo.get_value('accuracy', -1)
                 if best_acc < cur_iter_acc:
@@ -403,7 +403,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             # XXX: update the iteration result after all machines are finished.
             for b in self.bandits:
                 self.update_history(b)
-            debug("number of completes: {}".format(len(self.cur_samples.get_completes())))
+            debug("number of completes at {}: {}".format(self.cur_sync_time, len(self.cur_samples.get_completes())))
             return True
 
         else:

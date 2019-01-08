@@ -160,6 +160,7 @@ class HPOBanditMachine(object):
         self.bandit = BanditConfigurator(self.samples, config)
         self.samples.reset()
         self.trainer.reset()
+        self.working_result = None
 
     def force_stop(self):
         self.stop_flag = True

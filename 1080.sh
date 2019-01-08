@@ -20,4 +20,5 @@ python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data1 100
 python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 4h data1 100
 python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data1 100
 # parallel diversification
+python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data1 100
 #python hpo_runner.py -m BATCH -s ASYNC -et 4h data1 100

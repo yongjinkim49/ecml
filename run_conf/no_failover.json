@@ -1,6 +1,6 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "hybrid",
+    "title": "no_failover",
     "arms": [
         {
             "model": "GP-HLE",
