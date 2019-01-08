@@ -316,7 +316,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             log("Best accuracy at run #{}: {:.2f}%, batch simulation time: {}".format(
                 t, best_acc * 100, trial_sim_time))
 
-            results[t] = repo.get_current_result()
+            results[t] = repo.get_current_status()
 
         if save_results is True:
             self.saver.save('sync', num_trials, results)
