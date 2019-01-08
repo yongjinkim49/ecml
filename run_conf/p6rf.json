@@ -1,0 +1,19 @@
+{    
+    "credential" : "jo2fulwkq",
+    "title": "6RF-EI",
+    "arms": [
+        {
+            "model": "RF",
+            "acq_func": "EI"
+        }
+    ],
+    "failover": "None",
+    "bandits" : [
+        { "mode": "RF", "spec": "EI" },
+        { "mode": "RF", "spec": "EI" },
+        { "mode": "RF", "spec": "EI" },
+        { "mode": "RF", "spec": "EI" },
+        { "mode": "RF", "spec": "EI" },
+        { "mode": "RF", "spec": "EI" }
+    ]
+}

@@ -40,8 +40,8 @@ class ResultSaver(object):
         file_path = directory + '/' +\
             name1 + '-' + name2
 
-        if 'title' in self.config:
-            file_path = "{}-{}".format(file_path, self.config['title'])
+        if 'title' in self.config and name1 == "DIV":
+            file_path = "{}.{}".format(file_path, self.config['title'])
 
         file_path = "{}{}({})".format(file_path, self.postfix, str(trials))
         
