@@ -15,7 +15,7 @@
 #python hpo_runner.py -rc arms-log.json -m DIV -s SEQ -et 1d data10 100
 #python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 1d data10 100
 # Parallel BO
-python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data10 100
+#python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data10 100
 python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data10 100
 python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 4h data10 100
 python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data10 100
