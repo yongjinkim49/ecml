@@ -140,12 +140,14 @@ class CandidateSelector(object):
 
     def select(self, failover):
 
-        if failover == 'random':
+        if failover == None or failover == "None":
+            return self.get_any
+        elif failover == 'random':
             return self.get_by_random
         elif failover == 'next_candidate':
             return self.get_by_rank
         elif failover == 'premature':
             return self.get_by_premature            
-        elif failover != None or failove != "None":
-            warn("invalid failover method: {}. a default selection method is used.".format(self.failover))
+        else:
+            debug("invalid failover method: {}. a default selection method is used.".format(failover))
         return self.get_any   

@@ -125,8 +125,7 @@ class BatchHPOSimulator(object):
         # debug("machine #{} has evaluated work index #{}".format(machine_index, done_index))
 
         self.cur_samples.update(done_index)
-
-        debug("number of completes: {}".format(len(self.cur_samples.get_completes())))
+        
 
     def get_optimizer(self, bandit, cur_iters, num_random_start=2):
         if bandit['mode'] == 'DIV':
@@ -191,6 +190,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
                         exec_index, i, cur_async_time))
                     self.bandits[i]['cur_start_time'] = cur_async_time
                     self.update_history(self.bandits[i])
+                    debug("number of completes: {}".format(len(self.cur_samples.get_completes())))
                 else:
                     i = (i + 1) % len(self.bandits)
 
@@ -278,9 +278,10 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
 
 class SynchronusBatchSimulator(BatchHPOSimulator):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
+                 early_term_rule=None):
         super(SynchronusBatchSimulator, self).__init__(
-            run_mode, config, dataset, target_acc, time_expired)
+            run_mode, config, dataset, target_acc, time_expired, early_term_rule)
 
     def run(self, num_trials, save_results=True):
         start_idx = 0
@@ -300,7 +301,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
 
                 b['num_duplicates'] = 0
                 if repo is None:
-                    repo = m.get_current_results()
+                    repo = m.get_working_result()
                     self.cur_samples = m.samples
                     debug('initialized for new trial.')
 
@@ -392,7 +393,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                     'exec_time', -1)
                 opt_time = worst_bandit['local_result'].get_value(
                     'opt_time', -1)
-
+                
                 repo.append(select_index, test_error,
                                  opt_time, exec_time)
                 repo.count_duplicates(cur_shelves)
@@ -402,7 +403,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
             # XXX: update the iteration result after all machines are finished.
             for b in self.bandits:
                 self.update_history(b)
-
+            debug("number of completes: {}".format(len(self.cur_samples.get_completes())))
             return True
 
         else:
