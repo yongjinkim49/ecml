@@ -22,3 +22,8 @@ python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data3 100
 # Parallel diversification
 python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data3 100
 python hpo_runner.py -m BATCH -s ASYNC -et 4h data3 100
+# Sequential diversification with ETR
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data3 100
