@@ -118,6 +118,6 @@ tests/test_run_log_analysis.txt
 temp/
 # For excluding experimental results
 #lookup/
-results/
+results/*/*/*.json
 #*.xlsx
 
