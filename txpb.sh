@@ -15,10 +15,15 @@
 #python hpo_runner.py -rc arms-log.json -m DIV -s SEQ -et 1d data2 100
 #python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 1d data2 100
 # Parallel BO
-python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data2 100
-python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data2 100
-python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 4h data2 100
-python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data2 100
+#python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data2 100
+#python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data2 100
+#python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 4h data2 100
+#python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data2 100
 # Parallel diversification
-python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data2 100
-python hpo_runner.py -m BATCH -s ASYNC -et 4h data2 100
+#python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data2 100
+#python hpo_runner.py -m BATCH -s ASYNC -et 4h data2 100
+# Sequential diversification with ETR
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data3 100
