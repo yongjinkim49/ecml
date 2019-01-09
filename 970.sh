@@ -11,9 +11,9 @@
 #python hpo_runner.py -rc gp-hedge3.json -m ADA -s BO-HEDGE -et 1d data20 100
 # Sequential diversification
 #python hpo_runner.py -m DIV -s RANDOM -et 1d data20 100
-#python hpo_runner.py -m DIV -s SEQ -et 1d data20 100
-#python hpo_runner.py -rc arms-log.json -m DIV -s SEQ -et 1d data20 100
-#python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 1d data20 100
+python hpo_runner.py -m DIV -s SEQ -et 1d data20 100
+python hpo_runner.py -rc arms-log.json -m DIV -s SEQ -et 1d data20 100
+python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 1d data20 100
 # Parallel BO
 python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data20 100
 python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data20 100

@@ -16,6 +16,7 @@ import scipy.stats as sps
 
 def debug(args):
     pass
+    #print(args)
 
 
 def draw_catastrophic_failures(results, target_goal,
@@ -849,8 +850,8 @@ def add_error_fill_line(x, y, yerr, color=None, linestyle='-',
 
 def draw_best_error_curve(results, arms, repeats,
                           guidelines=[], summary=False, title=None,
-                          xlim=None, ylim=(.001, 1), alpha_fill=0.1,
-                          width=14, height=8):
+                          xlim=None, ylim=(.001, 1), alpha_fill=0.1, std_div=4,
+                          width=14, height=8, time_scale="Hour", x_steps=1):
 
     if type(arms) is not list:
         arms = [arms]
@@ -859,6 +860,7 @@ def draw_best_error_curve(results, arms, repeats,
     rcParams['figure.figsize'] = width, height
     fig = plt.figure()
     subplot = fig.add_subplot(111)
+    t_max = None
     for arm in arms:
         if not arm in results.keys():
             raise ValueError(
@@ -869,7 +871,7 @@ def draw_best_error_curve(results, arms, repeats,
             best_errors = []
             for i in range(repeats):
                 selected = analyze.get_result(results, arm, i)
-                x_time = analyze.get_total_times(selected, 'Hour')
+                x_time = analyze.get_total_times(selected, time_scale)
                 y_best_errors = analyze.get_best_errors(selected)
                 best_errors.append({'x': x_time, 'y': y_best_errors})
 
@@ -882,35 +884,50 @@ def draw_best_error_curve(results, arms, repeats,
                     subplot.semilogy(
                         [0] + best_error['x'], [1.0] + best_error['y'], color=color, linestyle=linestyle)
         else:
-            errors_by_interval = {}
+            errors_by_interval = { }            
             subplot.set_yscale('log')
+            
             for i in range(repeats):
 
                 selected = analyze.get_result(results, arm, i)
-                x_hours = analyze.get_total_times(selected, 'Hour')
+                t_times = analyze.get_total_times(selected, time_scale)
+                t_max = int(max(t_times)) + 1
                 y_best_errors = analyze.get_best_errors(selected)
-                h = 1
-                for j in range(len(x_hours)):
-                    if not h in errors_by_interval.keys():
-                        errors_by_interval[h] = []
+                if i == 0:
+                    debug("t_times: {}".format(t_times))
+                    debug("y_best_errors: {}".format(y_best_errors))
 
-                    if h < x_hours[j]:
-                        cur_best_err = y_best_errors[j - 1]
-                        errors_by_interval[h].append(cur_best_err)
-                        h = h + 1
-            h_max = h
-            h = 1
+                t = 0
+                cur_best_err = 1.0
+                for j in range(len(t_times)):
+                    
+                    cur_time = t_times[j]
+                    
+                    while t < cur_time:
+                        if not t in errors_by_interval.keys():
+                            errors_by_interval[t] = []                          
+                        errors_by_interval[t].append(cur_best_err)
+                        t += 1
+
+                    if y_best_errors[j] < cur_best_err:
+                        cur_best_err = y_best_errors[j]   
+
+                if i == 0:
+                    debug("errors_by_interval: {}".format(errors_by_interval))
+                        
+                        
             x = np.array([])
             y = np.array([])
             yerr = np.array([])
-            for i in range(1, h_max):
+            
+            for i in range(0, t_max):
                 errors = errors_by_interval[i]
 
                 y = np.append(y, np.mean(errors))
-                yerr = np.append(yerr, np.std(errors))
-                x = np.append(x, h)
-                h = h + 1
-
+                yerr = np.append(yerr, np.std(errors)/std_div)
+                x = np.append(x, i)
+                
+            
             if arm in unlabeled_arms:
                 add_error_fill_line(x, y, yerr, color, ax=subplot,
                                     label=arm, linestyle=linestyle, alpha_fill=alpha_fill)
@@ -919,14 +936,14 @@ def draw_best_error_curve(results, arms, repeats,
                 add_error_fill_line(
                     x, y, yerr, color, ax=subplot, linestyle=linestyle, alpha_fill=alpha_fill)
 
-    subplot.set_title('{} best test errors'.format(title))
+    subplot.set_title('{}'.format(title))
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
                fancybox=True, shadow=True, ncol=5)
     x_range = [0, 0]
     if xlim is not None:
         plt.xlim(xlim)
         x_range = list(xlim)
-        x_ticks = [x for x in range(x_range[0], x_range[-1] + 1)]
+        x_ticks = [x for x in range(x_range[0], x_range[-1] + 1, x_steps)]
         plt.xticks(x_ticks)
 
     if ylim is not None:
@@ -938,7 +955,7 @@ def draw_best_error_curve(results, arms, repeats,
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
     plt.ylabel("Test error", fontsize=15)
-    plt.xlabel('Hour', fontsize=15)
+    plt.xlabel(time_scale, fontsize=15)
     plt.show()
 
 

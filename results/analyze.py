@@ -154,10 +154,13 @@ def get_total_times(selected_result, unit='Min'):
             len(selected_result['cum_opt_time'])))
     for t in range(len(selected_result['cum_exec_time'])):
         total_time = selected_result['cum_exec_time'][t] + selected_result['cum_opt_time'][t]
+        
         if unit == 'Min':
             total_time = total_time / 60.0
         elif unit == 'Hour':
             total_time = total_time / 3600.0
+        else:
+            raise ValueError("Invalid unit: {}".format(unit))
         cum_total_time.append(total_time)
     
     return cum_total_time
@@ -489,22 +492,19 @@ def analyze_mean_var_ranks(opt, estimates, results, start_index=0, classifier=No
     return rank_traces
 
 
-def calc_catastrophic_failures(results, target_goal, num_trials, op_hours):
+def calc_catastrophic_failures(results, target_goal, num_trials, op_hours, 
+                                step=1, criteria='time'):
     opt_iterations = {}
     opt_failures = {}
-    step = 1
+
     x_max = op_hours + 1
-    criteria='hours'
-    if x_max > 50 and x_max < 100:
-        step = 3
-    if x_max >= 100:
-        step = 5
+
     x = range(0, x_max, step)
     opts = list(sorted(results.keys()))
 
     for opt in list(sorted(results.keys())):
         x_values = None
-        if criteria is 'iterations':
+        if criteria is 'iteration':
             x_values = np.array(get_num_iters_over_threshold(
                 results[opt], num_runs, target_goal))
         else:

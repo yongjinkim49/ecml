@@ -125,9 +125,12 @@ class TempSaver(object):
     
     def __init__(self, data_type, optimizer, aquisition_func, num_trials, config,
                 path='./temp/'):
-        
-        self.temp_name = "{}.{}-{}.({})".format(data_type, 
-                        optimizer, aquisition_func, num_trials)
+        title = ""
+        if "title" in config:
+            title = config["title"]
+
+        self.temp_name = "{}.{}-{}.{}.({})".format(data_type, 
+                        optimizer, aquisition_func, title, num_trials)
 
         self.path = path
         if not os.path.exists(self.path):
