@@ -20,30 +20,23 @@ def debug(args):
 
 
 def draw_catastrophic_failures(results, target_goal,
-                               num_runs=50, criteria='Hours', x_max=25, step_size=None,
+                               num_runs=50, criteria='Hours', x_max=25, step_size=1,
                                title=None, indi=None, div=None, ada=None,
                                save_name=None, target_folder='../../../figs/',
                                indi_max=None, div_max=None, ada_max=None,
-                               indi_scale=1, div_scale=1, ada_scale=1, get_style=None,
+                               indi_scale=1, div_scale=1, ada_scale=1, style_format=None,
                                avgs=None, subgroups=None,
                                width=10, height=6, legend=None):
     opt_iterations = {}
     opt_failures = {}
-    if step_size is None:
-        step = 1
-        if x_max > 50 and x_max < 100:
-            step = 3
-        if x_max >= 100:
-            step = 5
-    else:
-        step = step_size
+
     x = []
-    x = range(0, x_max, step)
+    x = range(0, x_max, step_size)
 
     opts = list(sorted(results.keys()))
 
-    if get_style is None:
-        get_style = get_predefined_style
+    if style_format is None:
+        style_format = get_predefined_style
 
 
     for opt in list(sorted(results.keys())):
@@ -82,7 +75,7 @@ def draw_catastrophic_failures(results, target_goal,
 
         # Average plot of Bayesian optimizations
         name = 'Ind-Avg'
-        marker, color, line_style = get_style(name)
+        marker, color, line_style = style_format(name)
         fr = opt_failures[opt]
         for t in range(x_max):
             x_ = x
@@ -94,7 +87,7 @@ def draw_catastrophic_failures(results, target_goal,
             if 'opt' in g:
                 opt = g['opt']
                 name = opt
-                marker, color, linestyle = get_style(get_label(opt))
+                marker, color, linestyle = style_format(get_label(opt))
                 fr = opt_failures[opt]
                 x_ = x
                 _max = x_max
@@ -108,7 +101,7 @@ def draw_catastrophic_failures(results, target_goal,
                 if _scale * _max > x_max:
                     _max = int(x_max / _scale) + 1
 
-                x_ = [x * _scale for x in range(0, _max, step)]
+                x_ = [x * _scale for x in range(0, _max, step_size)]
                 fr = np.asarray(opt_failures[opt])
 
                 max_index = min(len(x_), len(fr))
@@ -135,30 +128,30 @@ def draw_catastrophic_failures(results, target_goal,
 
     if indi is not None:
         for opt in indi:
-            marker, color, linestyle = get_style(get_label(opt))
+            marker, color, linestyle = style_format(get_label(opt))
             fr = opt_failures[opt]
             x_ = x
             if indi_max is not None:
-                x_ = range(0, indi_max, step)
+                x_ = range(0, indi_max, step_size)
                 if indi_scale > 1:
                     if indi_scale * indi_max > x_max:
                         indi_max = int(x_max / indi_scale) + 1
-                    x_ = [x * indi_scale for x in range(0, indi_max, step)]
+                    x_ = [x * indi_scale for x in range(0, indi_max, step_size)]
                 fr = opt_failures[opt][:indi_max]
             ax.plot(x_, fr,
                     marker=marker, color=color, linestyle=linestyle, label=get_label(opt))
 
     if div is not None:
         for opt in div:
-            marker, color, linestyle = get_style(get_label(opt))
+            marker, color, linestyle = style_format(get_label(opt))
             fr = opt_failures[opt]
             x_ = x
             if div_max is not None:
-                x_ = range(0, div_max, step)
+                x_ = range(0, div_max, step_size)
                 if div_scale > 1:
                     if div_scale * div_max > x_max:
                         div_max = int(x_max / div_scale) + 1
-                    x_ = [x * div_scale for x in range(0, div_max, step)]
+                    x_ = [x * div_scale for x in range(0, div_max, step_size)]
                     #linestyle = ':'
 
                 fr = opt_failures[opt][:div_max]
@@ -167,11 +160,11 @@ def draw_catastrophic_failures(results, target_goal,
 
     if ada is not None:
         for opt in ada:
-            marker, color, linestyle = get_style(get_label(opt))
+            marker, color, linestyle = style_format(get_label(opt))
             fr = opt_failures[opt]
             x_ = x
             if ada_max is not None:
-                x_ = range(0, div_max, step)
+                x_ = range(0, div_max, step_size)
                 fr = opt_failures[opt][:div_max]
 
             ax.plot(x_, fr,
@@ -221,39 +214,31 @@ def draw_catastrophic_failures(results, target_goal,
         return plt
 
 
-def draw_success_rate_fig(results, target_goal,
-                               num_runs=None, criteria='Hours', x_max=25, step_size=None,
-                               title=None, indi=None, div=None, ada=None,
-                               save_name=None, target_folder='../../../figs/',
-                               indi_max=None, div_max=None, ada_max=None,
-                               indi_scale=1, div_scale=1, ada_scale=1, name_map=None,
-                               avgs=None, subgroups=None, l_order=None,
-                               width=10, height=6, legend=None, get_style=None,
-                               show_marginal_best=False):
+def draw_success_rate_fig(results, target_goal, x_max, 
+                        num_runs=None, criteria='Hours', step_size=1,
+                        title=None, indi=None, div=None, ada=None,
+                        save_name=None, target_folder='../../../figs/',
+                        indi_max=None, div_max=None, ada_max=None,
+                        indi_scale=1, div_scale=1, ada_scale=1, name_map=None,
+                        avgs=None, parallel=None, l_order=None,
+                        width=10, height=6, legend=None, style_format=None,
+                        show_marginal_best=False):
     opt_iterations = {}
     opt_successes = {}
-    if step_size is None:
-        step = 1
-        if x_max > 50 and x_max < 100:
-            step = 3
-        if x_max >= 100:
-            step = 5
-    else:
-        step = step_size
-    x = []
-    x = range(0, x_max, step)
+    opts = list(sorted(results.keys()))
+
+    x = range(0, x_max, step_size)
 
     if name_map is None:
         def map_names(name):
             return name
         name_map = map_names
-
-    opts = list(sorted(results.keys()))
+    
     if num_runs == None:
         num_runs = len(results[opts[0]].keys())
 
-    if get_style is None:
-        get_style = get_predefined_style
+    if style_format is None:
+        style_format = get_predefined_style
 
     for opt in list(sorted(results.keys())):
         x_values = None
@@ -276,29 +261,14 @@ def draw_success_rate_fig(results, target_goal,
     rcParams['figure.figsize'] = width, height
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
+    ax.grid(alpha=0.5)
 
-
-    if indi is not None:
-        for opt in indi:
-            marker, color, linestyle = get_style(get_label(opt))
-            sr = opt_successes[opt]
-            x_ = x
-            if indi_max is not None:
-                x_ = range(0, indi_max, step)
-                if indi_scale > 1:
-                    if indi_scale * indi_max > x_max:
-                        indi_max = int(x_max / indi_scale) + 1
-                    x_ = [x * indi_scale for x in range(0, indi_max, step)]
-                sr = opt_successes[opt][:indi_max]
-            ax.plot(x_, sr,
-                    marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
-
-    if subgroups is not None:
-        for g in subgroups:
+    if parallel is not None:
+        for g in parallel:
             if 'opt' in g:
                 opt = g['opt']
                 name = opt
-                marker, color, linestyle = get_style(get_label(opt))
+                marker, color, linestyle = style_format(get_label(opt))
                 sr = opt_successes[opt]
                 x_ = x
                 _max = x_max
@@ -312,7 +282,7 @@ def draw_success_rate_fig(results, target_goal,
                 if _scale * _max > x_max:
                     _max = int(x_max / _scale) + 1
 
-                x_ = [x * _scale for x in range(0, _max, step)]
+                x_ = [x * _scale for x in range(0, _max, step_size)]
                 sr = np.asarray(opt_successes[opt])
 
                 max_index = min(len(x_), len(sr))
@@ -337,19 +307,33 @@ def draw_success_rate_fig(results, target_goal,
                         ax.plot(x_[:max_index], sr[:max_index, j],
                                 marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
 
+
+    if indi is not None:
+        for opt in indi:
+            marker, color, linestyle = style_format(get_label(opt))
+            sr = opt_successes[opt]
+            x_ = x
+            if indi_max is not None:
+                x_ = range(0, indi_max, step_size)
+                if indi_scale > 1:
+                    if indi_scale * indi_max > x_max:
+                        indi_max = int(x_max / indi_scale) + 1
+                    x_ = [x * indi_scale for x in range(0, indi_max, step_size)]
+                sr = opt_successes[opt][:indi_max]
+            ax.plot(x_, sr,
+                    marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
+
     if ada is not None:
         for opt in ada:
-            marker, color, linestyle = get_style(get_label(opt))
+            marker, color, linestyle = style_format(get_label(opt))
             sr = opt_successes[opt]
             x_ = x
             if ada_max is not None:
-                x_ = range(0, div_max, step)
+                x_ = range(0, div_max, step_size)
                 sr = opt_successes[opt][:div_max]
 
             ax.plot(x_, sr,
                     marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
-    ax.grid(alpha=0.5)
-
                 
     if avgs is not None and show_marginal_best:
         best_failures = []
@@ -367,27 +351,26 @@ def draw_success_rate_fig(results, target_goal,
         for bf in best_failures:
             best_successes.append(1.0 - bf)
 
-        marker, color, linestyle = get_style(get_label(opt))
+        marker, color, linestyle = style_format(get_label(opt))
         ax.plot(x, best_successes, 
                 marker='*', color=color, linestyle=linestyle, label=name_map(get_label(opt)))                   
 
     if div is not None:
         for opt in div:
-            marker, color, linestyle = get_style(get_label(opt))
+            marker, color, linestyle = style_format(get_label(opt))
             sr = opt_successes[opt]
             x_ = x
             if div_max is not None:
-                x_ = range(0, div_max, step)
+                x_ = range(0, div_max, step_size)
                 if div_scale > 1:
                     if div_scale * div_max > x_max:
                         div_max = int(x_max / div_scale) + 1
-                    x_ = [x * div_scale for x in range(0, div_max, step)]
+                    x_ = [x * div_scale for x in range(0, div_max, step_size)]
                     #linestyle = ':'
 
                 sr = opt_successes[opt][:div_max]
             ax.plot(x_, sr,
                     marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
-
 
     if criteria == "10 mins":
         subset_x = []
@@ -421,6 +404,7 @@ def draw_success_rate_fig(results, target_goal,
             loc = legend['loc']
         if 'borderaxespad' in legend:
             borderaxespad = legend['borderaxespad']
+    
     if l_order is not None:
         handles, labels = ax.get_legend_handles_labels()        
         plt.legend([handles[idx] for idx in l_order], [labels[idx] for idx in l_order],
@@ -432,16 +416,14 @@ def draw_success_rate_fig(results, target_goal,
 
     if save_name is not None:
         plt.tight_layout()
-
         plt.savefig(target_folder + save_name + '.png', format='png', dpi=300)
-
     else:
         return plt
 
 
 def draw_bar_catastrophic_failures(results, target_goal,
                                    percentiles=[0.7, 0.85, 0.9], criteria='Hours', num_iters=50,
-                                   title=None, opts=None, save_name=None, get_style=None,
+                                   title=None, opts=None, save_name=None, style_format=None,
                                    width=14, height=8):
 
     means = {}
@@ -457,8 +439,8 @@ def draw_bar_catastrophic_failures(results, target_goal,
     n_groups = 3
     rcParams['figure.figsize'] = width, height
 
-    if get_style is None:
-        get_style = get_predefined_style
+    if style_format is None:
+        style_format = get_predefined_style
 
     # create plot
     fig, ax = plt.subplots()
@@ -466,7 +448,7 @@ def draw_bar_catastrophic_failures(results, target_goal,
     bar_width = 0.85 / float(len(opts))
     opacity = 0.8
     for i in range((len(opts))):
-        marker, color, linestyle = get_style(get_label(opt))
+        marker, color, linestyle = style_format(get_label(opt))
         rects = plt.bar(index + i * bar_width,
                         means[opts[i]], bar_width,
                         color=color,
@@ -838,7 +820,7 @@ def draw_trials_curve(results, arm, run_index,
 
 
 def add_error_fill_line(x, y, yerr, color=None, linestyle='-',
-                        alpha_fill=0.3, ax=None, label=None):
+                        alpha_fill=0.3, ax=None, label=None, marker=None):
     #ax = ax if ax is not None else plt.gca()
     if color is None:
         color = ax._get_lines.color_cycle.next()
@@ -852,14 +834,15 @@ def add_error_fill_line(x, y, yerr, color=None, linestyle='-',
     ymax = np.minimum(1.0, ymax)
     debug("ymin: {}".format(ymin))
     debug("ymax: {}".format(ymax))
-    ax.semilogy(x, y, color=color, linestyle=linestyle, label=label)
+    ax.semilogy(x, y, color=color, linestyle=linestyle, label=label, marker=marker)
     ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill)
 
 
 def draw_best_error_curve(results, arms, repeats,
                           guidelines=[], summary=False, title=None,
                           xlim=None, ylim=(.001, 1), alpha_fill=0.1, std_div=4,
-                          width=14, height=8, time_scale="Hour", x_steps=1):
+                          width=14, height=8, time_scale="Hour", x_steps=1,
+                          legend=None, l_order=None, style_format=None):
 
     if type(arms) is not list:
         arms = [arms]
@@ -868,13 +851,16 @@ def draw_best_error_curve(results, arms, repeats,
     rcParams['figure.figsize'] = width, height
     fig = plt.figure()
     subplot = fig.add_subplot(111)
+    subplot.grid(alpha=0.5)
     t_max = None
     for arm in arms:
         if not arm in results.keys():
             raise ValueError(
                 "results log do not have record for {}".format(arm))
+        if style_format == None:
+            style_format = get_predefined_style
 
-        _, color, linestyle = get_style(arm, results.keys())
+        marker, color, linestyle = style_format(arm)
         if summary is False:
             best_errors = []
             for i in range(repeats):
@@ -886,11 +872,11 @@ def draw_best_error_curve(results, arms, repeats,
             for best_error in best_errors:
                 if arm in unlabeled_arms:
                     subplot.semilogy(
-                        [0] + best_error['x'], [1.0] + best_error['y'], color=color, linestyle=linestyle, label=arm)
+                        [0] + best_error['x'], [1.0] + best_error['y'], color=color, linestyle=linestyle, label=arm, marker=marker)
                     unlabeled_arms.remove(arm)
                 else:
                     subplot.semilogy(
-                        [0] + best_error['x'], [1.0] + best_error['y'], color=color, linestyle=linestyle)
+                        [0] + best_error['x'], [1.0] + best_error['y'], color=color, linestyle=linestyle, marker=marker)
         else:
             errors_by_interval = { }            
             subplot.set_yscale('log')
@@ -898,9 +884,10 @@ def draw_best_error_curve(results, arms, repeats,
             for i in range(repeats):
 
                 selected = analyze.get_result(results, arm, i)
+                y_best_errors = analyze.get_best_errors(selected)
                 t_times = analyze.get_total_times(selected, time_scale)
                 t_max = int(max(t_times)) + 1
-                y_best_errors = analyze.get_best_errors(selected)
+                
                 if i == 0:
                     debug("t_times: {}".format(t_times))
                     debug("y_best_errors: {}".format(y_best_errors))
@@ -937,16 +924,33 @@ def draw_best_error_curve(results, arms, repeats,
                 
             
             if arm in unlabeled_arms:
-                add_error_fill_line(x, y, yerr, color, ax=subplot,
+                add_error_fill_line(x, y, yerr, color, ax=subplot, marker=marker,
                                     label=arm, linestyle=linestyle, alpha_fill=alpha_fill)
                 unlabeled_arms.remove(arm)
             else:
-                add_error_fill_line(
-                    x, y, yerr, color, ax=subplot, linestyle=linestyle, alpha_fill=alpha_fill)
+                add_error_fill_line(x, y, yerr, color, marker=marker,
+                    ax=subplot, linestyle=linestyle, alpha_fill=alpha_fill)
 
     subplot.set_title('{}'.format(title))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
-               fancybox=True, shadow=True, ncol=5)
+    bbox_to_anchor = None
+    loc = None
+    borderaxespad = None
+    if legend is not None:
+
+        if 'bbox_to_anchor' in legend:
+            bbox_to_anchor = legend['bbox_to_anchor']
+        if 'loc' in legend:
+            loc = legend['loc']
+        if 'borderaxespad' in legend:
+            borderaxespad = legend['borderaxespad']
+    if l_order is not None:
+        handles, labels = ax.get_legend_handles_labels()        
+        plt.legend([handles[idx] for idx in l_order], [labels[idx] for idx in l_order],
+        prop={'size': 15}, bbox_to_anchor=bbox_to_anchor,
+               loc=loc, borderaxespad=borderaxespad)        
+    else:
+        plt.legend(prop={'size': 15}, bbox_to_anchor=bbox_to_anchor,
+               loc=loc, borderaxespad=borderaxespad)
     x_range = [0, 0]
     if xlim is not None:
         plt.xlim(xlim)

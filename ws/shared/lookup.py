@@ -84,6 +84,7 @@ class LookupDataLoader(object):
             end_epoch = self.num_epochs        
         time_col_index = self.begin_index + self.num_hyperparams + end_epoch  #25
         dur = self.data.ix[:, time_col_index].values  # elapsed time
+        dur = dur / self.num_epochs * end_epoch 
         return dur
 
     def get_sobol_grid(self): 

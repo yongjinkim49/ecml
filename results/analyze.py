@@ -153,8 +153,9 @@ def get_total_times(selected_result, unit='Min'):
             len(selected_result['cum_exec_time']), 
             len(selected_result['cum_opt_time'])))
     for t in range(len(selected_result['cum_exec_time'])):
-        total_time = selected_result['cum_exec_time'][t] + selected_result['cum_opt_time'][t]
-        
+        cet = selected_result['cum_exec_time'][t]
+        cot = selected_result['cum_opt_time'][t]
+        total_time = cet + cot 
         if unit == 'Min':
             total_time = total_time / 60.0
         elif unit == 'Hour':
@@ -169,7 +170,9 @@ def get_total_times(selected_result, unit='Min'):
 def get_best_errors(selected_result):
     cur_best_error = 1.0
     best_errors  = []
+
     for err in selected_result['error']:
+
         if cur_best_error > err:
             best_errors.append(err)
             cur_best_error = err
@@ -571,3 +574,44 @@ def compare_batch_peformance(results, base, compare, target_acc, fp,
     c2 = compare[index]
     coeff = c1 / c2
     return coeff
+
+
+# Flatten the parallelization result
+def flatten_results(num_processes, results, opt_name, num_trials):
+    sr_r = {}
+    sr = results[opt_name]
+    for n in range(num_trials):
+        fr = flatten_parallel_trial(num_processes, sr, n)
+        sr_r[str(n)] = fr
+    return sr_r
+
+
+def flatten_parallel_trial(n_p, sr, num_trial):
+    t = sr[str(num_trial)]
+    m_i= 0 # machine index
+    i = 0 # iteration index
+    keys = ["cum_exec_time", "select_trace", "exec_time", "opt_time", "model_idx", "cum_opt_time", "error", "accuracy"]
+    flat_results = []
+    max_i_list = t["iters"]
+    for m_i in range(len(max_i_list)):
+        max_i = max_i_list[m_i]
+        for i in range(max_i):
+            r = {"i" : i, "m": m_i }
+            for k in keys:            
+                r[k] = t[k][m_i][i]
+            r['end_time'] = r['cum_opt_time'] + r['cum_exec_time']
+            #print("{}.{}: {}".format(m_i, i, r['end_time']))
+            flat_results.append(r)
+
+    # sort dict list  by end_time
+    flatted ={}
+    from operator import itemgetter
+    sorted_list = sorted(flat_results, key=itemgetter('end_time')) 
+    for r in sorted_list:
+        #print("{}:{}.{}".format(r['end_time'], r['m'], r['i']))
+        for k in keys:
+            if not k in flatted:
+                flatted[k] = []
+            flatted[k].append(r[k])
+    return flatted
+
