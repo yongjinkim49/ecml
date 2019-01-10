@@ -52,9 +52,13 @@ If you are working on Linux, install these packages as follows:
 
 ```bash
 
-(hpo)device:path$ conda install pandas scikit-learn future 
-(hpo)device:path$ conda install -c conda-forge weave
+(hpo)device:path$ conda install pandas scikit-learn future numpy scipy
 (hpo)device:path$ pip install hyperopt validators flask-restful
+```
+
+(Optional) Speeding up the gradient calculation in GP, install below package:
+```bash
+(hpo)device:path$ conda install -c conda-forge weave
 ```
 
 ### Install with PIP

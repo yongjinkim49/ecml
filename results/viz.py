@@ -222,7 +222,7 @@ def draw_catastrophic_failures(results, target_goal,
 
 
 def draw_success_rate_fig(results, target_goal,
-                               num_runs=50, criteria='Hours', x_max=25, step_size=None,
+                               num_runs=None, criteria='Hours', x_max=25, step_size=None,
                                title=None, indi=None, div=None, ada=None,
                                save_name=None, target_folder='../../../figs/',
                                indi_max=None, div_max=None, ada_max=None,
@@ -249,6 +249,8 @@ def draw_success_rate_fig(results, target_goal,
         name_map = map_names
 
     opts = list(sorted(results.keys()))
+    if num_runs == None:
+        num_runs = len(results[opts[0]].keys())
 
     if get_style is None:
         get_style = get_predefined_style
@@ -663,9 +665,15 @@ def get_predefined_style(name):
             elif '(hybrid)' in name:
                 marker = 'o'
                 #color = 'black'                
-            elif '(w/ log + w/o log)' in name:
+            elif '(interval)' in name:
                 #color = 'xkcd:bright blue'
-                marker = '*'                
+                marker = '*'  
+            elif '(knock)' in name:
+                #color = 'xkcd:bright blue'
+                marker = '*' 
+            elif '(interval-knock)' in name:
+                #color = 'xkcd:bright blue'
+                marker = '*'                                                  
         elif 'R-Div' in name:
             marker = 'o'
         elif 'P-Div' in name:
