@@ -23,7 +23,12 @@
 #python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data10 100
 #python hpo_runner.py -m BATCH -s ASYNC -et 4h data10 100
 # Sequential diversification with ETR
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data10 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data10 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data10 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data10 100
+#python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data10 100
+#python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data10 100
+#python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data10 100
+#python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data10 100
+# Sequential diversification with ETR
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data2 10
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data2 10
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data2 10
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data2 10
