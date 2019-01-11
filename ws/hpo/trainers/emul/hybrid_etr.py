@@ -18,8 +18,8 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
         
         self.epoch_length = lookup.num_epochs
         
-        self.eval_epoch = int(self.epoch_length/3)
-        self.satisfy_epochs = int(self.epoch_length/4)
+        self.eval_epoch = int(self.epoch_length/4)
+        self.satisfy_epochs = int(self.epoch_length/self.eval_epoch*3)
         self.percentile = 75 # percentile X 100
         self.acc_min = 0.0
         self.acc_max = 0.2
@@ -90,10 +90,11 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
             debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
             if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
-                if self.acc_min < acc < self.acc_max:
-                    debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
-                    self.early_terminated.append(True)
-                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
+                if i >= 1:
+                    if self.acc_min < acc < self.acc_max:
+                        debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
+                        self.early_terminated.append(True)
+                        return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
                 if i <= self.eval_epoch-1:
                     if acc > knock_in_barriers[i]:
                         debug("acc knocked into above {} at epoch{}".format(knock_in_barriers[i],i+1))
