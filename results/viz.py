@@ -215,7 +215,7 @@ def draw_catastrophic_failures(results, target_goal,
 
 
 def draw_success_rate_fig(results, target_goal, x_max, 
-                        num_runs=None, criteria='Hours', step_size=1,
+                        num_runs=None, x_unit='Hour', step_size=1,
                         title=None, indi=None, div=None, ada=None,
                         save_name=None, target_folder='../../../figs/',
                         indi_max=None, div_max=None, ada_max=None,
@@ -242,12 +242,12 @@ def draw_success_rate_fig(results, target_goal, x_max,
 
     for opt in list(sorted(results.keys())):
         x_values = None
-        if criteria is 'Iterations':
+        if x_unit is 'Iterations':
             x_values = np.array(analyze.get_num_iters_over_threshold(
                 results[opt], num_runs, target_goal))
         else:
             x_values = np.array(analyze.get_exec_times_over_threshold(
-                results[opt], num_runs, target_goal, unit=criteria))
+                results[opt], num_runs, target_goal, unit=x_unit))
 
         opt_iterations[opt] = x_values
         successes = []
@@ -286,9 +286,9 @@ def draw_success_rate_fig(results, target_goal, x_max,
                 sr = np.asarray(opt_successes[opt])
 
                 max_index = min(len(x_), len(sr))
-                if criteria != 'Iterations' and 'max_hour' in g:
+                if x_unit != 'Iteration' and 'max_hour' in g:
                     max_index = g['max_hour'] + 1
-                    if criteria == '10 mins':
+                    if x_unit == '10min':
                         max_index = (max_index - 1) * 6 + 1
 
                 if sr.ndim == 1:
@@ -372,7 +372,7 @@ def draw_success_rate_fig(results, target_goal, x_max,
             ax.plot(x_, sr,
                     marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
 
-    if criteria == "10 mins":
+    if x_unit == "10 mins":
         subset_x = []
         for i in range(len(x)):
             if i % 6 == 0:
@@ -380,7 +380,7 @@ def draw_success_rate_fig(results, target_goal, x_max,
         ax.set_xticks(subset_x)
         xlabels = [ x * 10 for x in subset_x ]
         ax.set_xticklabels(xlabels)
-        criteria = 'Minute'
+        x_unit = 'Minute'
     else:
         ax.set_xticks(x)
 
@@ -391,7 +391,7 @@ def draw_success_rate_fig(results, target_goal, x_max,
     if title is not None:
         ax.set_title(title)
 
-    plt.xlabel("{}".format(criteria), size=20)
+    plt.xlabel("{}".format(x_unit), size=20)
     plt.ylabel("Success rate", fontsize=20)
     bbox_to_anchor = None
     loc = None
