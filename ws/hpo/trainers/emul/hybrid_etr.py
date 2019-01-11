@@ -17,7 +17,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
         super(IntervalKnockETRTrainer, self).__init__(lookup)
         
         self.epoch_length = lookup.num_epochs
-        self.lcs = self.history
+        
         self.eval_epoch = int(self.epoch_length/3)
         self.satisfy_epochs = int(self.epoch_length/4)
         self.percentile = 75 # percentile X 100
@@ -43,19 +43,19 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
         knock_out_barrier = 0
 
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.lcs.append(acc_curve)
+        self.history.append(acc_curve)
 
         history = []
         knock_temp_storage = []
         knock_in_barriers = [0] * self.eval_epoch #7
-        unstopped_list = list(compress(self.lcs, self.early_terminated))
+        unstopped_list = list(compress(self.history, self.early_terminated))
         knock_out_candidates = []       
 
 
         for i in range(self.eval_epoch): #7
             history.append([])
-            for n in range(len(self.lcs)): # number of iterations
-                history[i].append(self.lcs[n][i]) # vertical congregation of curve values     
+            for n in range(len(self.history)): # number of iterations
+                history[i].append(self.history[n][i]) # vertical congregation of curve values     
             knock_in_barriers[i] = np.percentile(history[i], self.percentile) # 75% value of the vertical row
         
         for i in range(len(unstopped_list)): # number of iterations fully trained without ETR activated
@@ -66,10 +66,10 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
 
 
         if len(knock_out_candidates) >= 1:
-            if len(self.lcs) > int(round(1/(1-self.percentile/100))):
+            if len(self.history) > int(round(1/(1-self.percentile/100))):
 
                 knock_out_point = min(knock_out_candidates)
-                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.lcs)-int(round(1/(1-self.percentile/100))))))
+                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.history)-int(round(1/(1-self.percentile/100))))))
                 knock_out_barrier = knock_out_point - knock_out_adjusted_margin
             else:
                 knock_out_barrier = np.max(knock_out_candidates)
@@ -78,7 +78,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
         
         debug('             ')
         debug('             ')
-        debug("commencing iteration {}".format(len(self.lcs)))
+        debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
 
 
@@ -89,7 +89,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
             
             debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
-            if len(self.lcs) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
+            if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
                 if self.acc_min < acc < self.acc_max:
                     debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
                     self.early_terminated.append(True)
@@ -127,8 +127,7 @@ class IntervalMultiKnockETRTrainer(EarlyTerminateTrainer):
         super(IntervalMultiKnockETRTrainer, self).__init__(lookup)
         
         self.epoch_length = lookup.num_epochs
-        self.lcs = self.history
-        
+                
         self.eval_p = 3 # can choose 3, 4, or 5
         self.satisfy_p = self.eval_p * 1.5
         if self.eval_p == 3:
@@ -175,7 +174,7 @@ class IntervalMultiKnockETRTrainer(EarlyTerminateTrainer):
         cur_max_acc = 0
 
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.lcs.append(acc_curve)
+        self.history.append(acc_curve)
 
         history1 = []; history2 = []; history3 = []; history4 = []
         knock_in_barriers1 = [0] * self.eval_epoch1
@@ -185,15 +184,15 @@ class IntervalMultiKnockETRTrainer(EarlyTerminateTrainer):
             if self.eval_p == 5:
                 knock_in_barriers4 = [0] * (self.eval_epoch4 - self.eval_epoch3)
 
-        unstopped_list1 = list(compress(self.lcs, 1 - np.array(self.early_stopped1))) ### survives if the paired component is True
+        unstopped_list1 = list(compress(self.history, 1 - np.array(self.early_stopped1))) ### survives if the paired component is True
         unstopped_list2 = list(compress(unstopped_list1, 1 - np.array(self.early_stopped2)))
         unstopped_list3 = list(compress(unstopped_list2, 1 - np.array(self.early_stopped3)))       
 
 
         for i in range(self.eval_epoch1): # creating knock-in barriers for the first segment
             history1.append([]) # add base list for the next epoch
-            for n in range(len(self.lcs)): # number of iterations
-                history1[i].append(self.lcs[n][i]) # vertical congregation of curve values     
+            for n in range(len(self.history)): # number of iterations
+                history1[i].append(self.history[n][i]) # vertical congregation of curve values     
             knock_in_barriers1[i] = np.percentile(history1[i], self.percentile, interpolation = 'lower') 
 
         if len(unstopped_list1) >= int(round(1/(1-self.percentile/100))):  # creating knock-in barriers for the second segment (if eval_p >= 3)
@@ -231,7 +230,7 @@ class IntervalMultiKnockETRTrainer(EarlyTerminateTrainer):
                 for i in range(self.eval_epoch4-self.eval_epoch3):
                     knock_in_barriers4[i] = knock_in_barriers3[i]
         
-        debug("commencing iteration {}".format(len(self.lcs)))
+        debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
 
 
@@ -242,7 +241,7 @@ class IntervalMultiKnockETRTrainer(EarlyTerminateTrainer):
             
             debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
-            if len(self.lcs) >= int(round(1/(1-self.percentile/100))): # after fully training a few trials
+            if len(self.history) >= int(round(1/(1-self.percentile/100))): # after fully training a few trials
                 ## INTERVAL RULE
                 # activates regardless of epoch in concern
                 if self.acc_min <= acc <= self.acc_max:

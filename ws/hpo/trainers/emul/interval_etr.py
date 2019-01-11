@@ -18,8 +18,6 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
         self.epoch_length = lookup.num_epochs
         self.acc_min = 0.0
         self.acc_max = 0.2
-        self.lcs = self.history
-
 
     def get_time_saving(self, cand_index, stop_epoch):
         # XXX: consider preparation time later
@@ -37,11 +35,9 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
         cur_max_acc = 0
 
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.lcs.append(acc_curve)
+        self.history.append(acc_curve)
 
-        debug('             ')
-        debug('             ')
-        debug("commencing iteration {}".format(len(self.lcs)))
+        debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
 
         for i in range(min_epoch, self.epoch_length-1):

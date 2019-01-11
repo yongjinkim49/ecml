@@ -16,7 +16,7 @@ class KnockETRTrainer(EarlyTerminateTrainer):
         super(KnockETRTrainer, self).__init__(lookup)
 
         self.epoch_length = lookup.num_epochs
-        self.lcs = self.history
+        
         self.eval_epoch = int(self.epoch_length/3)
         self.satisfy_epochs = int(self.epoch_length/4)
         self.percentile = 75 # percentile X 100
@@ -39,19 +39,19 @@ class KnockETRTrainer(EarlyTerminateTrainer):
         knock_out_barrier = 0
 
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.lcs.append(acc_curve)
+        self.history.append(acc_curve)
 
         history = []
         knock_temp_storage = []
         knock_in_barriers = [0] * self.eval_epoch #7
-        unstopped_list = list(compress(self.lcs, self.early_terminated))
+        unstopped_list = list(compress(self.history, self.early_terminated))
         knock_out_candidates = []       
 
 
         for i in range(self.eval_epoch): #7
             history.append([])
-            for n in range(len(self.lcs)): # number of iterations
-                history[i].append(self.lcs[n][i]) # vertical congregation of curve values     
+            for n in range(len(self.history)): # number of iterations
+                history[i].append(self.history[n][i]) # vertical congregation of curve values     
             knock_in_barriers[i] = np.percentile(history[i], self.percentile) # 75% value of the vertical row
         
         for i in range(len(unstopped_list)): # number of iterations fully trained without ETR activated
@@ -62,19 +62,17 @@ class KnockETRTrainer(EarlyTerminateTrainer):
 
 
         if len(knock_out_candidates) >= 1:
-            if len(self.lcs) > int(round(1/(1-self.percentile/100))):
+            if len(self.history) > int(round(1/(1-self.percentile/100))):
 
                 knock_out_point = min(knock_out_candidates)
-                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.lcs)-int(round(1/(1-self.percentile/100))))))
+                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.history)-int(round(1/(1-self.percentile/100))))))
                 knock_out_barrier = knock_out_point - knock_out_adjusted_margin
             else:
                 knock_out_barrier = np.max(knock_out_candidates)
         else: 
             knock_out_barrier = knock_in_barriers[self.eval_epoch-1]
         
-        debug('             ')
-        debug('             ')
-        debug("commencing iteration {}".format(len(self.lcs)))
+        debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
 
 
@@ -85,7 +83,7 @@ class KnockETRTrainer(EarlyTerminateTrainer):
             
             debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
-            if len(self.lcs) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
+            if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
                 if i <= self.eval_epoch-1:
                     if acc > knock_in_barriers[i]:
                         debug("acc knocked into above {} at epoch{}".format(knock_in_barriers[i],i+1))

@@ -15,8 +15,7 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
         
         super(VizMedianETRTrainer, self).__init__(lookup)
 
-        self.epoch_length = lookup.num_epochs
-        self.lcs = self.history
+        self.epoch_length = lookup.num_epochs        
         self.eval_epoch = int(self.epoch_length/3)
         self.percentile = 50 # median
 
@@ -35,16 +34,16 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
         cur_max_acc = 0
         debug("cand_index:{}".format(cand_index))
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.lcs.append(acc_curve)
+        self.history.append(acc_curve)
 
         history = []   
 
-        for i in range(len(self.lcs)):
-            history.append(np.mean(self.lcs[i][:self.eval_epoch]))
+        for i in range(len(self.history)):
+            history.append(np.mean(self.history[i][:self.eval_epoch]))
 
         threshold = np.percentile(history, self.percentile)
 
-        debug("commencing iteration {}".format(len(self.lcs)))
+        debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
 
         for i in range(min_epoch, self.epoch_length-1):
