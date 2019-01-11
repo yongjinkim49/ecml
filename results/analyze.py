@@ -219,7 +219,7 @@ def get_best_acc_of_trial(lookup_table, start_col=10, end_col=25, metric='acc'):
 
 def get_difficulty_stats(lookup, difficulties=[]):
     if len(difficulties) == 0:
-        difficulties = np.array([0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005])
+        difficulties = np.array([0.01, 0.005, 0.001, 0.0005, 0.0001])
     num_lookup = len(lookup)
     stats = []
     best_accs = lookup['best_acc']

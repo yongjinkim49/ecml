@@ -28,7 +28,7 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data10 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data10 100
 # Sequential diversification with ETR
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data2 10
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data2 10
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data2 10
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data2 10
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data2 90
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data2 90
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data2 90
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data2 90

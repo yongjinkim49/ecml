@@ -964,7 +964,7 @@ def draw_best_error_curve(results, arms, repeats,
         plt.ylim(ylim)
 
     for s in guidelines:
-        label = "Top {:2.2f}%".format(s['difficulty'])
+        label = "Top {:.2f}%".format(s['difficulty'])
         plt.text(x_range[-1] + 0.1, s['error'], label)
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
