@@ -54,7 +54,7 @@ def add_opt_time_span(results, opt, num_iters):
         return results
 
 
-def get_exec_times_over_threshold(logs, num_runs, threshold, unit='Hours'):
+def get_exec_times_over_threshold(logs, num_runs, threshold, unit='Hour'):
     cum_exec_time = []
 
     for i in range(num_runs):
@@ -78,11 +78,11 @@ def get_exec_times_over_threshold(logs, num_runs, threshold, unit='Hours'):
 
         total_mins = float(total_secs) / 60.0
         total_hours = float(total_mins) / 60.0
-        if unit == 'Secs':
+        if unit == 'Sec':
             cum_exec_time.append(total_secs)
-        elif unit == 'Mins':
+        elif unit == 'Min':
             cum_exec_time.append(total_mins)
-        elif unit == '10 mins':
+        elif unit == '10min':
             cum_exec_time.append(total_mins / 10.0)            
         else:
             cum_exec_time.append(total_hours)

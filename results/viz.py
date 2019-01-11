@@ -15,8 +15,9 @@ import scipy.stats as sps
 
 
 def debug(args):
-    pass
     #print(args)
+    pass
+    
 
 
 def draw_catastrophic_failures(results, target_goal,
@@ -242,13 +243,13 @@ def draw_success_rate_fig(results, target_goal, x_max,
 
     for opt in list(sorted(results.keys())):
         x_values = None
-        if x_unit is 'Iterations':
+        if x_unit is 'Iteration':
             x_values = np.array(analyze.get_num_iters_over_threshold(
                 results[opt], num_runs, target_goal))
         else:
             x_values = np.array(analyze.get_exec_times_over_threshold(
                 results[opt], num_runs, target_goal, unit=x_unit))
-
+        debug("x_values: {}".format(x_values))
         opt_iterations[opt] = x_values
         successes = []
         for i in x:
@@ -286,10 +287,8 @@ def draw_success_rate_fig(results, target_goal, x_max,
                 sr = np.asarray(opt_successes[opt])
 
                 max_index = min(len(x_), len(sr))
-                if x_unit != 'Iteration' and 'max_hour' in g:
+                if x_unit == 'Hour' and 'max_hour' in g:
                     max_index = g['max_hour'] + 1
-                    if x_unit == '10min':
-                        max_index = (max_index - 1) * 6 + 1
 
                 if sr.ndim == 1:
                     if x_max < max_index:
@@ -372,7 +371,7 @@ def draw_success_rate_fig(results, target_goal, x_max,
             ax.plot(x_, sr,
                     marker=marker, color=color, linestyle=linestyle, label=name_map(get_label(opt)))
 
-    if x_unit == "10 mins":
+    if x_unit == "10min":
         subset_x = []
         for i in range(len(x)):
             if i % 6 == 0:
@@ -652,10 +651,10 @@ def get_predefined_style(name):
                 marker = '*'  
             elif '(knock)' in name:
                 #color = 'xkcd:bright blue'
-                marker = '*' 
+                marker = 'd' 
             elif '(interval-knock)' in name:
                 #color = 'xkcd:bright blue'
-                marker = '*'                                                  
+                marker = 'D'                                                  
         elif 'R-Div' in name:
             marker = 'o'
         elif 'P-Div' in name:
@@ -839,9 +838,9 @@ def add_error_fill_line(x, y, yerr, color=None, linestyle='-',
 
 
 def draw_best_error_curve(results, arms, repeats,
-                          guidelines=[], summary=False, title=None,
+                          guidelines=[], summary=False, title=None, x_unit="Hour",
                           xlim=None, ylim=(.001, 1), alpha_fill=0.1, std_div=4,
-                          width=14, height=8, time_scale="Hour", x_steps=1,
+                          width=14, height=8, x_steps=1,
                           legend=None, l_order=None, style_format=None):
 
     if type(arms) is not list:
@@ -865,7 +864,7 @@ def draw_best_error_curve(results, arms, repeats,
             best_errors = []
             for i in range(repeats):
                 selected = analyze.get_result(results, arm, i)
-                x_time = analyze.get_total_times(selected, time_scale)
+                x_time = analyze.get_total_times(selected, x_unit)
                 y_best_errors = analyze.get_best_errors(selected)
                 best_errors.append({'x': x_time, 'y': y_best_errors})
 
@@ -885,7 +884,7 @@ def draw_best_error_curve(results, arms, repeats,
 
                 selected = analyze.get_result(results, arm, i)
                 y_best_errors = analyze.get_best_errors(selected)
-                t_times = analyze.get_total_times(selected, time_scale)
+                t_times = analyze.get_total_times(selected, x_unit)
                 t_max = int(max(t_times)) + 1
                 
                 if i == 0:
@@ -935,6 +934,7 @@ def draw_best_error_curve(results, arms, repeats,
     bbox_to_anchor = None
     loc = None
     borderaxespad = None
+    
     if legend is not None:
 
         if 'bbox_to_anchor' in legend:
@@ -943,6 +943,7 @@ def draw_best_error_curve(results, arms, repeats,
             loc = legend['loc']
         if 'borderaxespad' in legend:
             borderaxespad = legend['borderaxespad']
+    
     if l_order is not None:
         handles, labels = ax.get_legend_handles_labels()        
         plt.legend([handles[idx] for idx in l_order], [labels[idx] for idx in l_order],
@@ -952,6 +953,7 @@ def draw_best_error_curve(results, arms, repeats,
         plt.legend(prop={'size': 15}, bbox_to_anchor=bbox_to_anchor,
                loc=loc, borderaxespad=borderaxespad)
     x_range = [0, 0]
+    
     if xlim is not None:
         plt.xlim(xlim)
         x_range = list(xlim)
@@ -967,7 +969,7 @@ def draw_best_error_curve(results, arms, repeats,
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
     plt.ylabel("Test error", fontsize=15)
-    plt.xlabel(time_scale, fontsize=15)
+    plt.xlabel(x_unit, fontsize=15)
     plt.show()
 
 

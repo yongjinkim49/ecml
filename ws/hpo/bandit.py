@@ -319,7 +319,7 @@ class HPOBanditMachine(object):
             self.total_results[i] = wr.get_current_status()
             self.temp_saver.save(self.total_results)
             self.working_result = None
-
+            
         if save_results is True:
             
             est_records = None
