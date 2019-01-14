@@ -22,7 +22,7 @@ class SequentialStrategy(object):
         self.counts = counts                
         self.epsilon = 0.0
 
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         idx = step % self.num_arms
         return idx
 
@@ -55,7 +55,7 @@ class SequentialKnockOutStrategy(object):
         self.rank_sums = np.array([ 0.0 for i in range(self.num_arms)])
         self.cur_index = 0            
 
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         idx = 0
         if step != 0 and step % self.iters_round == 0:
             # remove the worst performed arm            
@@ -107,7 +107,7 @@ class RandomStrategy(object):
         self.counts = counts                
         self.epsilon = 1.0
 
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         idx = np.random.randint(0, self.num_arms)
         
         return idx
@@ -142,7 +142,7 @@ class ClassicHedgeStrategy(object):
                 return i
         raise ValueError("unrealistic status.")
 
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         z = sum([math.exp(v * self.temperature) for v in self.values])
         probs = [math.exp(v * self.temperature) / z for v in self.values]
         return self.categorical_draw(probs)
@@ -187,15 +187,17 @@ class BayesianHedgeStrategy(object):
                 return i
         raise ValueError("unrealistic status.")
 
-    def nominate(self):        
+    def nominate(self, use_interim_result=True):        
         all_nominees = []
+        
         for arm in self.arms:
             samples = cp.copy(self.samples)
             optimizer = arm['model']
             aquisition_func = arm['acq_func']
             chooser = self.choosers[optimizer]
             mean_value = 0.0 # default mean value.
-            next_index = chooser.next(samples, aquisition_func)
+            
+            next_index = chooser.next(samples, aquisition_func, use_interim_result)
             if chooser.mean_value is not None:
                 mean_value = chooser.mean_value
             test_error = samples.get_test_error(next_index)
@@ -209,8 +211,8 @@ class BayesianHedgeStrategy(object):
             })
         return all_nominees
 
-    def next(self, step):
-        self.nominees = self.nominate()
+    def next(self, step, use_interim_result=True):
+        self.nominees = self.nominate(use_interim_result)
 
         z = sum([math.exp(v * self.temperature) for v in self.values])
         probs = [round(math.exp(v * self.temperature) / z, 3) for v in self.values]
@@ -280,7 +282,7 @@ class EpsilonGreedyStrategy(object):
         self.log_scale_decay = log_scale_decay
         self.reward_scaling = reward_scaling
 
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         ran_num = np.random.random_sample()
         idx = None
 
@@ -379,7 +381,7 @@ class GreedyTimeStrategy(object):
             warn('unsupported time unit: {}'.format(self.time_unit))
         return elapsed
     
-    def next(self, step):
+    def next(self, step, use_interim_result=True):
         ran_num = np.random.random_sample()
         idx = None
 

@@ -763,9 +763,10 @@ def draw_trials_curve(results, arm, run_index,
     fig = plt.figure()
     subplot = fig.add_subplot(111)
 
+    available_arms = set([arm])
     #marker, color, linestyle = get_style(arm, results.keys())
-
-    available_arms = set(selected['select_trace'])
+    if 'select_trace' in selected:
+        available_arms = set(selected['select_trace'])
     unlabeled_arms = set([arm])
     if len(available_arms) > 0:
         unlabeled_arms = copy.copy(available_arms)
@@ -773,8 +774,22 @@ def draw_trials_curve(results, arm, run_index,
 
     for i in range(len(x_time)):
         if len(available_arms) > 0:
-            arm = selected['select_trace'][i]
+            if 'select_trace' in selected:            
+                arm = selected['select_trace'][i]
+                
             marker, color, _ = get_style(arm, available_arms)
+            if 'model_index' in selected:
+                if selected['model_index'][i] < 0:
+                    color = 'red'
+
+            if "epoch" in selected:
+                if selected['epoch'][i] <= 3:
+                    marker = '.'
+                elif selected['epoch'][i] < 10:
+                    marker = '*'
+                else:
+                    marker = 'o'
+                 
 
         if arm in unlabeled_arms:
             subplot.semilogy(
@@ -945,7 +960,7 @@ def draw_best_error_curve(results, arms, repeats,
             borderaxespad = legend['borderaxespad']
     
     if l_order is not None:
-        handles, labels = ax.get_legend_handles_labels()        
+        handles, labels = subplot.get_legend_handles_labels()        
         plt.legend([handles[idx] for idx in l_order], [labels[idx] for idx in l_order],
         prop={'size': 15}, bbox_to_anchor=bbox_to_anchor,
                loc=loc, borderaxespad=borderaxespad)        

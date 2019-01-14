@@ -37,7 +37,7 @@ class HyperOptChooser(object):
         # TODO:We can not apply the evaluation time penalty now. 
         pass
 
-    def next(self, samples, acq_func):
+    def next(self, samples, acq_func, use_interim=True):
         algo = tpe.suggest
         if acq_func == 'RANDOM':
             algo = rand.suggest

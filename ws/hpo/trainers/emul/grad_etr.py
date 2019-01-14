@@ -56,10 +56,11 @@ class GradientETRTrainer(EarlyTerminateTrainer):
         self.history.append(acc_curve)
 
         max_epoch = len(acc_curve)
+        early_terminated = False
         min_train_epoch = self.get_min_train_epoch()
         
         if estimates is None:
-            self.early_terminated.append(False)
+            self.early_terminated_history.append(False)
             return super(GradientETRTrainer, self).train(cand_index, space=space)
         else:
             candidates = estimates['candidates']
@@ -103,10 +104,13 @@ class GradientETRTrainer(EarlyTerminateTrainer):
                         warn("Inaccurate reporting: {:.4f} - ground truth {:.4f},".format(cur_max_acc, max(acc_curve)))
                     
                     # stop early
-                    self.early_terminated.append(True)
-                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
+                    early_terminated = True
+                    self.early_terminated_history.append(early_terminated)
+                    return 1.0 - cur_max_acc, \
+                            self.get_time_saving(cand_index, i+1), \
+                            early_terminated
             
-            self.early_terminated.append(False)
-            return 1.0 - max(acc_curve), self.total_times[cand_index]    
+            self.early_terminated_history.append(early_terminated)
+            return 1.0 - max(acc_curve), self.total_times[cand_index], early_terminated    
 
 

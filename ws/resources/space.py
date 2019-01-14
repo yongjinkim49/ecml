@@ -32,6 +32,28 @@ class Space(Resource):
 
         return space, 200
 
+    def post(self, space_id):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument("Authorization", location="headers") # for security reason
+            args = parser.parse_args()
+            if not self.sm.authorize(args['Authorization']):
+                return "Unauthorized", 401
+
+            samples = self.sm.get_samples(space_id)
+            if samples == None:
+                return "{} space is not available".format(space_id), 500            
+            
+            expand_req = request.get_json(force=True)
+            # TODO: validate space_req is valid
+            
+            samples.expand(expand_req)
+            return {"space_id": space_id}, 201
+        except Exception as ex:
+            return "Sampling space expand failed: {}".format(ex), 400        
+
+
+
     def put(self, space_id):
         parser = reqparse.RequestParser()        
         parser.add_argument("Authorization", location="headers") # for security reason

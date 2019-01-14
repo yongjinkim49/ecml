@@ -37,9 +37,9 @@ class RandomChooser:
     def set_eval_time_penalty(self, est_eval_time):
         pass
 
-    def next(self, samples, af):
+    def next(self, samples, af, use_interim=True):
 
-        candidates = samples.get_candidates()
+        candidates = samples.get_candidates(use_interim)
         next_index = int(candidates[int(np.floor(candidates.shape[0]*npr.rand()))])
         return next_index
 

@@ -20,7 +20,8 @@ class HPOResultFactory(object):
         self.result['exec_time'] = []
         self.result['opt_time'] = []
         self.result['cum_exec_time'] = []
-        self.result['cum_opt_time'] = []
+        self.result['early_terminated'] = []
+        self.result['cum_opt_time'] = []        
         self.result['model_idx'] = []  # for tracing selected candidates
         self.result['select_trace'] = []  # for tracing arm selection
 

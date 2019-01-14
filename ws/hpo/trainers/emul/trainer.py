@@ -30,7 +30,7 @@ class TrainEmulator(TrainerPrototype):
         acc_curve = self.acc_curves.loc[cand_index].values
         total_time = self.total_times[cand_index]
 
-        return 1.0 - max(acc_curve), total_time         
+        return 1.0 - max(acc_curve), total_time, False         
 
     def get_interim_error(self, model_index, cur_dur):
         total_dur = self.total_times[model_index]
@@ -56,12 +56,12 @@ class EarlyTerminateTrainer(TrainEmulator):
         super(EarlyTerminateTrainer, self).__init__(lookup)
 
         self.history = []
-        self.early_terminated = []
+        self.early_terminated_history = []
 
     def reset(self):
         # reset history
         self.history = []
-        self.early_terminated = []
+        self.early_terminated_history = []
 
 
 class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
@@ -86,14 +86,14 @@ class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
         # TODO: Your algorithm here
         early_termination = True # if your algorithm fires, append the result as below:
         if early_termination:
-            self.early_terminated.append(True)
+            self.early_terminated_history.append(True)
             stopped_error = 0.1
             eval_time = 100
 
             # TODO: you should return the error when it stopped and time to execute here.
-            return stopped_error, eval_time
+            return stopped_error, eval_time, True
         else:
-            self.early_terminated.append(False)
+            self.early_terminated_history.append(False)
 
-            return 1.0 - max(acc_curve), self.total_times[cand_index] 
+            return 1.0 - max(acc_curve), self.total_times[cand_index], False
 

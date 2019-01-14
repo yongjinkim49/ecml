@@ -56,8 +56,8 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
             if i+1 == self.eval_epoch:
                 if acc < threshold:
                     debug("terminated at epoch{}".format(i+1))
-                    self.early_terminated.append(True)
-                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1)
+                    self.early_terminated_history.append(True)
+                    return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
 
-        self.early_terminated.append(False)
-        return 1.0 - max(acc_curve), self.total_times[cand_index]
+        self.early_terminated_history.append(False)
+        return 1.0 - max(acc_curve), self.total_times[cand_index], False

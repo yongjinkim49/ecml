@@ -17,33 +17,52 @@ class SearchHistory(object):
         self.candidates = np.setdiff1d(np.arange(self.num_samples), self.complete)
         
         self.observed_errors = np.ones(self.num_samples)
+        self.terminal_record = np.zeros(self.num_samples)
 
-    def get_candidates(self):
-        return self.candidates
+    def get_candidates(self, use_interim=True):
+        if use_interim:
+            return self.candidates
+        else:
+            # select candidates by elements which have 0 of terminal record
+            candidates = np.where(self.terminal_record == 0)[0]
+            return candidates
 
-    def get_completes(self):
-        return self.complete
+    def get_completes(self, use_interim=True):
+        if use_interim:
+            return self.complete
+        else:
+            completes = np.where(self.terminal_record == 1)[0]
+            return completes
 
-    def update(self, model_index, test_error):
+    def update(self, model_index, test_error, interim=False):
         if not model_index in self.complete:
             self.candidates = np.setdiff1d(self.candidates, model_index)
             self.complete = np.append(self.complete, model_index)
         self.observed_errors[model_index] = test_error
+        if interim == False:
+            self.terminal_record[model_index] = 1
+        else:
+            self.terminal_record[model_index] = 0
 
-    def get_errors(self, type_or_id):
+    def get_errors(self, type_or_id, use_interim=True):
+        
         if type_or_id == "completes":
-            return self.observed_errors[self.complete]
+            completes = self.complete
+            if use_interim == False:
+                completes = self.get_completes(False)
+            return self.observed_errors[completes]
         else:
             return self.observed_errors[type_or_id]
 
-    def append(self):
+    def expand(self, hpv):
         # TODO: check hyperparams are existed
         model_index = self.num_samples # assign new model index
         self.complete = np.append(self.complete, model_index)
-        self.observed_errors = np.append(self.observed_errors, 0.0) 
+        self.observed_errors = np.append(self.observed_errors, 1.0) 
         
         self.num_samples += 1
         return model_index
+
 
 class GridSamplingSpace(SearchHistory):
 
@@ -68,13 +87,13 @@ class GridSamplingSpace(SearchHistory):
     def get_params(self):
         return self.hp_config.param_order
 
-    def get_grid(self, index=None):
+    def get_grid(self, index=None, use_interim=False):
         if index == "completes":
-            completes = self.get_completes()
+            completes = self.get_completes(use_interim)
             #debug("index of completes: {}".format(completes))
             return self.grid[completes, :]
         elif index == "candidates":
-            candidates = self.get_candidates()
+            candidates = self.get_candidates(use_interim)
             #debug("index of candidates: {}".format(candidates))
             return self.grid[candidates, :]        
         elif index != None:
@@ -94,13 +113,13 @@ class GridSamplingSpace(SearchHistory):
         else:
             return self.hpv
 
-    def append(self, hpv):
+    def expand(self, hpv):
         cvt = VectorGridConverter(self.hpv, self.get_candidates(), self.hp_config)
         grid_vec = cvt.to_grid_vector(hpv)
         
         self.hpv = np.append(self.hpv, hpv)
         self.grid = np.append(self.grid, grid_vec) 
-        return super(GridSamplingSpace, self).append()
+        return super(GridSamplingSpace, self).expand(hpv)
 
 
 class SurrogateSamplingSpace(GridSamplingSpace):
@@ -119,10 +138,10 @@ class SurrogateSamplingSpace(GridSamplingSpace):
 
     # For search history 
 
-    def update(self, model_index, test_error=None):
+    def update(self, model_index, test_error=None, interim=False):
         if test_error is None:
             test_error = self.test_errors[model_index]
-        super(GridSamplingSpace, self).update(model_index, test_error)
+        super(GridSamplingSpace, self).update(model_index, test_error, interim)
 
     def get_test_error(self, index=None):
         if index != None:
@@ -136,7 +155,7 @@ class SurrogateSamplingSpace(GridSamplingSpace):
         else:
             return self.exec_times
 
-    def append(self, hpv):
+    def expand(self, hpv):
         # return approximated index instead of newly created index
         cvt = VectorGridConverter(self.hpv, self.get_candidates(), self.hp_config)
         idx, err_distance = cvt.get_nearby_index(hpv)
@@ -177,15 +196,18 @@ class RemoteSamplingSpace(SearchHistory):
             return self.space.get_vector(index)
 
     # For history
-    def get_candidates(self):
-        return np.asarray(self.space.get_candidates())
+    def get_candidates(self, use_interim=True):
+        return np.asarray(self.space.get_candidates(use_interim))
 
-    def get_completes(self):
-        return np.asarray(self.space.get_completes())
+    def get_completes(self, use_interim=True):
+        return np.asarray(self.space.get_completes(use_interim))
 
-    def update(self, model_index, test_error):
-        self.space.update_error(model_index, test_error)
+    def update(self, model_index, test_error, interim=False):
+        self.space.update_error(model_index, test_error, interim)
 
-    def get_errors(self, type_or_id):
-        return np.asarray(self.space.get_error(type_or_id))
+    def get_errors(self, type_or_id, interim=False):
+        return np.asarray(self.space.get_error(type_or_id, interim))
 
+    def expand(self, hpv):
+        self.space.expand(hpv)
+        
