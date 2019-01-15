@@ -4,11 +4,11 @@ from __future__ import print_function
 
 from ws.shared.logger import *
 
-def get_simulator(space, etr, start_up_time=None):
+def get_simulator(space, etr, expired_time=None):
     
     from ws.hpo.trainers.emul.trainer import TrainEmulator
     from ws.hpo.trainers.emul.grad_etr import GradientETRTrainer
-    from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer
+    from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer, VizPentaETRTrainer 
     from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
     from ws.hpo.trainers.emul.hybrid_etr import IntervalKnockETRTrainer
@@ -21,10 +21,10 @@ def get_simulator(space, etr, start_up_time=None):
                 
         if etr == None or etr == "None":
             return TrainEmulator(lookup)
-        elif etr == 'Gradient':
-            return GradientETRTrainer(lookup)
         elif etr == "VizMedian":
-            return VizMedianETRTrainer(lookup)                
+            return VizMedianETRTrainer(lookup)
+        elif etr == "VizPenta":
+            return VizPentaETRTrainer(lookup)                         
         elif etr == "Knock":
             return KnockETRTrainer(lookup)
         elif etr == "Interval":
@@ -32,7 +32,7 @@ def get_simulator(space, etr, start_up_time=None):
         elif etr == "IntervalKnock":
             return IntervalKnockETRTrainer(lookup)            
         elif etr == "KickStarter":
-            return KickStarterETRTrainer(lookup, expired_time=start_up_time)
+            return KickStarterETRTrainer(lookup, expired_time=expired_time)
         else:
             debug("Invalid ETR: {}".format(etr))
             return TrainEmulator(lookup)

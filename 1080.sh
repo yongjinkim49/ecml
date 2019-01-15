@@ -24,4 +24,4 @@
 #python hpo_runner.py -m BATCH -s ASYNC -et 4h data1 100
 # Sequential diversification with ETR
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr KickStarter data2 100
-python hpo_runner.py -rc w6h.json -m DIV -s SEQ -et 1d -etr IntervalKnock data2 10
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizPenta data2 100

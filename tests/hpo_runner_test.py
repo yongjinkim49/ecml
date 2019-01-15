@@ -18,7 +18,7 @@ def data2_test(etr):
     
     #set_log_level('debug')
     
-    run_cfg = bconf.read("arms-w6h.json", path="run_conf/")
+    run_cfg = bconf.read("arms.json", path="run_conf/")
     m = bandit.create_emulator(samples, 
                 'TIME', 0.9999, '1d',
                 early_term_rule=etr,
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     #data2_test("VizMedian")
     #data2_test("Interval")
     #data2_test("Knock")
-    data2_test("IntervalKnock")
+    data2_test("VizPenta")
     #data2_test("KickStarter")
     
 
