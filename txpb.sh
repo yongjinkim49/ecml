@@ -23,4 +23,4 @@
 #python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data2 100
 #python hpo_runner.py -m BATCH -s ASYNC -et 4h data2 100
 # Sequential diversification with ETR
-python hpo_runner.py -rc arms-warm.json -m DIV -s SEQ -et 1d -etr KickStarter data1 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr KickStarter data3 100

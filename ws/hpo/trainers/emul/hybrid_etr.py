@@ -54,7 +54,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
             history.append([])
             for n in range(len(self.history)): # number of iterations
                 history[i].append(self.history[n]["curve"][i]) # vertical congregation of curve values     
-            knock_in_barriers[i] = np.percentile(history[i], self.percentile, interpolation = 'lower') 
+            knock_in_barriers[i] = np.percentile(history[i], self.percentile) 
 
         debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))

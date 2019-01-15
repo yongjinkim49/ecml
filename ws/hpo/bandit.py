@@ -209,7 +209,9 @@ class HPOBanditMachine(object):
             if self.warm_up_time < self.cur_runtime:
                 use_interim_result = False
             else:
-                debug("HPO utilize interim results to warm up")
+                debug("HPO utilizes interim results to warm up")
+        else:
+            debug("HPO utilizes interim results for modelling")
         next_index = chooser.next(samples, acq_func, use_interim_result)
 
         # for measure information sharing effect
