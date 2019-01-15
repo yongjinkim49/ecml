@@ -640,7 +640,7 @@ def get_predefined_style(name):
         color = palette[1]
         if 'S-Div' in name:            
             marker = 'x'
-            if '(log)' in name:
+            if '(median)' in name:
                 marker = '^'
                 #color = 'xkcd:royal blue'
             elif '(hybrid)' in name:
@@ -652,9 +652,9 @@ def get_predefined_style(name):
             elif '(knock)' in name:
                 #color = 'xkcd:bright blue'
                 marker = 'd' 
-            elif '(interval-knock)' in name:
+            elif '(kickstarter)' in name:
                 #color = 'xkcd:bright blue'
-                marker = 'D'                                                  
+                marker = 'v'                                                  
         elif 'R-Div' in name:
             marker = 'o'
         elif 'P-Div' in name:

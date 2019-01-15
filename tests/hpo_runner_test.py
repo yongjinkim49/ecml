@@ -18,7 +18,7 @@ def data2_test(etr):
     
     set_log_level('debug')
     
-    run_cfg = bconf.read("arms-warm.json", path="run_conf/")
+    run_cfg = bconf.read("arms.json", path="run_conf/")
     m = bandit.create_emulator(samples, 
                 'TIME', 0.9999, '1d',
                 early_term_rule=etr,

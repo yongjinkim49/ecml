@@ -208,8 +208,11 @@ class HPOBanditMachine(object):
         if self.warm_up_time != None:
             if self.warm_up_time < self.cur_runtime:
                 use_interim_result = False
+                debug("HPO does not utilize interim results")
             else:
-                debug("HPO utilize interim results to warm up")
+                debug("HPO utilizes interim results to warm up")
+        else:
+            debug("HPO utilizes interim results for modelling")
         next_index = chooser.next(samples, acq_func, use_interim_result)
 
         # for measure information sharing effect
@@ -278,7 +281,7 @@ class HPOBanditMachine(object):
         test_error, exec_time, early_terminated = self.evaluate(next_index, model)
         total_opt_time = select_opt_time + opt_time
         result_repo.append(next_index, test_error,
-                    total_opt_time, exec_time, metrics)
+                    total_opt_time, exec_time, metrics, early_terminated)
         self.cur_runtime += (total_opt_time + exec_time)
         self.samples.update(next_index, test_error, early_terminated)
         
