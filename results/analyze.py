@@ -1,5 +1,5 @@
 from __future__ import print_function
-
+import traceback
 import numpy as np
 import json
 import pickle
@@ -18,7 +18,7 @@ def load_json(file_path):
 
 
 def load_pickle(file_path):
-    with open(opt + '.pkl', 'rb') as pkl:
+    with open(file_path, 'rb') as pkl:
         return pickle.load(pkl)    
 
 
@@ -509,7 +509,7 @@ def calc_catastrophic_failures(results, target_goal, num_trials, op_hours,
         x_values = None
         if criteria is 'iteration':
             x_values = np.array(get_num_iters_over_threshold(
-                results[opt], num_runs, target_goal))
+                results[opt], num_trials, target_goal))
         else:
             x_values = np.array(get_exec_times_over_threshold(
                 results[opt], num_trials, target_goal, unit=criteria))
@@ -539,7 +539,7 @@ def calc_time_to_achieve(results, target_goal, num_trials):
 
 
 def write_table1_stats(results, target_goal, num_trials, 
-        optimizers, stat_csv):
+        optimizers, stat_csv, title):
     op_hours = 24
     checking_hours = [3, 6, 9, 12, 24]
     fail_summary = calc_catastrophic_failures(results, target_goal, num_trials, op_hours)
@@ -563,7 +563,7 @@ def write_table1_stats(results, target_goal, num_trials,
             writer.writerow(d)    
 
 
-def compare_batch_peformance(results, base, compare, target_acc, fp,  
+def compare_batch_performance(results, base, compare, target_acc, fp,  
                             num_trials=50, unit='10 mins'):
     baseline = get_exec_times_over_threshold(results[base], num_trials, target_acc, unit=unit)
     compare = get_exec_times_over_threshold(results[compare], num_trials, target_acc, unit=unit)

@@ -69,8 +69,8 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         
         return self.num_samples
 
-    def get_candidates(self):
-        resp = self.conn.request_get("/candidates", args={}, headers=self.headers)
+    def get_candidates(self, use_interim=True):
+        resp = self.conn.request_get("/candidates", args={'use_interim': use_interim}, headers=self.headers)
         status = resp['headers']['status']
 
         if status == '200':
@@ -80,8 +80,8 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
         else:
             raise ValueError("Connection failed: {}".format(status))
 
-    def get_completes(self):
-        resp = self.conn.request_get("/completes", args={}, headers=self.headers)
+    def get_completes(self, use_interim=True):
+        resp = self.conn.request_get("/completes", args={"use_interim": use_interim}, headers=self.headers)
         status = resp['headers']['status']
 
         if status == '200':
@@ -184,4 +184,20 @@ class RemoteSampleSpaceConnector(RemoteConnectorPrototype):
             return True
         else:
             raise ValueError("Invalid space status: {}".format(status))                
-     
+
+    def expand(self, hpv):
+    
+        if self.validate(id) == False:
+            raise ValueError("Invalid id: {}".format(id))
+    
+        args = {"value": error}
+        body = json.dumps(hpv)
+        resp = self.conn.request_post("/", args={}, body=body, headers=self.headers)
+        status = resp['headers']['status']
+        
+        if status == '202':
+            err = json.loads(resp['body'])
+            
+            return True
+        else:
+            raise ValueError("Invalid space status: {}".format(status))   

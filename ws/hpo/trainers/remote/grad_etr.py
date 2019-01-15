@@ -33,7 +33,7 @@ class GradientETRTrainer(EarlyTerminateTrainer):
 
     def check_termination_condition(self, acc_curve, estimates):
         if estimates is None:
-            self.early_terminated.append(False)
+            self.early_terminated_history.append(False)
             return False
         else:
             candidates = estimates['candidates']
@@ -73,9 +73,9 @@ class GradientETRTrainer(EarlyTerminateTrainer):
                 #debug("est. mean acc: {:.4f}, min delta: {:.4f}".format(est_acc_mean - acc, min_delta))
                 if acc < lower_bound and min_delta > self.get_gradient_average(acc_curve, i):
                     debug("Early stopped curve: {}".format( [round(acc, 5) for acc in acc_curve]))
-                    self.early_terminated.append(True)
+                    self.early_terminated_history.append(True)
                     return True
         
-        self.early_terminated.append(False)
+        self.early_terminated_history.append(False)
         return False                     
 

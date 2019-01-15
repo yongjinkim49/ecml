@@ -217,12 +217,12 @@ class ArmSelector(object):
                 debug("Arm selection ratio: {}, Current epsilon: {}".format(
                     [round(v, 2) for v in self.values], self.strategy.epsilon))                 
 
-    def select(self, step):
+    def select(self, step, use_interim_result=True):
         if step < self.num_skip:
             next_index = np.random.randint(0, self.num_arms)
             debug('random sampling before step {} passes'.format(self.num_skip)) 
         else:
-            next_index = self.strategy.next(step)
+            next_index = self.strategy.next(step, use_interim_result)
         arm = self.arms[next_index]
         self.cur_arm_index = next_index
         

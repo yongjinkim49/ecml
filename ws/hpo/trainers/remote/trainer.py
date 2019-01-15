@@ -43,6 +43,7 @@ class RemoteTrainer(TrainerPrototype):
         acc_curve = None
         prev_interim_err = None
         time_out_count = 0
+        early_terminated = False
         while True: # XXX: infinite loop
             try:
                 j = self.controller.get_job("active")
@@ -55,7 +56,7 @@ class RemoteTrainer(TrainerPrototype):
                         if prev_interim_err == None or prev_interim_err != interim_err:
                             debug("Interim error {} will be updated".format(interim_err))
                             if space != None:
-                                space.update(model_index, interim_err)
+                                space.update(model_index, interim_err, True)
                         
                         prev_interim_err = interim_err
                         time_out_count = 0 # XXX:reset time out count
@@ -66,6 +67,7 @@ class RemoteTrainer(TrainerPrototype):
                             job_id = j['job_id']
                             debug("This job will be terminated early as expected")
                             self.controller.stop(job_id)
+                            early_terminated = True
                             break
 
                     elif "losses" in j and len(j["losses"]) == 0:
@@ -91,13 +93,17 @@ class RemoteTrainer(TrainerPrototype):
                         continue
 
                 warn("Something goes wrong in remote worker: {}".format(ex))
+                early_terminated = True
                 break
+        
+        return early_terminated
 
     def train(self, cand_index, estimates=None, space=None):
         hpv = {}
         cfg = {'cand_index' : cand_index}
         param_names = self.hp_config.get_hyperparams()
         param_values = self.hpvs[cand_index]
+        early_terminated = False
         debug("Training HPV: {}".format(param_values))
         
         if type(param_values) == dict:
@@ -119,7 +125,7 @@ class RemoteTrainer(TrainerPrototype):
                     
                     self.jobs[job_id] = {"cand_index" : cand_index, "status" : "run"}
                     
-                    self.wait_until_done(job_id, cand_index, estimates, space)
+                    early_terminated = self.wait_until_done(job_id, cand_index, estimates, space)
 
                     result = self.controller.get_job(job_id)
                    
@@ -130,7 +136,7 @@ class RemoteTrainer(TrainerPrototype):
                     if acc_curve != None:
                         self.history.append(acc_curve) 
 
-                    return result['cur_loss'], result['run_time']
+                    return result['cur_loss'], result['run_time'], early_terminated
 
                 else:
                     error("Starting training job failed.")
@@ -167,14 +173,14 @@ class RemoteTrainer(TrainerPrototype):
 class EarlyTerminateTrainer(RemoteTrainer):
     
     def __init__(self, controller, hpvs):
-        self.early_terminated = []
+        self.early_terminated_history = []
         super(EarlyTerminateTrainer, self).__init__(controller, hpvs)
 
         self.history = []
-        self.early_terminated = []
+        self.early_terminated_history = []
 
     def reset(self):
         # reset history
         self.history = []
-        self.early_terminated = []
+        self.early_terminated_history = []
 

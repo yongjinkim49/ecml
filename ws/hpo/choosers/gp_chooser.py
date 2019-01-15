@@ -121,15 +121,13 @@ class GPChooser:
     def set_eval_time_penalty(self, est_eval_time):
         self.est_eval_time = est_eval_time
 
-    def next(self, samples, af):
-
-        #grid = samples.get_grid()
+    def next(self, samples, af, use_interim=True):
         
-        candidates = samples.get_candidates()
-        completes = samples.get_completes()
+        completes = samples.get_completes(use_interim)
+        candidates = samples.get_candidates(use_interim)
         num_params = len(samples.get_params())
 
-        errs = samples.get_errors("completes")
+        errs = samples.get_errors("completes", use_interim)
         
         # Don't bother using fancy GP stuff at first.
         if completes.shape[0] < 2:
@@ -140,8 +138,8 @@ class GPChooser:
             self._real_init(num_params, errs)
 
         # Grab out the relevant sets.
-        comp = samples.get_grid("completes")
-        cand = samples.get_grid("candidates")
+        comp = samples.get_grid("completes", use_interim)
+        cand = samples.get_grid("candidates", use_interim)
 
         #debug("[GP] shape of completes: {}, cands: {}, errs: {}".format(comp.shape, cand.shape, errs.shape))
 

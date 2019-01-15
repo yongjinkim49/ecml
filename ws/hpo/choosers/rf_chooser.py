@@ -70,11 +70,10 @@ class RFChooser:
         # TODO: Set eval time penalty for acquisition
         pass
 
-    def next(self, samples, af):        
-        #grid = samples.get_grid()
+    def next(self, samples, af, use_interim=True):        
         
-        candidates = samples.get_candidates()
-        completes = samples.get_completes()
+        candidates = samples.get_candidates(use_interim)
+        completes = samples.get_completes(use_interim)
         # Grab out the relevant sets.
         
         # Don't bother using fancy RF stuff at first.
@@ -83,9 +82,9 @@ class RFChooser:
 
         # Grab out the relevant sets.
         
-        errs = samples.get_errors("completes")
-        comp = samples.get_grid("completes")
-        cand = samples.get_grid("candidates")
+        errs = samples.get_errors("completes", use_interim)
+        comp = samples.get_grid("completes", use_interim)
+        cand = samples.get_grid("candidates", use_interim)
 
         #debug("[RF] shape of completes: {}, cands: {}, errs: {}".format(comp.shape, cand.shape, errs.shape))
 

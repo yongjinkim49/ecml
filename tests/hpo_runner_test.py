@@ -12,15 +12,15 @@ import ws.shared.hp_cfg as hconf
 import ws.hpo.bandit as bandit
 import ws.hpo.space_mgr as space
 
-def data207_test(etr):
-    hp_cfg = hconf.read_config("hp_conf/data207.json")
-    samples = space.create_surrogate_space('data207')
+def data2_test(etr):
+    hp_cfg = hconf.read_config("hp_conf/data2.json")
+    samples = space.create_surrogate_space('data2')
     
-    #set_log_level('debug')
+    set_log_level('debug')
     
-    run_cfg = bconf.read("arms.json", path="run_conf/")
+    run_cfg = bconf.read("arms-warm.json", path="run_conf/")
     m = bandit.create_emulator(samples, 
-                'TIME', 0.9999, '3d',
+                'TIME', 0.9999, '1d',
                 early_term_rule=etr,
                 run_config=run_cfg)
     results = m.mix('RANDOM', 1)
@@ -29,11 +29,11 @@ def data207_test(etr):
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
 if __name__ == "__main__":
-    data207_test("None")
-    data207_test("Gradient")
-    data207_test("VizMedian")
-    data207_test("Interval")
-    data207_test("Knock")
-    data207_test("IntervalKnock")
-    data207_test("IntervalMultiKnock")
+    #data2_test("None")
+    #data2_test("Gradient")
+    #data2_test("VizMedian")
+    #data2_test("Interval")
+    #data2_test("Knock")
+    data2_test("KickStarter")
+    
 

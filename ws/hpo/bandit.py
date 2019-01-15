@@ -43,8 +43,12 @@ def create_emulator(space,
 
     if run_config and "early_term_rule" in run_config:
         early_term_rule = run_config["early_term_rule"]
+
+    warm_up_time = None
+    if run_config and "warm_up_time" in run_config:
+        warm_up_time = run_config["warm_up_time"]
     
-    t = trainer.get_simulator(space, early_term_rule)
+    t = trainer.get_simulator(space, early_term_rule, warm_up_time)
 
     if early_term_rule != None and early_term_rule != "None":
         id = "{}.ETR-{}".format(id, early_term_rule) 
@@ -141,12 +145,15 @@ class HPOBanditMachine(object):
 
         self.working_result = None
         self.total_results = None
-
+        self.warm_up_time = None
         self.run_config = run_config
         self.min_train_epoch = min_train_epoch
         if self.run_config:
             if "min_train_epoch" in self.run_config:
                 self.min_train_epoch = self.run_config["min_train_epoch"]
+
+            if "warm_up_time" in self.run_config:
+                self.warm_up_time = self.run_config["warm_up_time"]
 
         self.print_exception_trace = False
 
@@ -161,6 +168,7 @@ class HPOBanditMachine(object):
         self.samples.reset()
         self.trainer.reset()
         self.working_result = None
+        self.cur_runtime = 0.0
 
     def force_stop(self):
         self.stop_flag = True
@@ -196,7 +204,13 @@ class HPOBanditMachine(object):
         chooser = self.bandit.choosers[model]
         start_time = time.time()
         exception_raised = False
-        next_index = chooser.next(samples, acq_func)
+        use_interim_result = True
+        if self.warm_up_time != None:
+            if self.warm_up_time < self.cur_runtime:
+                use_interim_result = False
+            else:
+                debug("HPO utilize interim results to warm up")
+        next_index = chooser.next(samples, acq_func, use_interim_result)
 
         # for measure information sharing effect
         if self.calc_measure:
@@ -217,25 +231,27 @@ class HPOBanditMachine(object):
         exec_time = 0.0
         test_error = 1.0
         chooser = self.bandit.choosers[model]
-
+        early_terminated = False
         if chooser.response_shaping == True:
             self.trainer.set_response_shaping(chooser.shaping_func)
         
         # set initial error for avoiding duplicate
         interim_error = self.trainer.get_interim_error(cand_index, 0)
-        self.samples.update(cand_index, test_error)
+        self.samples.update(cand_index, test_error, True)
         
-        test_error, exec_time = self.trainer.train(cand_index, 
+        test_error, exec_time, early_terminated = self.trainer.train(cand_index, 
                                                     estimates=chooser.estimates,
                                                     space=samples)
         
         if test_error == None:
             test_error = interim_error
+            early_terminated = True
         if exec_time == None:
             # return interim error for avoiding stopping
             exec_time = time.time() - eval_start_time
+            early_terminated = True
 
-        return test_error, exec_time
+        return test_error, exec_time, early_terminated
 
     def pull(self, model, acq_func, result_repo, select_opt_time=0):
 
@@ -259,11 +275,12 @@ class HPOBanditMachine(object):
         # estimate an evaluation time of the next candidate
         #est_eval_time = self.estimate_eval_time(next_index, model)
         # evaluate the candidate
-        test_error, exec_time = self.evaluate(next_index, model)
+        test_error, exec_time, early_terminated = self.evaluate(next_index, model)
         total_opt_time = select_opt_time + opt_time
         result_repo.append(next_index, test_error,
                     total_opt_time, exec_time, metrics)
-        self.samples.update(next_index, test_error)
+        self.cur_runtime += (total_opt_time + exec_time)
+        self.samples.update(next_index, test_error, early_terminated)
         
         curr_acc = 1.0 - test_error
         est_log = {
@@ -360,7 +377,11 @@ class HPOBanditMachine(object):
             for j in range(NUM_MAX_ITERATIONS):
 
                 start_time = time.time()
-                model, acq_func, _ = arm.select(j)
+                use_interim_result = True
+                if self.warm_up_time != None:
+                    if self.warm_up_time < self.cur_runtime:
+                        use_interim_result = False
+                model, acq_func, _ = arm.select(j, use_interim_result)
                 select_opt_time = time.time() - start_time
 
                 curr_acc, opt_log = self.pull(model, acq_func, wr, select_opt_time)
