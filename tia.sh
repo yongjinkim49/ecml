@@ -27,4 +27,4 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data10 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data10 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data10 100
-python hpo_runner.py -rc arms-warm.json -m DIV -s SEQ -et 1d -etr KickStarter data10 100
+python hpo_runner.py -rc arms-warm.json -m DIV -s SEQ -et 1d -etr KickStarter data30 100
