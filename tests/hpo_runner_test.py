@@ -34,7 +34,7 @@ if __name__ == "__main__":
     #data2_test("VizMedian")
     #data2_test("Interval")
     #data2_test("Knock")
-    data2_test("VizPentaOpt")
-    #data2_test("KickStarter")
+    #data2_test("VizPentaOpt")
+    data2_test("IntervalPentaOpt")
     
 

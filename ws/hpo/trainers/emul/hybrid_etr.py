@@ -24,16 +24,6 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
         self.acc_min = 0.0
         self.acc_max = 0.2
 
-    def get_time_saving(self, cand_index, stop_epoch):
-        # XXX: consider preparation time later
-        total_time = self.total_times[cand_index]
-        acc_curve = self.acc_curves.loc[cand_index].values
-        epoch_length = len(acc_curve)
-        est_time = stop_epoch * (total_time / epoch_length)
-        log("Evaluation time saving: {:.1f}s".format(total_time - est_time))
-        return est_time
-
-
     def train(self, cand_index, estimates, min_train_epoch=None, space=None):
         acc = 0 # stopping accuracy
         knocked_in_count = 0
@@ -112,3 +102,69 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
                             return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
 
         return 1.0 - max(acc_curve), self.total_times[cand_index], True
+
+
+class HybridETRTrainer(EarlyTerminateTrainer):
+    
+    def __init__(self, lookup, 
+                percentile=80, eval_start=0.5, eval_end=0.85, acc_min=0.0, acc_max=0.2):
+        
+        super(HybridETRTrainer, self).__init__(lookup)
+
+        self.epoch_length = lookup.num_epochs
+        self.lcs = self.history
+        self.eval_epoch_start = int(self.epoch_length * eval_start)
+        self.eval_epoch_end = int(self.epoch_length * eval_end)
+        self.percentile = percentile
+        self.acc_min = acc_min
+        self.acc_max = acc_max
+
+    def train(self, cand_index, estimates, min_train_epoch=None, space=None):
+        
+        if min_train_epoch == None:
+            min_epoch = 0
+        cur_max_acc = 0
+
+        acc_curve = self.acc_curves.loc[cand_index].values
+        train_time = self.total_times[cand_index]
+        min_loss = 1.0 - max(acc_curve)
+        lc = {"curve": acc_curve, "train_time":train_time}
+        self.history.append(lc)
+
+        history = []   
+        early_terminated = False
+        for i in range(len(self.history)):
+            history.append(np.mean(self.history[i]["curve"][self.eval_epoch_start:self.eval_epoch_end+1]))
+
+        threshold = np.percentile(history, self.percentile)
+        train_time = self.total_times[cand_index]
+
+        debug("commencing iteration {}".format(len(self.history)))
+        debug("accuracy curve: {}".format(acc_curve))
+
+        for i in range(min_epoch, self.epoch_length-1):
+            acc = acc_curve[i]
+            if acc > cur_max_acc:
+                cur_max_acc = acc
+
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))                
+            if self.acc_min < acc < self.acc_max:
+                debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
+                early_terminated = True
+                min_loss = 1.0 - cur_max_acc
+                train_time = self.get_time_saving(cand_index, i+1)
+                break
+            else:
+                cum_train_time = sum([lc["train_time"] for lc in self.history])
+
+                if i+1 == self.eval_epoch_end:
+                    if acc < threshold:
+                        debug("terminated at epoch{}".format(i+1))
+                        early_terminated = True
+                        
+                        min_loss = 1.0 - cur_max_acc
+                        train_time = self.get_time_saving(cand_index, i+1)
+                        
+                        break                    
+        self.early_terminated_history.append(early_terminated)
+        return min_loss, train_time, early_terminated

@@ -19,15 +19,6 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
         self.eval_epoch = int(self.epoch_length/3)
         self.percentile = 50 # median
 
-    def get_time_saving(self, cand_index, stop_epoch):
-        # XXX: consider preparation time later
-        total_time = self.total_times[cand_index]
-        acc_curve = self.acc_curves.loc[cand_index].values
-        epoch_length = len(acc_curve)
-        est_time = stop_epoch * (total_time / epoch_length)
-        log("Evaluation time saving: {:.1f}s".format(total_time - est_time))
-        return est_time
-
     def train(self, cand_index, estimates, min_train_epoch=None, space=None):
         acc = 0 # stopping accuracy
         min_epoch = 0
@@ -74,15 +65,6 @@ class VizPentaETRTrainer(EarlyTerminateTrainer):
         self.eval_epoch_start = int(self.epoch_length * eval_start)
         self.eval_epoch_end = int(self.epoch_length * eval_end)
         self.percentile = percentile
-
-    def get_time_saving(self, cand_index, stop_epoch):
-        # XXX: consider preparation time later
-        total_time = self.total_times[cand_index]
-        acc_curve = self.acc_curves.loc[cand_index].values
-        epoch_length = len(acc_curve)
-        est_time = stop_epoch * (total_time / epoch_length)
-        log("Evaluation time saving: {:.1f}s".format(total_time - est_time))
-        return est_time
 
     def train(self, cand_index, estimates, min_train_epoch=None, space=None):
         acc = 0 # stopping accuracy

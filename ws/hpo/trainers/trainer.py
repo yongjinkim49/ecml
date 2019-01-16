@@ -19,7 +19,7 @@ def get_simulator(space, run_config):
     from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer, VizPentaETRTrainer 
     from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
-    from ws.hpo.trainers.emul.hybrid_etr import IntervalKnockETRTrainer
+    from ws.hpo.trainers.emul.hybrid_etr import HybridETRTrainer
     from ws.hpo.trainers.emul.kickstart_etr import KickStarterETRTrainer
 
     try:
@@ -39,8 +39,8 @@ def get_simulator(space, run_config):
             return KnockETRTrainer(lookup)
         elif etr == "Interval":
             return IntervalETRTrainer(lookup)
-        elif etr == "IntervalKnock":
-            return IntervalKnockETRTrainer(lookup)            
+        elif etr == "IntervalPentaOpt":
+            return HybridETRTrainer(lookup)            
         elif etr == "KickStarter":
             return KickStarterETRTrainer(lookup, expired_time=expired_time)
         else:
