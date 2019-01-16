@@ -107,7 +107,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
 class HybridETRTrainer(EarlyTerminateTrainer):
     
     def __init__(self, lookup, 
-                percentile=80, eval_start=0.5, eval_end=0.85, acc_min=0.0, acc_max=0.2):
+                percentile=80, eval_start=0.5, eval_end=0.85, interval_bound_acc=0.2):
         
         super(HybridETRTrainer, self).__init__(lookup)
 
@@ -116,8 +116,8 @@ class HybridETRTrainer(EarlyTerminateTrainer):
         self.eval_epoch_start = int(self.epoch_length * eval_start)
         self.eval_epoch_end = int(self.epoch_length * eval_end)
         self.percentile = percentile
-        self.acc_min = acc_min
-        self.acc_max = acc_max
+        self.acc_min = 0.0
+        self.acc_max = interval_bound_acc
 
     def train(self, cand_index, estimates, min_train_epoch=None, space=None):
         
@@ -148,7 +148,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                 cur_max_acc = acc
 
             #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))                
-            if self.acc_min < acc < self.acc_max:
+            if i >= eval_start and self.acc_min < acc < self.acc_max:
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 early_terminated = True
                 min_loss = 1.0 - cur_max_acc
