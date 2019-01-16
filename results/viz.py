@@ -732,21 +732,12 @@ def get_predefined_style(name):
             marker_index += 3        
             marker = markers[marker_index]
 
-    if 'adalog' in name:
+    if '(baseline)' in name:
         line_style = ':'
 
-    if 'early stop' in name:
-        marker = 'o'
-
-    if 'early stop' in name and 'adalog' in name:
-        marker = '*'
-
-    if 'pure & adalog' in name:
-        marker = '+'
-
-    if '-SHUFFLE' in name:
+    if '(surrogate)' in name:
         marker = '8'
-        line_style = '-'
+        line_style = '--'
 
     return marker, color, line_style
 

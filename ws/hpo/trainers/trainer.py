@@ -4,8 +4,16 @@ from __future__ import print_function
 
 from ws.shared.logger import *
 
-def get_simulator(space, etr, expired_time=None):
+def get_simulator(space, run_config):
     
+    etr = None
+    if run_config and "early_term_rule" in run_config:
+        etr = run_config["early_term_rule"]
+
+    expired_time = None
+    if run_config and "warm_up_time" in run_config:
+        expired_time = run_config["warm_up_time"]
+
     from ws.hpo.trainers.emul.trainer import TrainEmulator
     from ws.hpo.trainers.emul.grad_etr import GradientETRTrainer
     from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer, VizPentaETRTrainer 
@@ -24,7 +32,9 @@ def get_simulator(space, etr, expired_time=None):
         elif etr == "VizMedian":
             return VizMedianETRTrainer(lookup)
         elif etr == "VizPenta":
-            return VizPentaETRTrainer(lookup)                         
+            return VizPentaETRTrainer(lookup)
+        elif etr == "VizPentaOpt":
+            return VizPentaETRTrainer(lookup, eval_end=0.85, percentile=80)                           
         elif etr == "Knock":
             return KnockETRTrainer(lookup)
         elif etr == "Interval":

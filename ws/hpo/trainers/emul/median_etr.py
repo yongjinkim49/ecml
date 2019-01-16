@@ -65,15 +65,15 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
 
 class VizPentaETRTrainer(EarlyTerminateTrainer):
     
-    def __init__(self, lookup):
+    def __init__(self, lookup, percentile=80, eval_start=0.5, eval_end=0.67):
         
         super(VizPentaETRTrainer, self).__init__(lookup)
 
         self.epoch_length = lookup.num_epochs
         self.lcs = self.history
-        self.eval_epoch_start = int(self.epoch_length/2)
-        self.eval_epoch_end = int(2*self.epoch_length/3)
-        self.percentile = 80
+        self.eval_epoch_start = int(self.epoch_length * eval_start)
+        self.eval_epoch_end = int(self.epoch_length * eval_end)
+        self.percentile = percentile
 
     def get_time_saving(self, cand_index, stop_epoch):
         # XXX: consider preparation time later

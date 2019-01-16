@@ -22,4 +22,4 @@
 # Parallel diversification
 #python hpo_runner.py -m BATCH -s ASYNC -et 20h data207 100
 #python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 20h data207 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizPenta data10 100
+python hpo_runner.py -m DIV -s SEQ -et 5d -etr VizPentaOpt data207 100

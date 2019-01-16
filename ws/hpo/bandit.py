@@ -38,20 +38,12 @@ def create_emulator(space,
                     run_config=None,
                     save_pkl=False,
                     num_resume=0,
-                    early_term_rule=None,
                     id="HPO_emulator"):
 
-    if run_config and "early_term_rule" in run_config:
-        early_term_rule = run_config["early_term_rule"]
+    t = trainer.get_simulator(space, run_config)
 
-    warm_up_time = None
-    if run_config and "warm_up_time" in run_config:
-        warm_up_time = run_config["warm_up_time"]
-    
-    t = trainer.get_simulator(space, early_term_rule, warm_up_time)
-
-    if early_term_rule != None and early_term_rule != "None":
-        id = "{}.ETR-{}".format(id, early_term_rule) 
+    if run_config != None and run_config["early_term_rule"] != "None":
+        id = "{}.ETR-{}".format(id, run_config["early_term_rule"]) 
 
     machine = HPOBanditMachine(
         space, t, 
@@ -349,7 +341,6 @@ class HPOBanditMachine(object):
                             num_trials, self.total_results, est_records)
 
         self.temp_saver.remove()
-
         self.show_best_hyperparams()
 
         return self.total_results
@@ -430,9 +421,7 @@ class HPOBanditMachine(object):
             self.saver.save('DIV', strategy,
                             num_trials, self.total_results, est_records)
 
-            self.temp_saver.remove()
-            
-        
+        self.temp_saver.remove()
         self.show_best_hyperparams()
 
         return self.total_results
