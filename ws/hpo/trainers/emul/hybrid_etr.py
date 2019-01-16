@@ -148,7 +148,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                 cur_max_acc = acc
 
             #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))                
-            if i >= eval_start and self.acc_min < acc < self.acc_max:
+            if i >= self.eval_epoch_start and self.acc_min < acc < self.acc_max:
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 early_terminated = True
                 min_loss = 1.0 - cur_max_acc
