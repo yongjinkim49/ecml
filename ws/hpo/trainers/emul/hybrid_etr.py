@@ -83,7 +83,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
             if acc > cur_max_acc:
                 cur_max_acc = acc
             
-            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
             if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
                 if i >= 1:

@@ -120,6 +120,9 @@ def execute(run_cfg, args, save_results=False):
             else:
                 raise ValueError("Invalid arguments: {}".format(args))
 
+            if args["early_term_rule"] != "None":
+                run_cfg["early_term_rule"] = args["early_term_rule"]
+
             if valid.url(args['worker_url']):
                 trainer = args['worker_url']
                     
@@ -129,14 +132,12 @@ def execute(run_cfg, args, save_results=False):
                             save_pkl=save_pkl,
                             run_config=run_cfg,
                             hp_config=hp_cfg,
-                            early_term_rule=args["early_term_rule"],
                             use_surrogate=use_surrogate)
             else:
                 m = bandit.create_emulator(samples, 
                             args['exp_crt'], args['exp_goal'], args['exp_time'],
                             num_resume=num_resume,
                             save_pkl=save_pkl,
-                            early_term_rule=args["early_term_rule"],
                             run_config=run_cfg)
 
             if args['mode'] == 'DIV' or args['mode'] == 'ADA':

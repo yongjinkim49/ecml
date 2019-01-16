@@ -66,7 +66,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
             if acc > cur_max_acc:
                 cur_max_acc = acc
             
-            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
             cum_train_time = sum([lc["train_time"] for lc in self.history])
 
             if cum_train_time <= self.expired_time: #1800 seconds == 30 minutes

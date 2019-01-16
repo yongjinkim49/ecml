@@ -45,7 +45,7 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
             if acc > cur_max_acc:
                 cur_max_acc = acc
 
-            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))                
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))                
             if self.acc_min < acc < self.acc_max:
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 self.early_terminated_history.append(True)

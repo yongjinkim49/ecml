@@ -51,7 +51,7 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
             if acc > cur_max_acc:
                 cur_max_acc = acc
             
-            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
             if i+1 == self.eval_epoch:
                 if acc < threshold:
@@ -111,7 +111,7 @@ class VizPentaETRTrainer(EarlyTerminateTrainer):
             if acc > cur_max_acc:
                 cur_max_acc = acc
             
-            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
+            #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
             cum_train_time = sum([lc["train_time"] for lc in self.lcs])
 
             if i+1 == self.eval_epoch_end:
