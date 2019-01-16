@@ -26,4 +26,4 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr KickStarter data2 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizPenta data2 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data10 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data20 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data3 100

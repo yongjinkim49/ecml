@@ -27,4 +27,4 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data2 90
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data2 90
 #python hpo_runner.py -m DIV -s SEQ -et 5d data207 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data3 100
+
