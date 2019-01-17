@@ -42,7 +42,7 @@ def create_emulator(space,
 
     t = trainer.get_simulator(space, run_config)
 
-    if run_config != None and run_config["early_term_rule"] != "None":
+    if run_config != None and "early_term_rule" in run_config:
         id = "{}.ETR-{}".format(id, run_config["early_term_rule"]) 
 
     machine = HPOBanditMachine(
