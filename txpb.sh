@@ -24,5 +24,3 @@
 #python hpo_runner.py -m BATCH -s ASYNC -et 4h data2 100
 # Sequential diversification with ETR
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data20 100
-python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 30h data207 100
-python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 30h data207 100

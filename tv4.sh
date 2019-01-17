@@ -27,6 +27,9 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data2 90
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data2 90
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data3 100
+python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 30h data207 100
+python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 30h data207 100
+
 # Parallel diversification
 python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 30h data207 100
 python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 30h data207 100
