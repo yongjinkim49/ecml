@@ -1,8 +1,7 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "no_failover",
+    "title": "hybrid",
     "early_term_rule" : "IntervalPentaOpt",
-    "failover": "None",        
     "arms": [
         {
             "model": "GP-HLE",
@@ -29,7 +28,6 @@
             "acq_func": "UCB"
         }
     ],
-
     "bandits" : [
         { "mode": "DIV", "spec": "RANDOM" },
         { "mode": "DIV", "spec": "RANDOM" },

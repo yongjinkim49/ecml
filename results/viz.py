@@ -218,7 +218,7 @@ def draw_catastrophic_failures(results, target_goal,
 def draw_success_rate_fig(results, target_goal, x_max, 
                         num_runs=None, x_unit='Hour', step_size=1,
                         title=None, indi=None, div=None, ada=None,
-                        save_name=None, target_folder='../../../figs/',
+                        save_name=None, target_folder='.',
                         indi_max=None, div_max=None, ada_max=None,
                         indi_scale=1, div_scale=1, ada_scale=1, name_map=None,
                         avgs=None, parallel=None, l_order=None,
@@ -850,6 +850,7 @@ def draw_best_error_curve(results, arms, repeats,
                           guidelines=[], summary=False, title=None, x_unit="Hour",
                           xlim=None, ylim=(.001, 1), alpha_fill=0.1, std_div=4,
                           width=14, height=8, x_steps=1,
+                          save_name=None, target_folder='.',
                           legend=None, l_order=None, style_format=None):
 
     if type(arms) is not list:
@@ -938,8 +939,8 @@ def draw_best_error_curve(results, arms, repeats,
             else:
                 add_error_fill_line(x, y, yerr, color, marker=marker,
                     ax=subplot, linestyle=linestyle, alpha_fill=alpha_fill)
-
-    subplot.set_title('{}'.format(title))
+    if title != None:
+        subplot.set_title('{}'.format(title))
     bbox_to_anchor = None
     loc = None
     borderaxespad = None
@@ -974,12 +975,17 @@ def draw_best_error_curve(results, arms, repeats,
 
     for s in guidelines:
         label = "Top {:.2f}%".format(s['difficulty'])
-        plt.text(x_range[-1] + 0.1, s['error'], label)
+        plt.text(x_range[0] + .1, s['error'], label)
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
     plt.ylabel("Test error", fontsize=15)
     plt.xlabel(x_unit, fontsize=15)
-    plt.show()
+    if save_name is not None:
+        plt.tight_layout()
+        plt.savefig(target_folder + save_name + '.png', format='png', dpi=300)
+    else:
+        plt.show()
+        return plt
 
 
 def draw_mean_sd_corr(opt, estimates, results, num_trial,

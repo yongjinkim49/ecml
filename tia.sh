@@ -28,4 +28,7 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data10 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data10 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr KickStarter data30 100
-python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data1 100
+#python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data1 100
+# Parallel BO
+python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 30h data207 100
+python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 30h data207 100
