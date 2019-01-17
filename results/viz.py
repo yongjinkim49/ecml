@@ -643,6 +643,9 @@ def get_predefined_style(name):
             if '(median)' in name:
                 marker = '^'
                 #color = 'xkcd:royal blue'
+            elif '(log)' in name:
+                marker = '*'
+                #color = 'xkcd:royal blue'
             elif '(hybrid)' in name:
                 marker = 'o'
                 #color = 'black'                
@@ -652,7 +655,7 @@ def get_predefined_style(name):
             elif '(knock)' in name:
                 #color = 'xkcd:bright blue'
                 marker = 'd' 
-            elif '(kickstarter)' in name:
+            elif '(penta)' in name:
                 #color = 'xkcd:bright blue'
                 marker = 'v'                                                  
         elif 'R-Div' in name:
