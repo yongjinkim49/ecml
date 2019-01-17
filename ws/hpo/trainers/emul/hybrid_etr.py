@@ -140,7 +140,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
         train_time = self.total_times[cand_index]
 
         debug("commencing iteration {}".format(len(self.history)))
-        debug("accuracy curve: {}".format(acc_curve))
+        #debug("accuracy curve: {}".format(acc_curve))
 
         for i in range(min_epoch, self.epoch_length-1):
             acc = acc_curve[i]

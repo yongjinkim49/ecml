@@ -96,9 +96,13 @@ class BatchHPOSimulator(object):
                 save_pkl = bandits[i]['save_pkl']
 
             grid_order = None 
+            
             if 'grid' in conf and 'order' in conf['grid']:
                 grid_order = conf['grid']['order']                 
             
+            if "early_term_rule" in config:
+                conf['early_term_rule'] = config['early_term_rule']
+
             samples = space.create_surrogate_space(self.data_type, grid_order)
             emulator = bandit.create_emulator(samples, self.run_mode, self.target_acc, self.time_expired, 
                                  run_config=conf, save_pkl=save_pkl)
