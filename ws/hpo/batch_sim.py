@@ -18,23 +18,20 @@ from ws.hpo.batch_cand import CandidateSelector
 import ws.hpo.space_mgr as space
 
 
-def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, config,
-                early_term_rule=None):
+def get_simulator(sync_mode, dataset_name, run_mode, target_acc, time_expired, config):
     sim = None
     if sync_mode == 'ASYNC':
         sim = AsynchronusBatchSimulator
     else:
         sim = SynchronusBatchSimulator
     time_expired = TimestringConverter().convert(time_expired)
-    cluster = sim(run_mode, config, dataset_name, target_acc, time_expired,
-                 early_term_rule=early_term_rule)
+    cluster = sim(run_mode, config, dataset_name, target_acc, time_expired)
     return cluster
 
 
 class BatchHPOSimulator(object):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
-                 early_term_rule=None):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
         
         self.target_acc = target_acc
         self.time_expired = time_expired
@@ -46,13 +43,17 @@ class BatchHPOSimulator(object):
         self.cur_iters = 0
         self.data_type = dataset
         self.config = config
-        self.early_term_rule = early_term_rule
+        self.early_term_rule = "None"
 
         self.failover = 'premature' # can be 'None', 'random', 'premature' or 'next_candidate'
 
         if 'failover' in config:
             self.failover = config['failover']
-        postfix = "{}.{}".format(self.failover, early_term_rule)
+
+        if "early_term_rule" in config:
+            self.early_term_rule = config['early_term_rule']
+
+        postfix = "FO-{}.ETR-{}".format(self.failover, self.early_term_rule)
         self.saver = BatchResultSaver(self.data_type, self.run_mode, self.target_acc,
                                     self.time_expired, self.config, postfix=postfix)
         
@@ -179,10 +180,9 @@ class BatchHPOSimulator(object):
 
 class AsynchronusBatchSimulator(BatchHPOSimulator):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
-                 early_term_rule=None):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
         super(AsynchronusBatchSimulator, self).__init__(
-            run_mode, config, dataset, target_acc, time_expired, early_term_rule=early_term_rule)
+            run_mode, config, dataset, target_acc, time_expired)
         
     def run(self, num_trials, save_results=True):
         start_idx = 0
@@ -255,12 +255,13 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         next_index, opt_time, model, acq_func = cs_func(b, cur_shelves, cur_time)
 
         #est_exec_time = b['machine'].estimate_eval_time(next_index, model)
-        test_error, exec_time = b['machine'].evaluate(
+        test_error, exec_time, etred = b['machine'].evaluate(
             next_index, model, b['samples'])
 
         acc = 1.0 - test_error
         b['local_result'].append(next_index, test_error,
-                                        opt_time, exec_time, None)
+                                        opt_time, exec_time, 
+                                        early_terminated=etred)
         b['samples'].update(next_index, test_error)
 
         b['local_result'].update_trace(model, acq_func)
@@ -277,10 +278,9 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
 
 class SynchronusBatchSimulator(BatchHPOSimulator):
 
-    def __init__(self, run_mode, config, dataset, target_acc, time_expired,
-                 early_term_rule=None):
+    def __init__(self, run_mode, config, dataset, target_acc, time_expired):
         super(SynchronusBatchSimulator, self).__init__(
-            run_mode, config, dataset, target_acc, time_expired, early_term_rule)
+            run_mode, config, dataset, target_acc, time_expired)
 
     def run(self, num_trials, save_results=True):
         start_idx = 0
@@ -353,11 +353,12 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 next_index = cur_shelves[i]['model_idx']
 
                 #est_exec_time = b['machine'].estimate_eval_time(next_index, optimizer)
-                test_error, exec_time = b['machine'].evaluate(
+                test_error, exec_time, etred = b['machine'].evaluate(
                     next_index, optimizer, samples)
                 total_opt_time = opt_times[i]
                 b['local_result'].append(next_index, test_error,
-                                                total_opt_time, exec_time, None)
+                                                total_opt_time, exec_time, 
+                                                early_terminated=etred)
                 b['samples'].update(next_index, test_error)
                 acc = 1.0 - test_error
                 i += 1

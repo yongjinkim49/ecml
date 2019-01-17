@@ -244,7 +244,7 @@ def main():
         if args['worker_url'] is 'none':
             c = batch.get_simulator(args['spec'].upper(), args['surrogate'],
                                 args['exp_crt'], args['exp_goal'], 
-                                args['exp_time'], run_cfg, args['early_term_rule'])
+                                args['exp_time'], run_cfg)
             result = c.run(args['num_trials'], save_results=True)
         else:
             raise NotImplementedError("This version only supports simulation of parallelization via surrogates.")
