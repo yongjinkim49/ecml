@@ -100,8 +100,7 @@ class BatchHPOSimulator(object):
             
             samples = space.create_surrogate_space(self.data_type, grid_order)
             emulator = bandit.create_emulator(samples, self.run_mode, self.target_acc, self.time_expired, 
-                                 run_config=conf, save_pkl=save_pkl,
-                                 early_term_rule=self.early_term_rule)
+                                 run_config=conf, save_pkl=save_pkl)
             b['m_id'] = i
             b['machine'] = emulator
             b['mode'] = bandits[i]['mode']
