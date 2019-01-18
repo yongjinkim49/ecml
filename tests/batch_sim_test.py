@@ -20,7 +20,7 @@ def data2_test(etr):
     
     run_cfg = bconf.read("p6div-etr.json", path="run_conf/")
     run_cfg["early_term_rule"] = etr
-    c = batch.get_simulator("SYNC", "data207",
+    c = batch.get_simulator("ASYNC", "data207",
                         "TIME", 0.999, 
                         "30h", run_cfg)
     results = c.run(1, save_results=False)
@@ -35,6 +35,6 @@ if __name__ == "__main__":
     #data2_test("Interval")
     #data2_test("Knock")
     #data2_test("VizPentaOpt")
-    data2_test("IntervalPentaOpt")
+    data2_test("TetraTercet")
     
 

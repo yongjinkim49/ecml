@@ -15,7 +15,6 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
     def __init__(self, lookup, survive_ratio, 
                 eval_start_ratio=0.5, eval_end_ratio=0.67):
 
-
         if survive_ratio < 0.0 or survive_ratio > 0.5:
             raise ValueError("Invalid survive_ratio: {}".format(survive_ratio))
         
@@ -36,15 +35,18 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
 
     def get_threshold(self, cur_acc_curve):
         mean_accs = []   
-        
-        cur_mean_acc = np.mean(cur_acc_curve[self.eval_start_index:self.eval_end_index+1])
-        if np.isnan(cur_mean_acc) == False:
-            mean_accs.append(cur_mean_acc)
+        if len(cur_acc_curve) > 0:
+            cur_mean_acc = np.mean(cur_acc_curve)
+            if np.isnan(cur_mean_acc) == False:
+                mean_accs.append(cur_mean_acc)
 
         for i in range(len(self.history)):
-            mean_acc = np.mean(self.history[i]["curve"][self.eval_start_index:self.eval_end_index+1])
-            if np.isnan(mean_acc) == False:
-                mean_accs.append(mean_acc)
+            acc_curve_span = self.history[i]["curve"][self.eval_start_index:self.eval_end_index+1]
+            if len(acc_curve_span) > 0:
+                mean_acc = np.mean(acc_curve_span)
+                if np.isnan(mean_acc) == False:
+                    mean_accs.append(mean_acc)
+        
         if len(mean_accs) > 0:
             threshold = np.percentile(mean_accs, self.percentile)
         else:
