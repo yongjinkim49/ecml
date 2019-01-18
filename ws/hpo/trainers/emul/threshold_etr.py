@@ -33,7 +33,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
     def get_eval_epoch(self):
         return self.eval_end_index + 1
 
-    def get_threshold(self, cur_acc_curve):
+    def get_acc_threshold(self, cur_acc_curve):
         mean_accs = []   
         if len(cur_acc_curve) > 0:
             cur_mean_acc = np.mean(cur_acc_curve)
@@ -84,7 +84,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
                 cur_max_acc = acc
             
             if cur_epoch == self.get_eval_epoch():
-                threshold = self.get_threshold(acc_curve[min_train_epoch-1:cur_epoch])
+                threshold = self.get_acc_threshold(acc_curve[min_train_epoch-1:cur_epoch])
 
                 if acc < threshold:
                     debug("{} terminates {} at epoch {} because current accuracy {} is lower than {}. max accuracy: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))

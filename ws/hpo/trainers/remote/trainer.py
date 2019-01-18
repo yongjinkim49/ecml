@@ -26,6 +26,10 @@ class RemoteTrainer(TrainerPrototype):
         self.history = []
 
         self.min_train_epoch = min_train_epoch
+        self.max_train_epoch = None
+        if "config" in self.hp_config and "max_epoch" in self.hp_config["config"]:
+            self.max_train_epoch = self.hp_config["config"]["max_epoch"]
+        
         self.max_timeout = max_timeout
         self.polling_interval = polling_interval
 
@@ -34,9 +38,6 @@ class RemoteTrainer(TrainerPrototype):
     def reset(self):
         self.jobs = {}
         self.history = []
-
-    def stop_early(self, acc_curve, estimates):
-        return False
         
     def wait_until_done(self, job_id, model_index, estimates, space):
 
@@ -65,7 +66,7 @@ class RemoteTrainer(TrainerPrototype):
                         if self.min_train_epoch < len(acc_curve) and \
                             self.check_termination_condition(acc_curve, estimates):                        
                             job_id = j['job_id']
-                            debug("This job will be terminated early as expected")
+                            debug("This job will be terminated")
                             self.controller.stop(job_id)
                             early_terminated = True
                             break
@@ -133,10 +134,16 @@ class RemoteTrainer(TrainerPrototype):
                     self.jobs[job_id]["status"] = "done"
                     
                     acc_curve = [ 1.0 - loss for loss in result["losses"] ]
+                    min_loss = result['cur_loss']
                     if acc_curve != None:
-                        self.history.append(acc_curve) 
+                        min_loss = 1.0 - max(acc_curve)
+                        self.history.append({
+                            "curve": acc_curve, 
+                            "train_time": result['run_time'], 
+                            "train_epoch": len(acc_curve)}
+                            ) 
 
-                    return result['cur_loss'], result['run_time'], early_terminated
+                    return min_loss, result['run_time'], early_terminated
 
                 else:
                     error("Starting training job failed.")
@@ -144,7 +151,7 @@ class RemoteTrainer(TrainerPrototype):
                 error("Creating job failed")
             
         else:
-            error("Invalid setting: configurations between controller and worker are not same.")
+            error("Invalid setting: configurations are not same.")
         
         raise ValueError("Remote training failed")       
 
@@ -184,3 +191,8 @@ class EarlyTerminateTrainer(RemoteTrainer):
         self.history = []
         self.early_terminated_history = []
 
+    def train(self, cand_index, estimates=None, space=None):
+        min_loss, train_time, early_terminated =  super(EarlyTerminateTrainer, self).train(train(cand_index, estimates, space))
+        self.early_terminated_history.append(early_terminated)
+
+        return min_loss, train_time, early_terminated 
