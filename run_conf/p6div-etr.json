@@ -1,7 +1,7 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "hybrid",
-    "early_term_rule" : "IntervalPentaOpt",
+    "title": "hybrid-deca",
+    "early_term_rule" : "DecaTercet",
     "arms": [
         {
             "model": "GP-HLE",

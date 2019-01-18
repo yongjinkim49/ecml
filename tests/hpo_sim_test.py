@@ -53,6 +53,6 @@ if __name__ == "__main__":
     #early_term_test("Interval")
     #early_term_test("Knock")
     #early_term_test("VizPentaOpt")
-    early_term_test("DecaTercet")
+    early_term_test("PentaTercet")
     
 
