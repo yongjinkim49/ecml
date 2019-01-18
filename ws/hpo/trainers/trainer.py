@@ -16,7 +16,9 @@ def get_simulator(space, run_config):
 
     from ws.hpo.trainers.emul.trainer import TrainEmulator
     from ws.hpo.trainers.emul.grad_etr import GradientETRTrainer
-    from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer, VizPentaETRTrainer 
+    from ws.hpo.trainers.emul.median_etr import VizMedianETRTrainer 
+    from ws.hpo.trainers.emul.threshold_etr import ThresholdingETRTrainer 
+    from ws.hpo.trainers.emul.threshold_etr import MultiThresholdingETRTrainer     
     from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
     from ws.hpo.trainers.emul.hybrid_etr import HybridETRTrainer
@@ -29,12 +31,19 @@ def get_simulator(space, run_config):
                 
         if etr == None or etr == "None":
             return TrainEmulator(lookup)
+        elif etr == "DecaTercet":
+            return MultiThresholdingETRTrainer(lookup, 0.1)
+        elif etr == "PentaTercet":
+            return MultiThresholdingETRTrainer(lookup, 0.2) 
+        elif etr == "TetraTercet":
+            return MultiThresholdingETRTrainer(lookup, 0.25)
         elif etr == "VizMedian":
             return VizMedianETRTrainer(lookup)
         elif etr == "VizPenta":
-            return VizPentaETRTrainer(lookup)
+            return ThresholdingETRTrainer(lookup, 0.2)
         elif etr == "VizPentaOpt":
-            return VizPentaETRTrainer(lookup, eval_end=0.85, percentile=80)                           
+            return ThresholdingETRTrainer(lookup, 0.2, 
+                                            eval_end_ratio=0.85)        
         elif etr == "Knock":
             return KnockETRTrainer(lookup)
         elif etr == "Interval":

@@ -72,6 +72,12 @@ class EarlyTerminateTrainer(TrainEmulator):
         log("Evaluation time saving by early termination: {:.1f} sec".format(total_time - est_time))
         return est_time
 
+    def get_preevaluated_result(self, cand_index):
+        acc_curve = self.acc_curves.loc[cand_index].values
+        train_time = self.total_times[cand_index]
+        min_loss = 1.0 - max(acc_curve)
+        return acc_curve, train_time, min_loss
+        
 
 class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
     ''' Sample code for your ETR logic. 

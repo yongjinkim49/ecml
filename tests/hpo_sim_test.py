@@ -12,11 +12,11 @@ import ws.shared.hp_cfg as hconf
 import ws.hpo.bandit as bandit
 import ws.hpo.space_mgr as space
 
-def data2_test(etr):
+def data207_test(etr):
     hp_cfg = hconf.read_config("hp_conf/data207.json")
     samples = space.create_surrogate_space('data207')
     
-    #set_log_level('debug')
+    set_log_level('debug')
     
     run_cfg = bconf.read("arms.json", path="run_conf/")
     run_cfg["early_term_rule"] = etr
@@ -28,13 +28,31 @@ def data2_test(etr):
         result = results[i]
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
+def data2_test(etr):
+    hp_cfg = hconf.read_config("hp_conf/data2.json")
+    samples = space.create_surrogate_space('data2')
+    
+    set_log_level('debug')
+    
+    run_cfg = bconf.read("arms.json", path="run_conf/")
+    run_cfg["early_term_rule"] = etr
+    m = bandit.create_emulator(samples, 
+                'TIME', 0.9999, '1d',
+                run_config=run_cfg)
+    results = m.mix('SEQ', 1, save_results=False)
+    for i in range(len(results)):
+        result = results[i]
+        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
+
+
 if __name__ == "__main__":
-    #data2_test("None")
-    #data2_test("Gradient")
-    #data2_test("VizMedian")
-    #data2_test("Interval")
-    #data2_test("Knock")
-    #data2_test("VizPentaOpt")
-    data2_test("IntervalPentaOpt")
+    early_term_test = data2_test
+    #early_term_test("None")
+    #early_term_test("Gradient")
+    #early_term_test("VizMedian")
+    #early_term_test("Interval")
+    #early_term_test("Knock")
+    #early_term_test("VizPentaOpt")
+    early_term_test("DecaTercet")
     
 

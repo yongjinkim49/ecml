@@ -1,0 +1,175 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import numpy as np
+import math
+import copy
+
+from ws.hpo.trainers.emul.trainer import EarlyTerminateTrainer
+from ws.shared.logger import *
+
+
+class ThresholdingETRTrainer(EarlyTerminateTrainer):
+    
+    def __init__(self, lookup, survive_ratio, 
+                eval_start_ratio=0.5, eval_end_ratio=0.67):
+
+
+        if survive_ratio < 0.0 or survive_ratio > 0.5:
+            raise ValueError("Invalid survive_ratio: {}".format(survive_ratio))
+        
+        super(ThresholdingETRTrainer, self).__init__(lookup)
+
+        self.num_epochs = lookup.num_epochs
+
+        start_index = int(self.num_epochs * eval_start_ratio)
+        if start_index > 0:
+            start_index -= 1
+        
+        self.eval_start_index = start_index
+        self.eval_end_index = int(self.num_epochs * eval_end_ratio) - 1
+        self.percentile = 100.0 - (survive_ratio * 100.0) 
+
+    def get_eval_epoch(self):
+        return self.eval_end_index + 1
+
+    def get_threshold(self, cur_acc_curve):
+        mean_accs = []   
+        
+        cur_mean_acc = np.mean(cur_acc_curve[self.eval_start_index:self.eval_end_index+1])
+        if np.isnan(cur_mean_acc) == False:
+            mean_accs.append(cur_mean_acc)
+
+        for i in range(len(self.history)):
+            mean_acc = np.mean(self.history[i]["curve"][self.eval_start_index:self.eval_end_index+1])
+            if np.isnan(mean_acc) == False:
+                mean_accs.append(mean_acc)
+        if len(mean_accs) > 0:
+            threshold = np.percentile(mean_accs, self.percentile)
+        else:
+            threshold = 0.0
+        debug("mean accs:{}".format(["{:.4f}".format(acc) for acc in mean_accs]))
+        return threshold
+
+    def train(self, cand_index, estimates, space=None, min_train_epoch=None, max_train_epoch=None):
+
+        if min_train_epoch == None:
+            min_train_epoch = 1
+
+        if max_train_epoch == None:
+            max_train_epoch = self.num_epochs
+        else:
+            self.num_epochs = max_train_epoch
+
+        debug("cand_index:{}".format(cand_index))
+
+        acc_curve, train_time, min_loss = self.get_preevaluated_result(cand_index)
+        debug("{}: commencing iteration {}".format(type(self).__name__, len(self.history)))
+        #debug("accuracy curve: {}".format(acc_curve))
+
+        cur_acc_curve = acc_curve
+        cur_max_acc = 0
+        cur_epoch = min_train_epoch
+        
+        early_terminated = False
+        
+        while cur_epoch <= max_train_epoch:
+
+            acc = acc_curve[cur_epoch - 1]
+            
+            if acc > cur_max_acc:
+                cur_max_acc = acc
+            
+            if cur_epoch == self.get_eval_epoch():
+                threshold = self.get_threshold(acc_curve[min_train_epoch-1:cur_epoch])
+
+                if acc < threshold:
+                    debug("{} terminates {} at epoch {} because current accuracy {} is lower than {}. max accuracy: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))
+                    
+                    cur_acc_curve = copy.copy(acc_curve[min_train_epoch-1:cur_epoch])
+                    min_loss = 1.0 - cur_max_acc
+                    train_time = self.get_time_saving(cand_index, cur_epoch)
+                    early_terminated = True
+                    break
+            
+            cur_epoch += 1
+
+        lc = {"curve": cur_acc_curve, "train_time":train_time, "train_epoch": cur_epoch}
+        self.history.append(lc)
+        self.early_terminated_history.append(early_terminated)
+        
+        return min_loss, train_time, early_terminated
+
+
+class EarlyDropETRTrainer(ThresholdingETRTrainer):
+    
+    def __init__(self, lookup, drop_ratio): # 0 ~ 0.5
+
+        survive_ratio = 1.0 - drop_ratio
+        super(EarlyDropETRTrainer, self).__init__(lookup, survive_ratio,
+                                                    eval_start_ratio=0,
+                                                    eval_end_ratio=0.5)    
+
+
+class LateSurviveETRTrainer(ThresholdingETRTrainer):
+    
+    def __init__(self, lookup, survive_ratio):
+
+        eval_end_ratio = 1.0 - survive_ratio
+        super(LateSurviveETRTrainer, self).__init__(lookup, survive_ratio,
+                                                    eval_start_ratio=0.5,
+                                                    eval_end_ratio=eval_end_ratio)
+
+
+class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
+    def __init__(self, lookup, survive_ratio):
+
+        self.num_epochs = lookup.num_epochs
+        drop_ratio = 1.0 - survive_ratio
+        self.lower_etr = EarlyDropETRTrainer(lookup, drop_ratio)
+        self.higher_etr = LateSurviveETRTrainer(lookup, survive_ratio)
+
+        super(MultiThresholdingETRTrainer, self).__init__(lookup)
+
+
+    def train(self, cand_index, estimates, min_train_epoch=None, space=None):
+        acc = 0 # stopping accuracy
+
+        if min_train_epoch == None:
+            min_train_epoch = 1
+        
+        acc_curve, train_time, min_loss = self.get_preevaluated_result(cand_index)
+
+        cur_acc_curve = acc_curve
+        cur_max_acc = 0
+        cur_epoch = min_train_epoch
+        early_terminated = False
+        threshold_epoch = int(self.num_epochs * 0.5)
+        
+        while cur_epoch <= self.num_epochs:
+           
+            if cur_epoch < threshold_epoch:
+                min_loss, train_time, early_terminated = self.lower_etr.train(cand_index, estimates,
+                                                                            max_train_epoch=threshold_epoch)
+                if early_terminated == True:
+                    cur_acc_curve = cur_acc_curve[:threshold_epoch]
+                    cur_epoch = threshold_epoch
+                else:
+                    min_loss, train_time, early_terminated = self.higher_etr.train(cand_index, estimates, 
+                                                                            min_train_epoch=threshold_epoch)
+                    if early_terminated == True:
+                        cur_epoch = self.higher_etr.get_eval_epoch()
+                        cur_acc_curve = copy.copy(acc_curve[:cur_epoch]) 
+                        
+                    else:
+                       cur_epoch = self.num_epochs 
+                  
+                break
+
+        lc = {"curve": cur_acc_curve, "train_time":train_time, "train_epoch": cur_epoch}
+        self.history.append(lc)
+        self.early_terminated_history.append(early_terminated)
+        
+        return min_loss, train_time, early_terminated            
+
