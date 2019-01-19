@@ -64,7 +64,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
         else:
             self.num_epochs = max_train_epoch
 
-        debug("cand_index:{}".format(cand_index))
+        #debug("cand_index:{}".format(cand_index))
 
         acc_curve, train_time, min_loss = self.get_preevaluated_result(cand_index)
         debug("{}: commencing iteration {}".format(type(self).__name__, len(self.history)))
@@ -87,7 +87,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
                 threshold = self.get_acc_threshold(acc_curve[min_train_epoch-1:cur_epoch])
 
                 if acc < threshold:
-                    debug("{} terminates {} at epoch {}:  accuracy {} is lower than {}. max accuracy: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))
+                    debug("{} terminates {} at epoch {}({} is lower than {}). max: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))
                     
                     cur_acc_curve = copy.copy(acc_curve[min_train_epoch-1:cur_epoch])
                     min_loss = 1.0 - cur_max_acc
