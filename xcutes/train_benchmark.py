@@ -42,6 +42,6 @@ def test_run_main(surrogate, port):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('port', type=int, help='Port number.')
+    parser.add_argument('port', type=int, default=6000, help='Port number.')
     args = parser.parse_args()
     test_run_main("data2", args.port)
