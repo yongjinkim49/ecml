@@ -69,7 +69,7 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
         early_drop_epoch = int(self.num_epochs * 0.5)
         survive_check_epoch = int(self.num_epochs * (1.0 - self.survive_ratio))
 
-        #debug("Current epoch: {}, checkpoints: {}".format(cur_epoch, [early_drop_epoch, survive_check_epoch]))
+        debug("Current epoch: {}, checkpoints: {}".format(cur_epoch, [early_drop_epoch, survive_check_epoch]))
         
         if self.etr_checked == None:
             if cur_epoch >= early_drop_epoch and cur_epoch < survive_check_epoch:

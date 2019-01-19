@@ -14,19 +14,19 @@ class HPOResultFactory(object):
         self.result = {}
         self.result['accuracy'] = []
         self.result['error'] = []
-        self.result['metrics'] = []
+        #self.result['metrics'] = []
         # list of the estimated execution time of a candidate
         #self.result['est_exec_time'] = []
         self.result['exec_time'] = []
         self.result['opt_time'] = []
         self.result['cum_exec_time'] = []
-        self.result['early_terminated'] = []
+        
         self.result['cum_opt_time'] = []        
         self.result['model_idx'] = []  # for tracing selected candidates
         self.result['select_trace'] = []  # for tracing arm selection
 
         self.result['num_duplicates'] = []
-        self.result['force_terminate'] = False # whether it found a goal or not
+        #self.result['force_terminate'] = False # whether it found a goal or not
 
         #debug("result initialized")
 
@@ -38,9 +38,9 @@ class HPOResultFactory(object):
         self.cum_exec_time += exec_time
         self.cum_opt_time += opt_time
 
-        if metrics is None:
-            metrics = -1
-        self.result['metrics'].append(metrics)
+        #if metrics is None:
+        #    metrics = -1
+        #self.result['metrics'].append(metrics)
 
         self.result['model_idx'].append(select_index)
         self.result['error'].append(test_error)
@@ -50,7 +50,7 @@ class HPOResultFactory(object):
         self.result['opt_time'].append(opt_time)
         self.result['cum_exec_time'].append(self.cum_exec_time)
         self.result['cum_opt_time'].append(self.cum_opt_time)
-        self.result['early_terminated'].append(early_terminated)
+        
         #if est_exec_time is None:
         #   est_exec_time = -1 
         #self.result['est_exec_time'].append(est_exec_time)
@@ -73,7 +73,8 @@ class HPOResultFactory(object):
         self.result['count_arr'] = arm_selector.counts
 
     def force_terminated(self):        
-        self.result['force_terminate'] = True
+        #self.result['force_terminate'] = True
+        pass
 
     def get_elapsed_time(self):        
         elapsed_time = 0

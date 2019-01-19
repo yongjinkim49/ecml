@@ -139,7 +139,7 @@ class RemoteTrainer(TrainerPrototype):
                     
                     acc_curve = [ 1.0 - loss for loss in result["losses"] ]
                     min_loss = result['cur_loss']
-                    if acc_curve != None:
+                    if acc_curve != None and len(acc_curve) > 0:
                         min_loss = 1.0 - max(acc_curve)
                         self.history.append({
                             "curve": acc_curve, 
