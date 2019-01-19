@@ -80,7 +80,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
                     if self.acc_min < acc < self.acc_max:
                         debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
                         self.early_terminated_history.append(True)
-                        return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
+                        return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
                 if i <= self.eval_epoch-1:
                     if acc > knock_in_barriers[i]:
                         debug("acc knocked into above {} at epoch{}".format(knock_in_barriers[i],i+1))
@@ -91,7 +91,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
                         debug("terminated at epoch{} with {} less knock_ins".format(i+1, self.satisfy_epochs - knocked_in_count))
                         # stop early
                         self.early_terminated_history.append(True)
-                        return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
+                        return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
 
                 if self.epoch_length-1 > i > self.eval_epoch-1:
                     if knocked_in_count > self.satisfy_epochs:
@@ -99,7 +99,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
                             #stop early
                             self.early_terminated_history.append(True)
                             debug("terminated at epoch{} by knocking out below {}".format(i+1, knock_out_barrier))
-                            return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
+                            return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
 
         return 1.0 - max(acc_curve), self.total_times[cand_index], True
 
@@ -152,7 +152,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 early_terminated = True
                 min_loss = 1.0 - cur_max_acc
-                train_time = self.get_time_saving(cand_index, i+1)
+                train_time = self.get_train_time(cand_index, i+1)
                 break
             else:
                 cum_train_time = sum([lc["train_time"] for lc in self.history])
@@ -163,7 +163,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                         early_terminated = True
                         
                         min_loss = 1.0 - cur_max_acc
-                        train_time = self.get_time_saving(cand_index, i+1)
+                        train_time = self.get_train_time(cand_index, i+1)
                         
                         break                    
         self.early_terminated_history.append(early_terminated)

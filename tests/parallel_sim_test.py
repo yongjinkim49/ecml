@@ -19,9 +19,9 @@ def data2_test(etr):
     set_log_level('debug')
     
     run_cfg = bconf.read("p6div-etr.json", path="run_conf/")
-    run_cfg["early_term_rule"] = etr
+    #run_cfg["early_term_rule"] = etr
     c = batch.get_simulator("ASYNC", "data207",
-                        "TIME", 0.999, 
+                        "GOAL", 0.9318, 
                         "30h", run_cfg)
     results = c.run(1, save_results=False)
     for i in range(len(results)):

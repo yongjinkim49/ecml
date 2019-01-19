@@ -40,6 +40,6 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
             if self.acc_min < acc < self.acc_max:
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 self.early_terminated_history.append(True)
-                return 1.0 - cur_max_acc, self.get_time_saving(cand_index, i+1), True
+                return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
     
         return 1.0 - max(acc_curve), self.total_times[cand_index], False

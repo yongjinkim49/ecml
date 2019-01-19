@@ -91,7 +91,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
                     
                     cur_acc_curve = copy.copy(acc_curve[min_train_epoch-1:cur_epoch])
                     min_loss = 1.0 - cur_max_acc
-                    train_time = self.get_time_saving(cand_index, cur_epoch)
+                    train_time = self.get_train_time(cand_index, cur_epoch)
                     early_terminated = True
                     break
             

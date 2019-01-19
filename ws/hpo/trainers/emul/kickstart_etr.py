@@ -67,7 +67,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
                             debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
                             self.early_terminated_history.append(True)
                             min_loss = 1.0 - cur_max_acc
-                            train_time = self.get_time_saving(cand_index, i+1)
+                            train_time = self.get_train_time(cand_index, i+1)
                             early_terminated = True
                             break 
 
@@ -82,7 +82,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
                             # stop early
                             self.early_terminated_history.append(True)
                             min_loss = 1.0 - cur_max_acc
-                            train_time = self.get_time_saving(cand_index, i+1)
+                            train_time = self.get_train_time(cand_index, i+1)
                             early_terminated = True
                             break
         

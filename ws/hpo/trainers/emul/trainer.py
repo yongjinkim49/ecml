@@ -63,14 +63,14 @@ class EarlyTerminateTrainer(TrainEmulator):
         self.history = []
         self.early_terminated_history = []
 
-    def get_time_saving(self, cand_index, stop_epoch):
+    def get_train_time(self, cand_index, stop_epoch):
         # XXX: consider preparation time later
         total_time = self.total_times[cand_index]
         acc_curve = self.acc_curves.loc[cand_index].values
         epoch_length = len(acc_curve)
-        est_time = stop_epoch * (total_time / epoch_length)
-        log("Evaluation time saving by early termination: {:.1f} sec".format(total_time - est_time))
-        return est_time
+        elapsed_time = stop_epoch * (total_time / epoch_length)
+        log("Evaluation time saving by early termination: {:.1f} sec".format(total_time - elapsed_time))
+        return elapsed_time
 
     def get_preevaluated_result(self, cand_index):
         acc_curve = self.acc_curves.loc[cand_index].values

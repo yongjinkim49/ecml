@@ -98,7 +98,7 @@ class GradientETRTrainer(EarlyTerminateTrainer):
                     early_terminated = True
                     self.early_terminated_history.append(early_terminated)
                     return 1.0 - cur_max_acc, \
-                            self.get_time_saving(cand_index, i+1), \
+                            self.get_train_time(cand_index, i+1), \
                             early_terminated
             
             self.early_terminated_history.append(early_terminated)

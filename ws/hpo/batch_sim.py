@@ -233,7 +233,11 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
                 if best_acc < acc:
                     best_acc = acc
 
-                if cur_async_time >= self.time_expired:
+                if self.run_mode == "GOAL" and best_acc >= self.target_acc:
+                    timeout = True
+                    res.update_batch_result(self.bandits)
+                    break
+                elif cur_async_time >= self.time_expired:
                     timeout = True
                     res.update_batch_result(self.bandits)
                     break
@@ -312,6 +316,9 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 cur_iter_acc = repo.get_value('accuracy', -1)
                 if best_acc < cur_iter_acc:
                     best_acc = cur_iter_acc
+
+                if self.run_mode == "GOAL" and best_acc >= self.target_acc:
+                    break
 
                 self.cur_iters += 1
 
