@@ -53,34 +53,43 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
                 if np.isnan(mean_acc) == False:
                     mean_accs.append(mean_acc)
         
+        debug("# of history :{}, mean accs:{}".format(len(self.history), ["{:.4f}".format(acc) for acc in mean_accs]))
+        
         if len(mean_accs) > 0:
             threshold = np.percentile(mean_accs, percentile)
         else:
             threshold = 0.0
-        debug("mean accs:{}".format(["{:.4f}".format(acc) for acc in mean_accs]))
+        
         return threshold
 
     def check_termination_condition(self, acc_curve, estimates):
         cur_epoch = len(acc_curve)
         
         early_drop_epoch = int(self.num_epochs * 0.5)
-        survive_check_epoch = int(self.max_train_epoch * (1.0 - self.survive_ratio))
+        survive_check_epoch = int(self.num_epochs * (1.0 - self.survive_ratio))
+
+        debug("Current epoch: {}, checkpoints: {}".format(cur_epoch, [early_drop_epoch, survive_check_epoch]))
         
-        if cur_epoch >= early_drop_epoch:            
+        if cur_epoch >= early_drop_epoch and cur_epoch < survive_check_epoch:
             # evaluate early termination criteria
             start_index, end_index = self.get_eval_indices(0.0, 0.5)
             cur_acc = acc_curve[end_index]
+            debug("Checking early termination: {}".format(["{:.4f}".format(acc) for acc in acc_curve[:end_index+1]]))
             acc_thres = self.get_acc_threshold(acc_curve[:end_index+1], start_index, end_index, self.drop_percentile)
             if cur_acc < acc_thres:
+                debug("Early dropped by {} vs. {}".format(cur_acc, acc_thres))
                 return True
-        elif cur_epoch >= self.survive_check_epoch:
+        elif cur_epoch >= survive_check_epoch:
             # evaluate late survival criteria
             eval_end_ratio = 1.0 - self.survive_ratio
             start_index, end_index = self.get_eval_indices(0.5, eval_end_ratio)
-            cur_acc = acc_curve[end_index]            
-            acc_thres = self.get_acc_threshold(acc_curve[:end_index+1], start_index, end_index, self.survive_percentile)
+            cur_acc = acc_curve[end_index]
+            debug("Checking late termination: {}".format(["{:.4f}".format(acc) for acc in acc_curve[start_index:end_index+1]]))
+            acc_thres = self.get_acc_threshold(acc_curve[start_index:end_index+1], start_index, end_index, self.survive_percentile)
             if cur_acc < acc_thres:
+                debug("Late dropped by {} vs. {}".format(cur_acc, acc_thres))
                 return True
+                
         elif cur_epoch >= self.max_train_epoch:
             warn("Invalid scenario: current epochs exceeds max epochs")
             return True

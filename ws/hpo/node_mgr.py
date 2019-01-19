@@ -29,6 +29,12 @@ class ParallelHPOManager(ManagerPrototype):
         }
         return cfg
 
+    def get_spec(self):
+        my_spec = {
+            "job_type": "HPO_space",
+            "type": self.type }
+        return my_spec
+
     def get_space_manager(self):
         return self.space_mgr
 

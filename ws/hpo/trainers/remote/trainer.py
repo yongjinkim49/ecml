@@ -27,8 +27,9 @@ class RemoteTrainer(TrainerPrototype):
 
         self.min_train_epoch = min_train_epoch
         self.max_train_epoch = None
-        if "config" in self.hp_config and "max_epoch" in self.hp_config["config"]:
-            self.max_train_epoch = self.hp_config["config"]["max_epoch"]
+        
+        if hasattr(self.hp_config, "config") and hasattr(self.hp_config.config, "max_epoch"):
+            self.max_train_epoch = self.hp_config.config.max_epoch
         
         self.max_timeout = max_timeout
         self.polling_interval = polling_interval
@@ -80,7 +81,7 @@ class RemoteTrainer(TrainerPrototype):
                     r = self.controller.get_job(job_id)
                     if "losses" in r:
                         num_losses = len(r["losses"])
-                        debug("Current working job finished with {} losses.".format(num_losses))
+                        debug("Current working job finished with min loss {}.".format(min(r["losses"])))
                         break 
                 
                 #debug("Waiting {} sec...".format(self.polling_interval)) 
@@ -104,8 +105,11 @@ class RemoteTrainer(TrainerPrototype):
         cfg = {'cand_index' : cand_index}
         param_names = self.hp_config.get_hyperparams()
         param_values = self.hpvs[cand_index]
+        if type(param_values) == np.ndarray:
+             param_values = param_values.tolist()
+        
         early_terminated = False
-        debug("Training HPV: {}".format(param_values))
+        #debug("Training using hyperparameters: {}".format(param_values))
         
         if type(param_values) == dict:
             for param in param_names:
@@ -151,7 +155,7 @@ class RemoteTrainer(TrainerPrototype):
                 error("Creating job failed")
             
         else:
-            error("Invalid setting: configurations are not same.")
+            error("Connection error: handshaking with trainer failed.")
         
         raise ValueError("Remote training failed")       
 
@@ -192,7 +196,8 @@ class EarlyTerminateTrainer(RemoteTrainer):
         self.early_terminated_history = []
 
     def train(self, cand_index, estimates=None, space=None):
-        min_loss, train_time, early_terminated =  super(EarlyTerminateTrainer, self).train(train(cand_index, estimates, space))
+        parent = super(EarlyTerminateTrainer, self)
+        min_loss, train_time, early_terminated = parent.train(cand_index, estimates, space)
         self.early_terminated_history.append(early_terminated)
 
         return min_loss, train_time, early_terminated 

@@ -14,7 +14,7 @@ import numpy as np
 
 from ws.shared.logger import *
 import ws.shared.lookup as lookup
-import ws.shared.hp_cfg as hp_cfg
+import ws.shared.hp_cfg as hconf
 from ws.shared.saver import ResultSaver, TempSaver
 
 
@@ -70,23 +70,25 @@ def create_runner(trainer_url, space,
         kwargs = {}
         if use_surrogate != None:            
             kwargs["surrogate"] = use_surrogate
-            id += "-S{}".format(use_surrogate)
+            id += "-S_{}".format(use_surrogate)
+        
         
         if isinstance(hp_config, dict):
-            cfg = hp_cfg.HyperparameterConfiguration(hp_config)
+            hp_config = hconf.HyperparameterConfiguration(hp_config)
         else:
-            cfg = hp_config
+            hp_config = hp_config
 
         hpvs = space.get_hpv()
         cred = ""
+        
         if "credential" in run_config:
             cred = run_config["credential"]
         
-        rtc = RemoteTrainConnector(url, cfg, cred, **kwargs)
-        
         if run_config and "early_term_rule" in run_config:
             early_term_rule = run_config["early_term_rule"]
-        
+
+        rtc = RemoteTrainConnector(trainer_url, hp_config, cred, **kwargs)
+
         t = trainer.get_remote_trainer(rtc, hpvs, early_term_rule)
         
         if early_term_rule != None and early_term_rule != "None":

@@ -6,14 +6,14 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import ws.hpo.bandit as bandit
 import ws.hpo.bandit_config as run_config
-
+import ws.hpo.space_mgr as space
 from ws.shared.logger import *
 
 def test_emul_main():
     
-    conf = run_config.read('arms-alet.json')
-    space, lookup = bandit.create_surrogate_space('data10', conf)
-    emul = bandit.create_emulator(space, lookup,
+    conf = run_config.read('p6div-etr.json')
+    samples = space.create_surrogate_space('data10')
+    emul = bandit.create_emulator(samples,
                 'TIME', 0.999, '24h', 
                 run_config=conf)
     #emul.with_pkl = True

@@ -85,7 +85,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
             debug("Job {} is created remotely.".format(js['job_id']))
             return js['job_id'] 
         else:
-            raise ValueError("Connection error. status code: {}".format(status))
+            raise ValueError("Job creation error. code: {}, {}".format(status, resp['body']))
         
         return None
 
