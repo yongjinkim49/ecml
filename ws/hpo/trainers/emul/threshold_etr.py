@@ -51,7 +51,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
             threshold = np.percentile(mean_accs, self.threshold_percentile)
         else:
             threshold = 0.0
-        debug("mean accs:{}".format(["{:.4f}".format(acc) for acc in mean_accs]))
+        #debug("mean accs:{}".format(["{:.4f}".format(acc) for acc in mean_accs]))
         return threshold
 
     def train(self, cand_index, estimates, space=None, min_train_epoch=None, max_train_epoch=None):
@@ -87,7 +87,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
                 threshold = self.get_acc_threshold(acc_curve[min_train_epoch-1:cur_epoch])
 
                 if acc < threshold:
-                    debug("{} terminates {} at epoch {} because current accuracy {} is lower than {}. max accuracy: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))
+                    debug("{} terminates {} at epoch {}:  accuracy {} is lower than {}. max accuracy: {}".format(type(self).__name__, cand_index, cur_epoch, acc, threshold, max(acc_curve)))
                     
                     cur_acc_curve = copy.copy(acc_curve[min_train_epoch-1:cur_epoch])
                     min_loss = 1.0 - cur_max_acc
