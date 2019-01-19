@@ -45,7 +45,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
             history.append([])
             for n in range(len(self.history)): # number of iterations
                 history[i].append(self.history[n]["curve"][i]) # vertical congregation of curve values     
-            knock_in_barriers[i] = np.percentile(history[i], self.percentile) 
+            knock_in_barriers[i] = np.percentile(history[i], self.threshold_percentile) 
 
         debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
@@ -61,7 +61,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
             cum_train_time = sum([lc["train_time"] for lc in self.history])
 
             if cum_train_time <= self.expired_time: #1800 seconds == 30 minutes
-                if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
+                if len(self.history) > int(round(1/(1-self.threshold_percentile/100))): # fully train a few trials for intial parameter setting
                     if 0 <= i:
                         if self.acc_min < acc < self.acc_max:
                             debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))

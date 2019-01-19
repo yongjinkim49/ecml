@@ -56,7 +56,7 @@ class RemoteTrainer(TrainerPrototype):
                         # Interim error update
                         interim_err = j["losses"][-1]
                         if prev_interim_err == None or prev_interim_err != interim_err:
-                            debug("Interim error {} will be updated".format(interim_err))
+                            #debug("Interim error {} will be updated".format(interim_err))
                             if space != None:
                                 space.update(model_index, interim_err, True)
                         
@@ -81,7 +81,7 @@ class RemoteTrainer(TrainerPrototype):
                     r = self.controller.get_job(job_id)
                     if "losses" in r:
                         num_losses = len(r["losses"])
-                        debug("Current working job finished with min loss {}.".format(min(r["losses"])))
+                        debug("Current working job finished with accuracy {:.4f}.".format(1.0 - min(r["losses"])))
                         break 
                 
                 #debug("Waiting {} sec...".format(self.polling_interval)) 
@@ -189,15 +189,17 @@ class EarlyTerminateTrainer(RemoteTrainer):
 
         self.history = []
         self.early_terminated_history = []
+        self.etr_checked = None
 
     def reset(self):
         # reset history
         self.history = []
         self.early_terminated_history = []
+        self.etr_checked = None
 
     def train(self, cand_index, estimates=None, space=None):
         parent = super(EarlyTerminateTrainer, self)
         min_loss, train_time, early_terminated = parent.train(cand_index, estimates, space)
         self.early_terminated_history.append(early_terminated)
-
+        self.etr_checked = None
         return min_loss, train_time, early_terminated 

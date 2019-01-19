@@ -205,8 +205,7 @@ class HPOBanditMachine(object):
                 debug("HPO does not utilize interim results")
             else:
                 debug("HPO utilizes interim results to warm up")
-        else:
-            debug("HPO utilizes interim results for modelling")
+
         next_index = chooser.next(samples, acq_func, use_interim_result)
 
         # for measure information sharing effect

@@ -39,7 +39,7 @@ def test_run_main(surrogate):
 #    runner.all_in('HO', 'TPE', 1, save_results=False)
 #    runner.all_in('RF', 'UCB', 1, save_results=True)
 #    runner.mix('BO-HEDGE', 1, save_results=False)
-    runner.mix('SEQ', 1, save_results=False)
+    runner.mix('SEQ', 2, save_results=True)
 
     runner.temp_saver.remove()    
 

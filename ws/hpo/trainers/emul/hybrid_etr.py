@@ -45,7 +45,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
             history.append([])
             for n in range(len(self.history)): # number of iterations
                 history[i].append(self.history[n][i]) # vertical congregation of curve values     
-            knock_in_barriers[i] = np.percentile(history[i], self.percentile) # 75% value of the vertical row
+            knock_in_barriers[i] = np.percentile(history[i], self.threshold_percentile) # 75% value of the vertical row
         
         for i in range(len(unstopped_list)): # number of iterations fully trained without ETR activated
             knock_temp_storage.append([1])
@@ -55,10 +55,10 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
 
 
         if len(knock_out_candidates) >= 1:
-            if len(self.history) > int(round(1/(1-self.percentile/100))):
+            if len(self.history) > int(round(1/(1-self.threshold_percentile/100))):
 
                 knock_out_point = min(knock_out_candidates)
-                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.history)-int(round(1/(1-self.percentile/100))))))
+                knock_out_adjusted_margin = max(0,(0.05 - 0.001 * (len(self.history)-int(round(1/(1-self.threshold_percentile/100))))))
                 knock_out_barrier = knock_out_point - knock_out_adjusted_margin
             else:
                 knock_out_barrier = np.max(knock_out_candidates)
@@ -75,7 +75,7 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
             
             #debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
 
-            if len(self.history) > int(round(1/(1-self.percentile/100))): # fully train a few trials for intial parameter setting
+            if len(self.history) > int(round(1/(1-self.threshold_percentile/100))): # fully train a few trials for intial parameter setting
                 if i >= 1:
                     if self.acc_min < acc < self.acc_max:
                         debug("stopped at epoch{} locked between ({},{})".format(i+1, self.acc_min, self.acc_max))
@@ -136,7 +136,7 @@ class HybridETRTrainer(EarlyTerminateTrainer):
         for i in range(len(self.history)):
             history.append(np.mean(self.history[i]["curve"][self.eval_epoch_start:self.eval_epoch_end+1]))
 
-        threshold = np.percentile(history, self.percentile)
+        threshold = np.percentile(history, self.threshold_percentile)
         train_time = self.total_times[cand_index]
 
         debug("commencing iteration {}".format(len(self.history)))

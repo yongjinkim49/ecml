@@ -211,7 +211,7 @@ class ArmSelector(object):
         if self.cur_arm_index is not None and step >= self.num_skip:
             self.strategy.update(self.cur_arm_index, curr_acc, estimates)
             arm = self.arms[self.cur_arm_index]
-            debug("At step {}, HPO by {}-{} will be proceeded.".format(
+            debug("At step {}, HPO by {}-{} has been proceeded.".format(
                 step, arm['model'], arm['acq_func']))
             if self.spec != 'SEQ' and self.spec != 'RANDOM':
                 debug("Arm selection ratio: {}, Current epsilon: {}".format(

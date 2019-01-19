@@ -26,7 +26,7 @@ class RemoteTrainConnector(RemoteJobConnector):
                 warn("Getting profile failed") 
                 return False
             elif "spec" in profile and "job_type" in profile["spec"]:
-                debug("Remote worker profile: {}".format(profile["spec"]))
+                #debug("Remote worker profile: {}".format(profile["spec"]))
                 if profile["spec"]["job_type"] == "ML_trainer":
                     config = self.get_config()
                     if "run_config" in config and "target_func" in config["run_config"]:                

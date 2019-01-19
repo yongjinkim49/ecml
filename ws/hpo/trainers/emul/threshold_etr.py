@@ -28,7 +28,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
         
         self.eval_start_index = start_index
         self.eval_end_index = int(self.num_epochs * eval_end_ratio) - 1
-        self.percentile = 100.0 - (survive_ratio * 100.0) 
+        self.threshold_percentile = 100.0 - (survive_ratio * 100.0) 
 
     def get_eval_epoch(self):
         return self.eval_end_index + 1
@@ -48,7 +48,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
                     mean_accs.append(mean_acc)
         
         if len(mean_accs) > 0:
-            threshold = np.percentile(mean_accs, self.percentile)
+            threshold = np.percentile(mean_accs, self.threshold_percentile)
         else:
             threshold = 0.0
         debug("mean accs:{}".format(["{:.4f}".format(acc) for acc in mean_accs]))

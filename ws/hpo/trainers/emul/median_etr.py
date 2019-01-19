@@ -32,7 +32,7 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
         for i in range(len(self.history)):
             history.append(np.mean(self.history[i][:self.eval_epoch]))
 
-        threshold = np.percentile(history, self.percentile)
+        threshold = np.percentile(history, self.threshold_percentile)
 
         debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))

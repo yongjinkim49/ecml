@@ -82,7 +82,7 @@ class RemoteJobConnector(RemoteConnectorPrototype):
         
         if status == '201':
             js = json.loads(resp['body'])
-            debug("Job {} is created remotely.".format(js['job_id']))
+            #debug("Job {} is created remotely.".format(js['job_id']))
             return js['job_id'] 
         else:
             raise ValueError("Job creation error. code: {}, {}".format(status, resp['body']))
