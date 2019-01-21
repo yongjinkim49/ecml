@@ -58,7 +58,7 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
         else:
             threshold = 0.0
 
-        debug("P:{}%, T:{:.4f}, mean accs:{}".format(percentile, threshold, ["{:.4f}".format(acc) for acc in mean_accs]))
+        #debug("P:{}%, T:{:.4f}, mean accs:{}".format(percentile, threshold, ["{:.4f}".format(acc) for acc in mean_accs]))
 
 
         return threshold
