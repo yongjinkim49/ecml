@@ -649,10 +649,10 @@ def get_predefined_style(name):
             elif '(hybrid)' in name:
                 marker = 'o'
                 #color = 'black'                
-            elif '(interval)' in name:
+            elif '(deca)' in name:
                 #color = 'xkcd:bright blue'
                 marker = '*'  
-            elif '(knock)' in name:
+            elif '(tetra)' in name:
                 #color = 'xkcd:bright blue'
                 marker = 'd' 
             elif '(penta)' in name:
