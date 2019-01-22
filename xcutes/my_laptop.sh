@@ -1,13 +1,6 @@
-# Parallel diversification with ETR
-#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9334 -et 30h data207 100
-#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9334 -et 30h data207 100
-#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9334 -et 30h data207 100
-
-#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.8994 -et 4h data10 100
-#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.8994 -et 4h data10 100
-#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.8994 -et 4h data10 100
-
-#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
-#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
-#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
-#python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d -etr DecaTercet data2 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 4h data2 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 4h data3 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 4h data10 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 4h data20 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 4h data30 100
+python hpo_runner.py -rc p6gp_ucb.json -m BATCH -s ASYNC -et 30h data207 100

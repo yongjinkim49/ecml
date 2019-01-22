@@ -1,0 +1,19 @@
+{    
+    "credential" : "jo2fulwkq",
+    "title": "6RF-PI",
+    "arms": [
+        {
+            "model": "RF",
+            "acq_func": "PI"
+        }
+    ],
+    "failover": "None",
+    "bandits" : [
+        { "mode": "RF", "spec": "PI" },
+        { "mode": "RF", "spec": "PI" },
+        { "mode": "RF", "spec": "PI" },
+        { "mode": "RF", "spec": "PI" },
+        { "mode": "RF", "spec": "PI" },
+        { "mode": "RF", "spec": "PI" }
+    ]
+}

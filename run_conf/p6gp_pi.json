@@ -1,0 +1,19 @@
+{    
+    "credential" : "jo2fulwkq",
+    "title": "6GP-PI",
+    "arms": [
+        {
+            "model": "GP",
+            "acq_func": "PI"
+        }
+    ],
+    "failover": "None",
+    "bandits" : [
+        { "mode": "GP", "spec": "PI" },
+        { "mode": "GP", "spec": "PI" },
+        { "mode": "GP", "spec": "PI" },
+        { "mode": "GP", "spec": "PI" },
+        { "mode": "GP", "spec": "PI" },
+        { "mode": "GP", "spec": "PI" }
+    ]
+}

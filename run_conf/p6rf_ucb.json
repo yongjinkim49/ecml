@@ -1,0 +1,19 @@
+{    
+    "credential" : "jo2fulwkq",
+    "title": "6RF-UCB",
+    "arms": [
+        {
+            "model": "RF",
+            "acq_func": "UCB"
+        }
+    ],
+    "failover": "None",
+    "bandits" : [
+        { "mode": "RF", "spec": "UCB" },
+        { "mode": "RF", "spec": "UCB" },
+        { "mode": "RF", "spec": "UCB" },
+        { "mode": "RF", "spec": "UCB" },
+        { "mode": "RF", "spec": "UCB" },
+        { "mode": "RF", "spec": "UCB" }
+    ]
+}
