@@ -31,7 +31,8 @@
 #python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 30h data207 100
 
 # Parallel diversification
-python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data10 100
-python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data20 100
-python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data30 100
-
+#python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data10 100
+#python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data20 100
+#python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data30 100
+python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data10 100
+python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data20 100

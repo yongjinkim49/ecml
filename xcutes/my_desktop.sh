@@ -27,14 +27,14 @@
 #python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 30h data207 100
 #python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 30h data207 100
 #python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 30h data207 100
-python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
-python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
-python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
+#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
+#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
+#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9933 -et 4h data2 100
+#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
+#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
+#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
+#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
+#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
+#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
+python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data3 100
 
-python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
-python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
-python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9922 -et 4h data3 100
-
-python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
-python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
-python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
