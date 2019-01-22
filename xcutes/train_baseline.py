@@ -1,3 +1,12 @@
+import os
+import sys
+
+# For path arrangement (set the parent directory as the root folder)
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+import ws.hpo.bandit as bandit
+import ws.hpo.bandit_config as rconf
+
 import ws.shared.hp_cfg as hconf
 import ws.hpo.space_mgr as space
 
