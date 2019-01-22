@@ -39,7 +39,11 @@ class RemoteTrainer(TrainerPrototype):
     def reset(self):
         self.jobs = {}
         self.history = []
-        
+
+    def check_termination_condition(self, acc_curve, estimates):
+        # No termination check
+        return False
+
     def wait_until_done(self, job_id, model_index, estimates, space):
 
         acc_curve = None
