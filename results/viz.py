@@ -646,18 +646,24 @@ def get_predefined_style(name):
             elif '(log)' in name:
                 marker = '*'
                 #color = 'xkcd:royal blue'
-            elif '(hybrid)' in name:
+            elif '(hybrid' in name:
                 marker = 'o'
-                #color = 'black'                
-            elif '(deca)' in name:
-                #color = 'xkcd:bright blue'
+                #color = 'black'
+            elif '(baseline' in name:
+                marker = ''
+                #color = 'black'                 
+            if 'β=0.1' in name:
+                color = 'xkcd:orange'
                 marker = '*'  
-            elif '(tetra)' in name:
-                #color = 'xkcd:bright blue'
+            elif 'β=0.25' in name:
+                color = 'xkcd:orange'
                 marker = 'd' 
-            elif '(penta)' in name:
-                #color = 'xkcd:bright blue'
-                marker = 'v'                                                  
+            elif 'β=0.2' in name:
+                color = 'xkcd:orange'
+                marker = 'v'
+            elif 'β=0.05' in name:
+                color = 'xkcd:orange'
+                marker = '|'                                                                    
         elif 'R-Div' in name:
             marker = 'o'
         elif 'P-Div' in name:

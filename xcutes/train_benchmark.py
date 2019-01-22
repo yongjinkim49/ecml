@@ -12,7 +12,7 @@ import ws.hpo.space_mgr as space
 from ws.shared.logger import *
 import argparse
 
-def test_run_main(surrogate, port):
+def test_run_main(surrogate, port, trials, duration):
     
 
     set_log_level('debug')
@@ -32,17 +32,19 @@ def test_run_main(surrogate, port):
     
     samples = space.create_grid_space(hp_cfg.get_dict())
     runner = bandit.create_runner(trainer_url, samples,
-                                'TIME', 0.999, "12h",
+                                'TIME', 0.999, duration,
                                 run_cfg, hp_cfg
                                 )
 
-    runner.mix('SEQ', 5, save_results=True)
+    runner.mix('SEQ', trials, save_results=True)
     runner.temp_saver.remove()    
 
 
 if __name__ == '__main__':
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('port', type=int, default=6000, help='Port number.')
-    #args = parser.parse_args()
-    port = 6000 # args.port
-    test_run_main("data2", port)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('port', type=int, default=6000, help='Port number.')
+    parser.add_argument('trials', type=int, default=1, help='number of trials.')
+    parser.add_argument('duration', type=str, default="24h", help='The walltime to optimize.')
+    args = parser.parse_args()
+    port = args.port
+    test_run_main("data2", args.port, args.trials, args.duration)
