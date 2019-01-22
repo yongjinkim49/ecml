@@ -640,7 +640,7 @@ def get_predefined_style(name):
         color = palette[1]
         if 'S-Div' in name:            
             marker = 'x'
-            if '(median)' in name:
+            if '(naive)' in name:
                 marker = '^'
                 #color = 'xkcd:royal blue'
             elif '(log)' in name:
