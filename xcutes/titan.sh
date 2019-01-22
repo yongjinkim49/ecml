@@ -29,5 +29,5 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data30 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data30 100
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data2 100
-python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data30 100
-python hpo_runner.py -rc p6div-etr-w3d.json -m DIV -s SEQ -et 5d data207 100
+#python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data30 100
+#python hpo_runner.py -rc p6div-etr-w3d.json -m DIV -s SEQ -et 5d data207 100

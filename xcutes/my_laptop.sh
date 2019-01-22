@@ -10,5 +10,4 @@
 #python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
 #python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
 #python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.784 -et 4h data20 100
-
-python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d -etr DecaTercet data2 100
+#python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d -etr DecaTercet data2 100
