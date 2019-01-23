@@ -706,7 +706,9 @@ def get_predefined_style(name):
         line_style = ':'
     elif 'Knockout' in name:
         line_style = '--'
-
+    elif 'BOHB' in name:
+        color = palette[2]
+        marker = 's'
     if 'GP-' in name and not 'GP-Hedge' in name:
         # thin blues
         palette = ['xkcd:royal blue', 'xkcd:bright blue',
