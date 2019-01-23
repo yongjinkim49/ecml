@@ -1,8 +1,11 @@
-# Scalable Unified Hyperparameter Optimization Framework of Deep Neural Networks
+# Diversified Bayesian Optimization for DNN Hyperparameter Optimization
 
 ## Abstract
 
-TBD
+Bayesian Optimization (BO) is a well-known solution for automatic Hyper-Parameter Optimization (HPO) of machine learning models. For Deep Neural Networks (DNN), however, the use of BO has been rather limited because of the fear of a disastrous failure. 
+In this paper, we adopt a diversification strategy using six different BO algorithms to design S-Div and P-Div, and show that both expected and worst-case performances can be improved. 
+S-Div is a sequential diversification strategy that repeatedly goes through the six options using a single processor and P-Div is its parallel version. For further enhancements, cost function transformation and early termination rule are investigated for S-Div and history sharing strategy over parallel workers is investigated for P-Div. 
+For the evaluation, we have performed an extensive investigation over six benchmark tasks. In terms of success rate, S-Div and P-Div achieved 53\% and 134\% of average improvements over the existing BO techniques. In terms of time to reach a target performance, S-Div and P-Div achieved 41\% and 50\% of average reductions. Also, S-Div and a state-of-the-art algorithm BOHB are compared and S-Div is found to substantially outperform BOHB for the benchmark DNN problems.  
 
 **Key features**
   * Pluggable structure which can easily expand HPO algorithms
@@ -11,9 +14,7 @@ TBD
   * Large scale HPO by building a microservices architecture
     * Resource Oriented Architecture with RESTful Web API
 
-TODO:System architecture diagram required
-
-We firstly unified all three practical ML HPO frameworks:
+We unified all three practical ML HPO frameworks for diversificated BO:
 
 * [Spearmint](https://github.com/JasperSnoek/spearmint) 
 * [SMAC](http://www.cs.ubc.ca/labs/beta/Projects/SMAC/)
@@ -63,13 +64,8 @@ If you are working on Linux, install these packages as follows:
 (hpo)device:path$ conda install -c conda-forge weave
 ```
 
-### Install with PIP
 
-TODO
-
-------
-
-## How to run the experiment in single mode
+## How to run the experiment 
 
 ### Run with Console Mode
 
@@ -85,7 +81,7 @@ TODO
 (mab)$ python hpo_runner.py data3 10 -e=TIME -et=36000
 ```
 
-* This command optimizes the hyperparameters of surrogates data3 10 times with diverification with given time bin.
+* This command optimizes the hyperparameters of surrogates benchmark data3 10 times with diverification with given time bin.
   * It will not be terminated before the given time (36000 secs == 10 min.) expired.
 
 
@@ -94,13 +90,13 @@ See help for more options.
 ```bash
 (mab)$ python hpo_runner.py --help
 usage: hpo_runner.py [-h] [-m MODE] [-s SPEC] [-e EXP_CRT] [-eg EXP_GOAL]
-                        [-et EXP_TIME] [-c CONF] [-rc RUN_CONF] [-hc HP_CONF]
-                        [-w WORKER_URL] [-l LOG_LEVEL] [-r RERUN] [-p PKL]
-                        [-tp TIME_PENALTY]
-                        config_name num_trials
+                     [-et EXP_TIME] [-etr EARLY_TERM_RULE] [-rd RCONF_DIR]
+                     [-hd HCONF_DIR] [-rc RCONF] [-w WORKER_URL]
+                     [-l LOG_LEVEL] [-r RERUN] [-p PKL]
+                     hp_config num_trials
 
 positional arguments:
-  config_name           hyperparameter configuration name.
+  hp_config             hyperparameter configuration name.
   num_trials            The total repeats of the experiment.
 
 optional arguments:
@@ -108,8 +104,9 @@ optional arguments:
   -m MODE, --mode MODE  The optimization mode. Set a model name to use a
                         specific model only.Set DIV to sequential
                         diverification mode. Set BATCH to parallel mode.
-                        ['RANDOM', 'GP', 'RF', 'TPE', 'GP-NM', 'GP-ALE', 'RF-
-                        ALE', 'DIV', 'BATCH'] are available. default is DIV.
+                        ['RANDOM', 'GP', 'RF', 'HYPEROPT', 'GP-NM', 'GP-HLE',
+                        'RF-HLE', 'DIV', 'ADA', 'BATCH'] are available.
+                        default is DIV.
   -s SPEC, --spec SPEC  The detailed specification of the given mode. (e.g.
                         acquisition function) ['RANDOM', 'TPE', 'EI', 'PI',
                         'UCB', 'SEQ', 'RANDOM', 'HEDGE', 'BO-HEDGE', 'BO-
@@ -124,49 +121,34 @@ optional arguments:
   -eg EXP_GOAL, --exp_goal EXP_GOAL
                         The expected target goal accuracy. When it is
                         achieved, the trial will be terminated automatically.
-                        Default setting is 0.999.
+                        Default setting is 0.9999.
   -et EXP_TIME, --exp_time EXP_TIME
                         The time each trial expires. When the time is up, it
                         is automatically terminated. Default setting is 86400.
-  -c CONF, --conf CONF  Run configuration file name existed in ./run_conf/.
-                        Default setting is arms.json
-  -rc RUN_CONF, --run_conf RUN_CONF
+  -etr EARLY_TERM_RULE, --early_term_rule EARLY_TERM_RULE
+                        Early termination rule. Default setting is None.
+  -rd RCONF_DIR, --rconf_dir RCONF_DIR
                         Run configuration directory. Default setting is
                         ./run_conf/
-  -hc HP_CONF, --hp_conf HP_CONF
+  -hd HCONF_DIR, --hconf_dir HCONF_DIR
                         Hyperparameter configuration directory. Default
                         setting is ./hp_conf/
+  -rc RCONF, --rconf RCONF
+                        Run configuration file in ./run_conf/. Default setting
+                        is arms.json
   -w WORKER_URL, --worker_url WORKER_URL
-                        Remote training worker URL. Set the valid URL for
-                        remote training.
+                        Remote training worker node URL. Set the valid URL if
+                        remote training required.
   -l LOG_LEVEL, --log_level LOG_LEVEL
                         Print out log level. ['debug', 'warn', 'error', 'log']
                         are available. default is warn
+  -r RERUN, --rerun RERUN
+                        [Experimental] Use to expand the number of trials for
+                        the experiment. zero means no rerun. default is 0.
+  -p PKL, --pkl PKL     [Experimental] Whether to save internal values into a
+                        pickle file. CAUTION:this operation requires very
+                        large storage space! Default value is False.
 
 
 ```
 
-For more information, kindly refer to the [Wiki page](https://github.com/hyunghunny/hpo-mab/wiki).
-
-#### Run HPO through surrogates
-TODO
-
-#### Run HPO through the remote worker
-
-TODO
-
-## How to run the experiment on Microservice Mode
-
-### Install WoT interface 
-
-TODO
-
-### Run HPO with Web Service Mode
-
-TODO
-
-## How to run the experiment in parallel mode
-
-#### Configure your mashup
-
-TODO
