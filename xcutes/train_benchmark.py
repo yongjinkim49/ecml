@@ -28,7 +28,7 @@ def test_run_main(surrogate, port, trials, duration):
         print("Invalid hyperparameter configuration file: {}".format(hp_cfg_path))
         return  
 
-    #run_cfg = rconf.read('p6div-etr.json')
+    run_cfg = rconf.read('arms.json') # p6div-etr.json
     
     samples = space.create_grid_space(hp_cfg.get_dict())
     runner = bandit.create_runner(trainer_url, samples,
