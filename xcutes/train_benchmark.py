@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('port', type=int, default=6000, help='Port number.')
     parser.add_argument('-t', '--trials', type=int, default=3, help='number of trials.')
-    parser.add_argument('-d', '--duration', type=str, default="12", help='The walltime to optimize.')
+    parser.add_argument('-d', '--duration', type=str, default="12h", help='The walltime to optimize.')
     args = parser.parse_args()
     
     test_run_main("data2", args.port, args.trials, args.duration)
