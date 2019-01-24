@@ -1,1 +1,1 @@
-python xcutes/train_baseline.py 6003 2>&1 | tee hpo6003_log.txt
+python xcutes/train_benchmark.py 6003 2>&1 | tee hpo6003_log.txt
