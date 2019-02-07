@@ -56,7 +56,7 @@ def add_opt_time_span(results, opt, num_iters):
 
 def get_exec_times_over_threshold(logs, num_runs, threshold, unit='Hour'):
     cum_exec_time = []
-
+    
     for i in range(num_runs):
         opt = logs[str(i)]
         index_cum_time = len(get_accuracies_under_threshold(opt['accuracy'], threshold)) - 1
