@@ -18,11 +18,12 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
             raise ValueError("Invalid survive_ratio: {}".format(survive_ratio))
 
         super(MultiThresholdingETRTrainer, self).__init__(controller, hpvs)
+        
         self.survive_ratio = survive_ratio
         self.early_drop_percentile = (survive_ratio * 100.0)
         self.late_drop_percentile = 100 - (survive_ratio * 100.0)
         self.num_epochs = self.max_train_epoch
-                
+                        
     def get_eval_indices(self, eval_start_ratio, eval_end_ratio):
         start_index = int(self.num_epochs * eval_start_ratio)
         if start_index > 0:
@@ -71,7 +72,7 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
 
         #debug("Current epoch: {}, checkpoints: {}".format(cur_epoch, [early_drop_epoch, survive_check_epoch]))
         
-        if self.etr_checked == None:
+        if self.etr_checked == False:
             if cur_epoch >= early_drop_epoch and cur_epoch < survive_check_epoch:
                 # evaluate early termination criteria
                 start_index, end_index = self.get_eval_indices(0.0, 0.5)
@@ -80,7 +81,7 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
                 acc_thres = self.get_acc_threshold(acc_curve, start_index, end_index, self.early_drop_percentile)
                 debug("Checking early termination at {}:  C-{:.4f} vs. T-{:.4f}".format(cur_epoch, cur_acc, acc_thres))
                 if cur_acc < acc_thres:
-                    debug("Early dropped as {}".format(cur_acc))
+                    debug("Early dropped as {}".format(cur_acc))                    
                     return True
                 else:
                     self.etr_checked = "early"
@@ -96,7 +97,8 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
                     debug("Late dropped as {}".format(cur_acc))
                     return True
                 else:
-                    self.etr_checked = "late"
+                    self.etr_checked = True
+                    return False
 
         else:
             return False

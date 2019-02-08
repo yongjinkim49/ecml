@@ -85,8 +85,11 @@ class RemoteTrainer(TrainerPrototype):
                     r = self.controller.get_job(job_id)
                     if "losses" in r:
                         num_losses = len(r["losses"])
-                        debug("Current working job finished with accuracy {:.4f}.".format(1.0 - min(r["losses"])))
-                        break 
+                        if num_losses > 0:
+                            debug("Current working job finished with accuracy {:.4f}.".format(1.0 - min(r["losses"])))
+                            break
+                        else:
+                            debug("Result of finished job: {}".format(r)) 
                 
                 #debug("Waiting {} sec...".format(self.polling_interval)) 
                 time.sleep(self.polling_interval)
@@ -193,17 +196,17 @@ class EarlyTerminateTrainer(RemoteTrainer):
 
         self.history = []
         self.early_terminated_history = []
-        self.etr_checked = None
+        self.etr_checked = False
 
     def reset(self):
         # reset history
         self.history = []
         self.early_terminated_history = []
-        self.etr_checked = None
 
     def train(self, cand_index, estimates=None, space=None):
         parent = super(EarlyTerminateTrainer, self)
+        self.etr_checked = False
         min_loss, train_time, early_terminated = parent.train(cand_index, estimates, space)
         self.early_terminated_history.append(early_terminated)
-        self.etr_checked = None
+
         return min_loss, train_time, early_terminated 
