@@ -60,8 +60,6 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
             threshold = 0.0
 
         #debug("P:{}%, T:{:.4f}, mean accs:{}".format(percentile, threshold, ["{:.4f}".format(acc) for acc in mean_accs]))
-
-
         return threshold
 
     def check_termination_condition(self, acc_curve, estimates):

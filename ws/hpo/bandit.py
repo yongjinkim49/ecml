@@ -240,12 +240,11 @@ class HPOBanditMachine(object):
                                                     space=samples)
         
         if test_error == None:
+            # return interim error for avoiding stopping
             test_error = interim_error
             early_terminated = True
         if exec_time == None:
-            # return interim error for avoiding stopping
             exec_time = time.time() - eval_start_time
-            early_terminated = True
 
         return test_error, exec_time, early_terminated
 
