@@ -208,13 +208,11 @@ class EarlyTerminateTrainer(RemoteTrainer):
         self.early_terminated_history = []
 
     def train(self, cand_index, estimates=None, space=None):
-        parent = super(EarlyTerminateTrainer, self)
         self.etr_checked = False
-        min_loss, train_time, early_terminated = parent.train(cand_index, estimates, space)
+        early_terminated = False
+        train_result = super(EarlyTerminateTrainer, self).train(cand_index, estimates, space)
+        if 'early_terminated' in train_result:
+            early_terminated = train_result['early_terminated']
         self.early_terminated_history.append(early_terminated)
 
-        return {
-                "test_error": min_loss, 
-                "exec_time" : train_time, 
-                'early_terminated' : early_terminated
-        }  
+        return train_result  

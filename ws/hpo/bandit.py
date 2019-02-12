@@ -243,8 +243,7 @@ class HPOBanditMachine(object):
         if train_result == None or not 'test_error' in train_result:
             train_result = {}
             # return interim error for avoiding stopping
-            train_result['test_error'] = interim_error
-            
+            train_result['test_error'] = interim_error            
             train_result['early_terminated'] = True
 
         if not 'exec_time' in train_result:
