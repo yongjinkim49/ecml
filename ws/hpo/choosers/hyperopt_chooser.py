@@ -87,7 +87,15 @@ class HyperOptSearchSpaceConfig(object):
         for param, setting in self.config.hyperparams.__dict__.items():
             range_distribution = None
             if setting.value_type == 'discrete' and setting.type == 'int':
-                range_distribution = hp.quniform(param, setting.range[0], setting.range[-1], 1)
+                if hasattr(setting, 'power_of'):
+                    base = setting.power_of
+                    log_range = []
+                    # transform setting.range values to log
+                    for value in setting.range:
+                        log_range.append(int(math.log(base**value)))                    
+                    range_distribution = hp.loguniform(param, log_range[0], log_range[-1])                     
+                else:
+                    range_distribution = hp.quniform(param, setting.range[0], setting.range[-1], 1)
             elif setting.value_type == 'continuous' and setting.type == 'float':
                 if hasattr(setting, 'power_of'):
                     base = setting.power_of

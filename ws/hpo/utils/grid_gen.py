@@ -109,6 +109,9 @@ class HyperparameterVectorGenerator(object):
 
             if hp_cfg.type == 'int':
                 result = min_value + int(value * (max_value - min_value + 1)) #XXX:to include max value
+                if hasattr(hp_cfg, 'power_of'):
+                    result = int(np.power(hp_cfg.power_of, result))
+
             elif hp_cfg.type == 'float':
                 result = min_value + (value * (max_value - min_value)) #FIXME:float type can't access max_value.
 
