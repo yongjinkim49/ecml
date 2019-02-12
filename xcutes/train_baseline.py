@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime as dt
 
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -15,6 +16,8 @@ import argparse
 
 def test_run_main(surrogate, port, trials, duration):
     
+    start_date = dt.datetime.now()
+    log("{} trial(s) of each {} start(s) at {}".format(trials, duration, start_date))
 
     set_log_level('debug')
     print_trace()
@@ -39,12 +42,14 @@ def test_run_main(surrogate, port, trials, duration):
 
     runner.all_in('GP', 'UCB', trials, save_results=True)
     runner.temp_saver.remove()    
+    end_date = dt.datetime.now()
+    log("HPO ends at {} ({})".format(end_date, end_date - start_date))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('port', type=int, default=6000, help='Port number.')
-    parser.add_argument('-t', '--trials', type=int, default=5, help='number of trials.')
+    parser.add_argument('-t', '--trials', type=int, default=1, help='number of trials.')
     parser.add_argument('-d', '--duration', type=str, default="12h", help='The walltime to optimize.')
     args = parser.parse_args()
     

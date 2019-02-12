@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime as dt
 
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -12,14 +13,16 @@ import ws.hpo.space_mgr as space
 from ws.shared.logger import *
 import argparse
 
-def test_run_main(surrogate, port, trials, duration):
+def test_run_main(surrogate, ip, port, trials, duration):
     
+    start_date = dt.datetime.now()
+    log("{} trial(s) of each {} start(s) at {}".format(trials, duration, start_date))
 
-    set_log_level('debug')
+    #set_log_level('debug')
     print_trace()
 
     # XXX: prerequisite: training worker service should be executed before running.
-    trainer_url = 'http://147.47.120.82:{}'.format(port)
+    trainer_url = 'http://{}:{}'.format(ip, port)  # 147.47.120.82
     
     hp_cfg_path = './hp_conf/{}.json'.format(surrogate)
     hp_cfg = hconf.read_config(hp_cfg_path)
@@ -28,7 +31,7 @@ def test_run_main(surrogate, port, trials, duration):
         print("Invalid hyperparameter configuration file: {}".format(hp_cfg_path))
         return  
 
-    run_cfg = rconf.read('arms.json') # p6div-etr.json
+    run_cfg = rconf.read('p6div-etr.json') # p6div-etr.json arms.json
     
     samples = space.create_grid_space(hp_cfg.get_dict())
     runner = bandit.create_runner(trainer_url, samples,
@@ -38,13 +41,23 @@ def test_run_main(surrogate, port, trials, duration):
 
     runner.mix('SEQ', trials, save_results=True)
     runner.temp_saver.remove()    
+    end_date = dt.datetime.now()
+    log("HPO ends at {} ({})".format(end_date, end_date - start_date))
 
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('port', type=int, default=6000, help='Port number.')
-    parser.add_argument('-t', '--trials', type=int, default=3, help='number of trials.')
+
+    parser.add_argument('-c', '--config', type=str, default="bm1", help='hyperparameter configuration.')
+    parser.add_argument('-ip', '--ip_addr', type=str, default="147.47.120.82", help='IP address.')
+    parser.add_argument('-t', '--trials', type=int, default=1, help='number of trials.')
     parser.add_argument('-d', '--duration', type=str, default="12h", help='The walltime to optimize.')
+    
+    parser.add_argument('port', type=int, default=6001, help='Port number.')
+    
     args = parser.parse_args()
     
-    test_run_main("data2", args.port, args.trials, args.duration)
+    test_run_main(args.config, args.ip_addr, args.port, args.trials, args.duration)
+
+if __name__ == '__main__':
+    #test_run_main("data2", '127.0.0.1', 6001, 40, "12h")
+    main()
