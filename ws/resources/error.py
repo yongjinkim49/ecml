@@ -55,7 +55,7 @@ class ObservedError(Resource):
             try:
                 if space_id != "active":
                     self.sm.set_space_status(space_id, "active")
-                samples.update(int(sample_id), float(args["value"]))
+                samples.update_error(int(sample_id), float(args["value"]))
                 error = {"id": sample_id}
                 error["error"] = samples.get_errors(int(sample_id))
                 

@@ -62,7 +62,7 @@ class RemoteTrainer(TrainerPrototype):
                         if prev_interim_err == None or prev_interim_err != interim_err:
                             #debug("Interim error {} will be updated".format(interim_err))
                             if space != None:
-                                space.update(model_index, interim_err, True)
+                                space.update_error(model_index, interim_err, True)
                         
                         prev_interim_err = interim_err
                         time_out_count = 0 # XXX:reset time out count
