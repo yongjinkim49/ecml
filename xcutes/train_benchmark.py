@@ -13,12 +13,12 @@ import ws.hpo.space_mgr as space
 from ws.shared.logger import *
 import argparse
 
-def test_run_main(surrogate, ip, port, trials, duration):
+def test_run_main(surrogate, ip, port, trials, duration, log_level='log'):
     
     start_date = dt.datetime.now()
     log("{} trial(s) of each {} start(s) at {}".format(trials, duration, start_date))
 
-    #set_log_level('debug')
+    set_log_level(log_level)
     print_trace()
 
     # XXX: prerequisite: training worker service should be executed before running.
@@ -51,12 +51,13 @@ def main():
     parser.add_argument('-ip', '--ip_addr', type=str, default="147.47.120.82", help='IP address.')
     parser.add_argument('-t', '--trials', type=int, default=1, help='number of trials.')
     parser.add_argument('-d', '--duration', type=str, default="12h", help='The walltime to optimize.')
+    parser.add_argument('-l', '--log', type=str, default="log", help='The log level.')
     
     parser.add_argument('port', type=int, default=6001, help='Port number.')
     
     args = parser.parse_args()
     
-    test_run_main(args.config, args.ip_addr, args.port, args.trials, args.duration)
+    test_run_main(args.config, args.ip_addr, args.port, args.trials, args.duration, args.log)
 
 if __name__ == '__main__':
     #test_run_main("data2", '127.0.0.1', 6001, 40, "12h")
