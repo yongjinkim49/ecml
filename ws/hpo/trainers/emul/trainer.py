@@ -29,8 +29,12 @@ class TrainEmulator(TrainerPrototype):
     def train(self, cand_index, estimates=None, space=None):
         acc_curve = self.acc_curves.loc[cand_index].values
         total_time = self.total_times[cand_index]
+        return {
+                "test_error": 1.0 - max(acc_curve), 
+                "exec_time" : total_time, 
+                'early_terminated' : False
+        }  
 
-        return 1.0 - max(acc_curve), total_time, False         
 
     def get_interim_error(self, model_index, cur_dur):
         total_dur = self.total_times[model_index]
@@ -106,9 +110,15 @@ class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
             eval_time = 100
 
             # TODO: you should return the error when it stopped and time to execute here.
-            return stopped_error, eval_time, True
+            return {
+                    "test_error": stopped_error, 
+                    "exec_time" : eval_time, 
+                    'early_terminated' : True
+            }  
         else:
             self.early_terminated_history.append(False)
-
-            return 1.0 - max(acc_curve), self.total_times[cand_index], False
-
+            return {
+                    "test_error": 1.0 - max(acc_curve), 
+                    "exec_time" : self.total_times[cand_index], 
+                    'early_terminated' : False
+            }  

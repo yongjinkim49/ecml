@@ -145,17 +145,21 @@ class RemoteTrainer(TrainerPrototype):
                     self.jobs[job_id]["status"] = "done"
                     
                     acc_curve = [ 1.0 - loss for loss in result["losses"] ]
+                    max_i = np.argmax(acc_curve)
                     min_loss = result['cur_loss']
                     if acc_curve != None and len(acc_curve) > 0:
-                        min_loss = 1.0 - max(acc_curve)
+                        min_loss = 1.0 - acc_curve[max_i]
                         self.history.append({
                             "curve": acc_curve, 
                             "train_time": result['run_time'], 
                             "train_epoch": len(acc_curve)}
                             ) 
 
-                    return min_loss, result['run_time'], early_terminated
-
+                    return {
+                            "test_error": min_loss, 
+                            "exec_time" : result['run_time'], 
+                            'early_terminated' : early_terminated
+                    }  
                 else:
                     error("Starting training job failed.")
             else:
@@ -209,4 +213,8 @@ class EarlyTerminateTrainer(RemoteTrainer):
         min_loss, train_time, early_terminated = parent.train(cand_index, estimates, space)
         self.early_terminated_history.append(early_terminated)
 
-        return min_loss, train_time, early_terminated 
+        return {
+                "test_error": min_loss, 
+                "exec_time" : train_time, 
+                'early_terminated' : early_terminated
+        }  

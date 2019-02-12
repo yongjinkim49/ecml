@@ -97,11 +97,19 @@ class GradientETRTrainer(EarlyTerminateTrainer):
                     # stop early
                     early_terminated = True
                     self.early_terminated_history.append(early_terminated)
-                    return 1.0 - cur_max_acc, \
-                            self.get_train_time(cand_index, i+1), \
-                            early_terminated
-            
+                    return {
+                            "test_error":  1.0 - cur_max_acc, 
+                            "exec_time" : self.get_train_time(cand_index,i+1), 
+                            'early_terminated' : early_terminated
+                    }  
+
+
+
             self.early_terminated_history.append(early_terminated)
-            return 1.0 - max(acc_curve), self.total_times[cand_index], early_terminated    
+            return {
+                    "test_error":  1.0 - max(acc_curve), 
+                    "exec_time" : self.total_times[cand_index], 
+                    'early_terminated' :early_terminated
+            }    
 
 

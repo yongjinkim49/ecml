@@ -31,9 +31,11 @@ class HPOResultFactory(object):
         #debug("result initialized")
 
     def append(self, select_index, test_error, opt_time, exec_time, 
-                    metrics=None, est_exec_time=None, early_terminated=False):
-        
-        self.curr_acc = 1.0 - test_error
+               metrics=None, est_exec_time=None, early_terminated=False, test_acc=None):
+        if test_acc == None:
+            self.curr_acc = 1.0 - test_error
+        else:
+            self.curr_acc = test_acc
 
         self.cum_exec_time += exec_time
         self.cum_opt_time += opt_time

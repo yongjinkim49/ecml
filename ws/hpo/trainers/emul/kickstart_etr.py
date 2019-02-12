@@ -86,4 +86,8 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
                             early_terminated = True
                             break
         
-        return min_loss, train_time, early_terminated
+        return {
+                "test_error": min_loss, 
+                "exec_time" : train_time, 
+                'early_terminated' : early_terminated
+        }    

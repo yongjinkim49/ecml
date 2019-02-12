@@ -226,6 +226,7 @@ class HPOBanditMachine(object):
         eval_start_time = time.time()
         exec_time = 0.0
         test_error = 1.0
+        
         chooser = self.bandit.choosers[model]
         early_terminated = False
         if chooser.response_shaping == True:
@@ -233,20 +234,26 @@ class HPOBanditMachine(object):
         
         # set initial error for avoiding duplicate
         interim_error = self.trainer.get_interim_error(cand_index, 0)
-        self.samples.update(cand_index, test_error, True)
+        self.samples.update_error(cand_index, test_error, True)
         
-        test_error, exec_time, early_terminated = self.trainer.train(cand_index, 
-                                                    estimates=chooser.estimates,
-                                                    space=samples)
+        train_result = self.trainer.train(cand_index, 
+                                          estimates=chooser.estimates,
+                                          space=samples)
         
-        if test_error == None:
+        if train_result == None or not 'test_error' in train_result:
+            train_result = {}
             # return interim error for avoiding stopping
-            test_error = interim_error
-            early_terminated = True
-        if exec_time == None:
-            exec_time = time.time() - eval_start_time
+            train_result['test_error'] = interim_error
+            
+            train_result['early_terminated'] = True
 
-        return test_error, exec_time, early_terminated
+        if not 'exec_time' in train_result:
+            train_result['exec_time'] = time.time() - eval_start_time
+
+        if not 'test_acc' in train_result:
+            train_result['test_acc'] = 1.0 - train_result['test_error']
+
+        return train_result
 
     def pull(self, model, acq_func, result_repo, select_opt_time=0):
 
@@ -269,15 +276,24 @@ class HPOBanditMachine(object):
 
         # estimate an evaluation time of the next candidate
         #est_eval_time = self.estimate_eval_time(next_index, model)
+        
         # evaluate the candidate
-        test_error, exec_time, early_terminated = self.evaluate(next_index, model)
+        eval_result = self.evaluate(next_index, model)
+        test_error = eval_result['test_error']
+        test_acc = 1.0 - test_error
+        if 'test_acc' in eval_result:
+            test_acc = eval_result['test_acc']            
+        exec_time = eval_result['exec_time']
+        early_terminated = eval_result['early_terminated']
         total_opt_time = select_opt_time + opt_time
         result_repo.append(next_index, test_error,
-                    total_opt_time, exec_time, metrics, early_terminated)
+                    total_opt_time, exec_time, 
+                    metrics=metrics, early_terminated=early_terminated,
+                    test_acc=test_acc)
         self.cur_runtime += (total_opt_time + exec_time)
-        self.samples.update(next_index, test_error, early_terminated)
+        self.samples.update_error(next_index, test_error, early_terminated)
         
-        curr_acc = 1.0 - test_error
+        curr_acc = test_acc
         est_log = {
             'exception_raised': exception_raised,
             "estimated_values": self.bandit.choosers[model].estimates

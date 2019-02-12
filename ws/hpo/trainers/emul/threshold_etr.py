@@ -101,7 +101,11 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
         self.history.append(lc)
         self.early_terminated_history.append(early_terminated)
         
-        return min_loss, train_time, early_terminated
+        return {
+                "test_error": min_loss, 
+                "exec_time" : train_time, 
+                'early_terminated' : early_terminated
+        }    
 
 
 class EarlyDropETRTrainer(ThresholdingETRTrainer):
@@ -163,15 +167,17 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
                     if early_terminated == True:
                         cur_epoch = self.higher_etr.get_eval_epoch()
                         cur_acc_curve = copy.copy(acc_curve[:cur_epoch]) 
-                        
                     else:
                        cur_epoch = self.num_epochs 
-                  
                 break
 
         lc = {"curve": cur_acc_curve, "train_time":train_time, "train_epoch": cur_epoch}
         self.history.append(lc)
         self.early_terminated_history.append(early_terminated)
-        
-        return min_loss, train_time, early_terminated            
+      
+        return {
+                "test_error": min_loss, 
+                "exec_time" : train_time, 
+                'early_terminated' : early_terminated
+        }    
 

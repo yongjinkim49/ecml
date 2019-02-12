@@ -83,15 +83,26 @@ class KnockETRTrainer(EarlyTerminateTrainer):
                         debug("terminated at epoch{} with {} less knock_ins".format(i+1, self.satisfy_epochs - knocked_in_count))
                         # stop early
                         self.early_terminated_history.append(True)
-                        return 1.0 - cur_max_acc, self.get_train_time(cand_index,i+1), True
-
+                        return {
+                                "test_error":  1.0 - cur_max_acc, 
+                                "exec_time" : self.get_train_time(cand_index,i+1), 
+                                'early_terminated' : True
+                        }  
                 if self.epoch_length-1 > i > self.eval_epoch-1:
                     if knocked_in_count > self.satisfy_epochs:
                         if acc < knock_out_barrier:
                             #stop early
                             self.early_terminated_history.append(True)
                             debug("terminated at epoch{} by knocking out below {}".format(i+1, knock_out_barrier))
-                            return 1.0 - cur_max_acc, self.get_train_time(cand_index,i+1), True
+                            return {
+                                    "test_error":  1.0 - cur_max_acc, 
+                                    "exec_time" : self.get_train_time(cand_index,i+1), 
+                                    'early_terminated' : True
+                            }  
 
         self.early_terminated_history.append(False)
-        return 1.0 - max(acc_curve), self.total_times[cand_index], False
+        return {
+                "test_error":  1.0 - max(acc_curve), 
+                "exec_time" : self.total_times[cand_index], 
+                'early_terminated' : False
+        }    

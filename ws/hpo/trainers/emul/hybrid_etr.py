@@ -100,9 +100,11 @@ class IntervalKnockETRTrainer(EarlyTerminateTrainer): #
                             self.early_terminated_history.append(True)
                             debug("terminated at epoch{} by knocking out below {}".format(i+1, knock_out_barrier))
                             return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
-
-        return 1.0 - max(acc_curve), self.total_times[cand_index], True
-
+        return {
+                "test_error":  1.0 - max(acc_curve), 
+                "exec_time" : self.total_times[cand_index], 
+                'early_terminated' : True
+        }    
 
 class HybridETRTrainer(EarlyTerminateTrainer):
     
@@ -167,4 +169,8 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                         
                         break                    
         self.early_terminated_history.append(early_terminated)
-        return min_loss, train_time, early_terminated
+        return {
+                "test_error":  min_loss,
+                "exec_time" : train_time, 
+                'early_terminated' : early_terminated
+        }    

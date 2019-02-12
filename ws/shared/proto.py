@@ -42,7 +42,7 @@ class TrainerPrototype(object):
         raise NotImplementedError("This should override to reset the accumulated result.")
 
     def train(self, cand_index, estimates=None, min_train_epoch=None, space=None):
-        raise NotImplementedError("This should return loss and duration.")
+        raise NotImplementedError("This should return result dictionary.")
 
     def get_interim_error(self, model_index, cur_dur):
         raise NotImplementedError("This should return interim loss.")

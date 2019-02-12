@@ -27,6 +27,7 @@ class TrainingJobFactory(object):
             "created" : time.time(),
             "status" : "not assigned",
             "cur_loss" : None,
+            "cur_acc" : None,
             "losses" : [],
             "run_time" : None,
             "times" : [],
@@ -172,11 +173,11 @@ class TrainingJobManager(ManagerPrototype):
                     self.update(id, status='done')
                 break
 
-    def update_result(self, cur_iter, iter_unit, cur_loss, run_time):
+    def update_result(self, cur_iter, iter_unit, cur_acc, run_time):
         for w in self.to_dos:
             if w['worker'].get_cur_status() == 'processing':
                 job_id = w['job_id']
-                w['worker'].add_result(cur_iter, cur_loss, run_time, iter_unit)
+                w['worker'].add_result(cur_iter, cur_acc, run_time, iter_unit)
                 debug("The result of {} at {} {} is updated".format(job_id, cur_iter, iter_unit))
                 break
 

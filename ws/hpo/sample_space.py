@@ -34,7 +34,7 @@ class SearchHistory(object):
             completes = np.where(self.terminal_record == 1)[0]
             return completes
 
-    def update(self, model_index, test_error, interim=False):
+    def update_error(self, model_index, test_error, interim=False):
         if not model_index in self.complete:
             self.candidates = np.setdiff1d(self.candidates, model_index)
             self.complete = np.append(self.complete, model_index)
@@ -138,10 +138,10 @@ class SurrogateSamplingSpace(GridSamplingSpace):
 
     # For search history 
 
-    def update(self, model_index, test_error=None, interim=False):
+    def update_error(self, model_index, test_error=None, interim=False):
         if test_error is None:
             test_error = self.test_errors[model_index]
-        super(GridSamplingSpace, self).update(model_index, test_error, interim)
+        super(GridSamplingSpace, self).update_error(model_index, test_error, interim)
 
     def get_test_error(self, index=None):
         if index != None:
@@ -202,7 +202,7 @@ class RemoteSamplingSpace(SearchHistory):
     def get_completes(self, use_interim=True):
         return np.asarray(self.space.get_completes(use_interim))
 
-    def update(self, model_index, test_error, interim=False):
+    def update_error(self, model_index, test_error, interim=False):
         self.space.update_error(model_index, test_error, interim)
 
     def get_errors(self, type_or_id, interim=False):

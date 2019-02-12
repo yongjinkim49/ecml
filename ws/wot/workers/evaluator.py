@@ -50,6 +50,7 @@ class IterativeFunctionEvaluator(Trainer):
             result['times'] = [copy.copy(r['run_time']) for r in self.results]
             
             result['cur_loss'] = min(result['losses'])
+            result['cur_acc'] = 1.0 - result['cur_loss']
             result['run_time'] = sum(result['times'])
             return result
 
@@ -83,6 +84,7 @@ class IterativeFunctionEvaluator(Trainer):
                 debug("Assigned params: {}".format(self.params))
 
                 cur_loss = None
+                cur_acc = None
                 cur_iter = i + 1
                 cur_dur = time.time() - base_time
                 
@@ -105,7 +107,13 @@ class IterativeFunctionEvaluator(Trainer):
                         time.sleep(1)
 
                 elif type(result) == dict and "cur_loss" in result:
-                    cur_loss = result["cur_loss"]                    
+                    cur_loss = result["cur_loss"]
+
+                    if "cur_acc" in result:
+                        cur_acc = result['cur_acc']
+                    else:
+                        cur_acc = 1.0 - cur_loss
+
                     if "run_time" in result and result["run_time"] > 0:                        
                         cur_dur = result["run_time"]
                     
@@ -116,6 +124,7 @@ class IterativeFunctionEvaluator(Trainer):
                         iter_unit = result["iter_unit"]
                 elif type(result) == float:
                     cur_loss = result
+                    cur_acc = 1.0 - cur_loss
                     cur_iter = i + 1
                     cur_dur = time.time() - base_time
                 else:
@@ -123,7 +132,8 @@ class IterativeFunctionEvaluator(Trainer):
 
                 if cur_loss != None:                    
                     result = {"run_time": cur_dur,
-                            "cur_loss": cur_loss, 
+                            "cur_loss": cur_loss,
+                            "cur_acc" : cur_acc, 
                             "cur_iter": cur_iter,
                             "iter_unit": self.iter_unit}
                     self.results.append(result)
