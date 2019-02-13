@@ -65,7 +65,16 @@ class RemoteTrainer(TrainerPrototype):
                                 space.update_error(model_index, interim_err, True)
                         
                         prev_interim_err = interim_err
-                        time_out_count = 0 # XXX:reset time out count
+                        if prev_interim_err != interim_err:
+                            # XXX:reset time out count
+                            time_out_count = 0 
+                        else:
+                            time_out_count += 1
+                            if time_out_count > self.max_timeout * 10:
+                                warn("Force termination due to no update for {} sec".format(self.polling_interval * self.max_timeout * 10))
+                                self.controller.stop(job_id)
+                                early_terminated = True
+                                break                                
                         
                         # Early termination check
                         if self.min_train_epoch < len(acc_curve) and \
