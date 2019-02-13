@@ -71,7 +71,7 @@ class RemoteTrainer(TrainerPrototype):
                         if self.min_train_epoch < len(acc_curve) and \
                             self.check_termination_condition(acc_curve, estimates):                        
                             job_id = j['job_id']
-                            debug("This job will be terminated")
+                            #debug("This job will be terminated")
                             self.controller.stop(job_id)
                             early_terminated = True
                             break
