@@ -16,7 +16,7 @@ import argparse
 def test_run_main(surrogate, ip, port, trials, duration, log_level='log'):
     
     start_date = dt.datetime.now()
-    log("{} trial(s) of each {} start(s) at {}".format(trials, duration, start_date))
+    log("{} trial(s) of each {} run start(s) at {}".format(trials, duration, start_date))
 
     set_log_level(log_level)
     print_trace()

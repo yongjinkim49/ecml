@@ -335,6 +335,9 @@ class HPOBanditMachine(object):
                     #debug("current time: {} - {}".format(duration, self.time_expired))
                     if duration >= self.time_expired:
                         break
+                    elif time.time() - trial_start_time >= self.time_expired:
+                        debug("Trial time mismatch: {}".format(self.time_expired - duration))
+                        break
 
             trial_sim_time = time.time() - trial_start_time
             log("{} found best accuracy {:.2f}% at run #{}. ({:.1f} sec)".format(
@@ -416,6 +419,9 @@ class HPOBanditMachine(object):
                     duration = wr.get_elapsed_time()
                     #debug("current time: {} - {}".format(duration, self.time_expired))
                     if duration >= self.time_expired:
+                        break
+                    elif time.time() - trial_start_time >= self.time_expired:
+                        debug("Trial time mismatch: {}".format(self.time_expired - duration))
                         break
 
             trial_sim_time = time.time() - trial_start_time
