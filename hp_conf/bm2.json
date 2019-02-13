@@ -1,0 +1,62 @@
+{
+    "dataset": "MNIST",
+    "model": "CNN",
+    "config": { 
+        "max_epoch": 27 
+    },    
+    "hyperparams": {
+        "num_conv_layers": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [1, 3]
+        },
+        "num_filters_1": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [4, 64]
+        },
+        "num_filters_2": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [4, 64]
+        },
+        "num_filters_3": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [4, 64]
+        },
+        "num_fc_units": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [3, 8],
+            "power_of": 2
+        },
+        "optimizer": {
+            "type": "str",
+            "value_type": "categorical",
+            "range": [
+                "Adam",
+                "SGD"
+            ]
+        },                                
+        "lr": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [-6, -2],
+            "power_of": 10
+        },
+        "sgd_momentum": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.0, 0.99]
+        },
+        "dropout_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.0, 0.9]
+        }
+    },
+    "param_order" : ["num_conv_layers", "num_filters_1", "num_filters_2", 
+        "num_filters_3", "num_fc_units", "optimizer",
+        "lr", "sgd_momentum", "dropout_rate"]
+}
