@@ -49,7 +49,7 @@ def main():
 
     parser.add_argument('-c', '--config', type=str, default="bm1", help='hyperparameter configuration.')
     parser.add_argument('-ip', '--ip_addr', type=str, default="147.47.120.82", help='IP address.')
-    parser.add_argument('-t', '--trials', type=int, default=5, help='number of trials.')
+    parser.add_argument('-t', '--trials', type=int, default=1, help='number of trials.')
     parser.add_argument('-d', '--duration', type=str, default="2h", help='The walltime to optimize.')
     parser.add_argument('-l', '--log', type=str, default="log", help='The log level.')
     
