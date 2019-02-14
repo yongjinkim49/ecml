@@ -13,17 +13,20 @@
         "num_filters_1": {
             "type": "int",
             "value_type": "discrete",
-            "range": [4, 64]
+            "range": [2, 6],
+            "power_of": 2
         },
         "num_filters_2": {
             "type": "int",
             "value_type": "discrete",
-            "range": [4, 64]
+            "range": [2, 6],
+            "power_of": 2
         },
         "num_filters_3": {
             "type": "int",
             "value_type": "discrete",
-            "range": [4, 64]
+            "range": [2, 6],
+            "power_of": 2
         },
         "num_fc_units": {
             "type": "int",

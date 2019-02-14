@@ -163,6 +163,8 @@ class HPOBanditMachine(object):
         self.trainer.reset()
         self.working_result = None
         self.cur_runtime = 0.0
+        
+        self.eval_end_time = time.time()
 
     def force_stop(self):
         self.stop_flag = True
@@ -245,12 +247,13 @@ class HPOBanditMachine(object):
             # return interim error for avoiding stopping
             train_result['test_error'] = interim_error            
             train_result['early_terminated'] = True
-
-        if not 'exec_time' in train_result:
-            train_result['exec_time'] = time.time() - eval_start_time
-
+        
         if not 'test_acc' in train_result:
             train_result['test_acc'] = 1.0 - train_result['test_error']
+
+        self.eval_stop_time = time.time()
+        if not 'exec_time' in train_result:
+            train_result['exec_time'] = self.eval_stop_time - eval_start_time
 
         return train_result
 
@@ -273,6 +276,10 @@ class HPOBanditMachine(object):
                 model, acq_func)
             exception_raised = True
 
+        total_opt_time = select_opt_time + opt_time
+        # XXX: To solve time mismatch problem   
+        if self.eval_end_time != None:
+            total_opt_time = self.eval_end_time - time.time()
         # estimate an evaluation time of the next candidate
         #est_eval_time = self.estimate_eval_time(next_index, model)
         
@@ -284,7 +291,7 @@ class HPOBanditMachine(object):
             test_acc = eval_result['test_acc']            
         exec_time = eval_result['exec_time']
         early_terminated = eval_result['early_terminated']
-        total_opt_time = select_opt_time + opt_time
+        
         result_repo.append(next_index, test_error,
                     total_opt_time, exec_time, 
                     metrics=metrics, early_terminated=early_terminated,
