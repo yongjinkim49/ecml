@@ -56,7 +56,7 @@ class HyperparameterVectorGenerator(object):
         return self.hpvs
 
     def generate(self, return_type='array'):
-        debug("Generating hyperparams...")
+        debug("Sampling hyperparameter configurations...")
         hps = self.config.hyperparams
         hpv_list = []
         if return_type == 'array':

@@ -26,11 +26,13 @@ def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1):
 
         if 'grid_seed' in hp_cfg_dict['config']:
             grid_seed = hp_cfg_dict['config']['grid_seed']
-    
-    name = "grid-{}".format(time.strftime('%Y%m%dT%H%M%SZ',time.gmtime()))
+    prefix = 'Sobol'
+    if 'dataset' in hp_cfg_dict and 'model' in hp_cfg_dict:
+        prefix = "{}-{}".format(hp_cfg_dict['dataset'], hp_cfg_dict['model'])
+    name = "{}-{}".format(prefix, time.strftime('%Y%m%dT%H%M%SZ',time.gmtime()))
     hvg = HyperparameterVectorGenerator(hp_cfg_dict, num_samples, grid_seed)
     s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), hp_cfg_dict)
-    debug("Grid sampling space created: {}".format(name))
+    debug("Sampling space created: {}".format(name))
     return s
 
 
