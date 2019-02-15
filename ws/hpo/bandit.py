@@ -279,7 +279,7 @@ class HPOBanditMachine(object):
         total_opt_time = select_opt_time + opt_time
         # XXX: To solve time mismatch problem   
         if self.eval_end_time != None:
-            total_opt_time = self.eval_end_time - time.time()
+            total_opt_time = time.time() - self.eval_end_time 
         # estimate an evaluation time of the next candidate
         #est_eval_time = self.estimate_eval_time(next_index, model)
         
