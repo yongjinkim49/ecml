@@ -164,7 +164,7 @@ class HPOBanditMachine(object):
         self.working_result = None
         self.cur_runtime = 0.0
         
-        self.eval_end_time = None
+        self.eval_end_time = time.time()
 
     def force_stop(self):
         self.stop_flag = True
