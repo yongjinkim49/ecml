@@ -164,7 +164,7 @@ class HPOBanditMachine(object):
         self.working_result = None
         self.cur_runtime = 0.0
         
-        self.eval_end_time = time.time()
+        self.eval_end_time = None
 
     def force_stop(self):
         self.stop_flag = True
@@ -251,9 +251,9 @@ class HPOBanditMachine(object):
         if not 'test_acc' in train_result:
             train_result['test_acc'] = 1.0 - train_result['test_error']
 
-        self.eval_stop_time = time.time()
+        self.eval_end_time = time.time()
         if not 'exec_time' in train_result:
-            train_result['exec_time'] = self.eval_stop_time - eval_start_time
+            train_result['exec_time'] = self.eval_end_time - eval_start_time
 
         return train_result
 
