@@ -75,7 +75,7 @@ class HyperOptChooser(object):
     def fake_evaluate(self, params):
         # XXX: replace index value of categorical string type to original string 
         params = self.space_cfg.replace_string_values(params)
-        #debug("Selected by HyperOpt: {}".format(params))
+        debug("Selected by HyperOpt: {}".format(params))
         
         est_loss = 0.5 # XXX:meaningless loss value
         self.last_params = params
@@ -205,11 +205,11 @@ class HyperoptTrialMaker(object):
                                     break
                                 else:
                                     index_val += 1
-                            debug("Transform {} to {} avoiding binning error: {}".format(val, index_val, cat_vals))
+                            #debug("Transform {} to {} avoiding binning error: {}".format(val, index_val, cat_vals))
                             val = index_val
 
                         h[str(param_order[i])] = val
-                    debug("History: {}".format(h))
+                    #debug("History: {}".format(h))
                     history.append(h)
                 else:
                     error("size mismatch: {} != {}".format(hpv, self.param_order))
