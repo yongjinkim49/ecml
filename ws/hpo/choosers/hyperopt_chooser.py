@@ -198,8 +198,13 @@ class HyperoptTrialMaker(object):
                                 val = int(val)
                         else:
                             #XXX: String value raises binning error. To avoid this error, we replace it an index
-                            cat_vals = np.array(self.space_cfg.get_range(param))
-                            index_val = int(np.where(cat_vals == val))
+                            cat_vals = self.space_cfg.get_range(param)
+                            index_val = 0
+                            for cat in cat_vals:
+                                if cat == val:
+                                    break
+                                else:
+                                    index_val += 1
                             debug("Transform {} to {} avoiding binning error: {}".format(val, index_val, cat_vals))
                             val = index_val
 
