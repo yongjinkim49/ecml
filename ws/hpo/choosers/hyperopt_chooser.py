@@ -144,6 +144,9 @@ class HyperOptSearchSpaceConfig(object):
                 return hp.type
         
         return range
+    
+    def get_range(self, name):
+        return self.config.get_range(name)
 
     def replace_string_values(self, param_values):
         for param, setting in self.config.hyperparams.__dict__.items():
@@ -195,9 +198,11 @@ class HyperoptTrialMaker(object):
                                 val = int(val)
                         else:
                             #XXX: String value raises binning error. To avoid this error, we replace it an index
-                            debug("Avoiding binning error: {}".format(val))
-                            val = str_index #str(val)
-                            str_index += 1
+                            cat_vals = np.array(self.space_cfg.get_range(param))
+                            index_val = int(np.where(cat_vals == val))
+                            debug("Transform {} to {} avoiding binning error: {}".format(val, index_val, cat_vals))
+                            val = index_val
+
                         h[str(param_order[i])] = val
                     debug("History: {}".format(h))
                     history.append(h)
