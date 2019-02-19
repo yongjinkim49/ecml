@@ -53,6 +53,8 @@ class SearchHistory(object):
             if use_interim == False:
                 completes = self.get_completes(False)
             return self.observed_errors[completes]
+        elif type_or_id == "all":
+            return self.observed_errors
         else:
             return self.observed_errors[type_or_id]
 

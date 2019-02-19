@@ -50,7 +50,7 @@ class HyperOptChooser(object):
         helper = HyperoptTrialMaker(samples.get_hpv(), self.hyperparams)
         #history = objective.create_history(samples.get_completes())
         t = helper.create_trials(samples.get_completes(), 
-                                samples.get_errors("completes", use_interim))
+                                samples.get_errors("all", use_interim))
         
         debug("number of items in history: {}".format(len(t.trials)))
         num_iters = len(t.trials) + 1
