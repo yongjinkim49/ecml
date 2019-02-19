@@ -60,7 +60,7 @@ class SearchHistory(object):
         # TODO: check hyperparams are existed
         model_index = self.num_samples # assign new model index
         self.num_samples += 1
-        self.complete = np.append(self.complete, model_index, axis=0)
+        self.complete = np.append(self.complete, model_index)
         self.observed_errors = np.append(self.observed_errors, 1.0, axis=0)
         self.terminal_record = np.append(self.terminal_record, 0, axis=0) 
         
