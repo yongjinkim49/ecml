@@ -130,11 +130,15 @@ class RemoteTrainer(TrainerPrototype):
         if type(param_values) == dict:
             for param in param_names:
                 value = param_values[param]
+                if self.hp_config.get_type(param) == 'int':
+                    value = int(value)
                 hpv[param] = value
         elif type(param_values) == list and len(param_names) == len(param_values):
             for i in range(len(param_names)):
                 param = param_names[i]
                 value = param_values[i]
+                if self.hp_config.get_type(param) == 'int':
+                    value = int(value)
                 hpv[param] = value
         else:
             raise TypeError("Invalid hyperparams: {}/{}".format(param_names, param_values))
