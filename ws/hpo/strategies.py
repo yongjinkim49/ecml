@@ -200,7 +200,7 @@ class BayesianHedgeStrategy(object):
             next_index = chooser.next(samples, aquisition_func, use_interim_result)
             if chooser.mean_value is not None:
                 mean_value = chooser.mean_value
-            test_error = samples.get_test_error(next_index)
+            test_error = samples.get_errors(next_index)
 
             all_nominees.append({
                 "optimizer": optimizer,

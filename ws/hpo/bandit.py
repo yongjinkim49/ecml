@@ -212,7 +212,7 @@ class HPOBanditMachine(object):
 
         # for measure information sharing effect
         if self.calc_measure:
-            mr = RankIntersectionMeasure(samples.get_test_error())
+            mr = RankIntersectionMeasure(samples.get_errors())
             if chooser.estimates:
                 metrics = mr.compare_all(chooser.estimates['candidates'],
                                                 chooser.estimates['acq_funcs'])
