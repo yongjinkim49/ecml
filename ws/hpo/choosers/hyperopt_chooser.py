@@ -186,6 +186,8 @@ class HyperoptTrialMaker(object):
             hist = self.create_history(complete)
             index = 0
             for c in complete:
+                if not c in losses:
+                    error("No {} index existed: {}".format(c, losses))
                 loss = losses[c]
                 rval_specs = [None]
                 new_id = index

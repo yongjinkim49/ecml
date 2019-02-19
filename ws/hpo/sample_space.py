@@ -59,11 +59,11 @@ class SearchHistory(object):
     def expand(self, hpv):
         # TODO: check hyperparams are existed
         model_index = self.num_samples # assign new model index
-        self.complete = np.append(self.complete, model_index)
-        self.observed_errors = np.append(self.observed_errors, 1.0)
-        self.terminal_record = np.append(self.terminal_record, 0) 
-        
         self.num_samples += 1
+        self.complete = np.append(self.complete, model_index, axis=0)
+        self.observed_errors = np.append(self.observed_errors, 1.0, axis=0)
+        self.terminal_record = np.append(self.terminal_record, 0, axis=0) 
+        
         return model_index
 
 
@@ -122,7 +122,7 @@ class GridSamplingSpace(SearchHistory):
         
         self.hpv = np.append(self.hpv, [hpv], axis=0)
         self.grid = np.append(self.grid, [grid_vec], axis=0)
-        debug("sampling space expanded: {}".format(len(self.hpv))) 
+        debug("Sampling space expanded: {}".format(len(self.hpv))) 
         return super(GridSamplingSpace, self).expand(hpv)
 
 
