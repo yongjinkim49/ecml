@@ -12,26 +12,29 @@ from hyperopt import hp, fmin, tpe, base, rand, Trials, STATUS_OK, JOB_STATE_DON
 
 import ws.shared.hp_cfg as hp_cfg
 from ws.shared.logger import *
+from ws.shared.resp_shape import *
 from ws.hpo.utils.converter import VectorGridConverter
 
-def init(samples):
-   
+def init(samples, arg_string):
+    args = unpack_args(arg_string)
     ssc = HyperOptSearchSpaceConfig(samples.get_hp_config())    
-    return HyperOptChooser(ssc)
+    return HyperOptChooser(ssc, **args)
 
 
 class HyperOptChooser(object):
 
-    def __init__(self, space_cfg):
+    def __init__(self, space_cfg,
+                 response_shaping=False,
+                 shaping_func="log_err"):
         self.space_cfg = space_cfg
         self.hyperparams = space_cfg.get_params()
         self.hyperopt_space = space_cfg.get_hyperopt_space()
-        self.acq_funcs = ['TPE', 'RANDOM']
+        self.acq_funcs = ['EI', 'RANDOM']
         self.mean_value = None
         self.estimates = None
         self.last_params = None
-        self.response_shaping = False
-        self.shaping_func = None
+        self.response_shaping = bool(response_shaping)
+        self.shaping_func = shaping_func
 
     def set_eval_time_penalty(self, est_eval_time):
         # TODO:We can not apply the evaluation time penalty now. 
@@ -41,6 +44,8 @@ class HyperOptChooser(object):
         algo = tpe.suggest
         if acq_func == 'RANDOM':
             algo = rand.suggest
+        elif acq_func != 'EI':
+            debug("Unsupported acquisition function: {}".format(acq_func))
 
         helper = HyperoptTrialMaker(samples.get_hpv(), self.hyperparams)
         #history = objective.create_history(samples.get_completes())
@@ -192,6 +197,15 @@ class HyperoptTrialMaker(object):
                 
                 hyperopt_trial = trials.new_trial_docs([new_id], rval_specs, rval_results, rval_miscs)[0]
                 index += 1
+                if self.response_shaping is True:
+                    # transform log applied loss for enhancing optimization performance
+                    if self.shaping_func == "log_err":
+                        debug("before scaling: {}".format(loss))
+                        loss = apply_log_err(loss)
+                    elif self.shaping_func == "hybrid_log":
+                        loss = apply_hybrid_log(loss)
+                    else:
+                        debug("Invalid shaping function: {}".format(self.shaping_func))                    
                 hyperopt_trial['result'] = {'loss': loss, 'status': STATUS_OK}
                 hyperopt_trial['state'] = JOB_STATE_DONE
                 

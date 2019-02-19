@@ -109,7 +109,7 @@ optional arguments:
                         ['RANDOM', 'GP', 'RF', 'TPE', 'GP-NM', 'GP-ALE', 'RF-
                         ALE', 'DIV', 'BATCH'] are available. default is DIV.
   -s SPEC, --spec SPEC  The detailed specification of the given mode. (e.g.
-                        acquisition function) ['RANDOM', 'TPE', 'EI', 'PI',
+                        acquisition function) ['RANDOM', 'EI', 'PI',
                         'UCB', 'SEQ', 'RANDOM', 'HEDGE', 'BO-HEDGE', 'BO-
                         HEDGE-T', 'BO-HEDGE-LE', 'BO-HEDGE-LET', 'EG', 'EG-
                         LE', 'GT', 'GT-LE', 'SKO', 'SYNC', 'ASYNC'] are

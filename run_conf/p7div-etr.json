@@ -28,8 +28,8 @@
             "acq_func": "UCB"
         },
         {
-            "model": "HO",
-            "acq_func": "TPE"
+            "model": "TPE-HLE",
+            "acq_func": "EI"
         }        
     ],
     "bandits" : [
@@ -38,7 +38,7 @@
         { "mode": "DIV", "spec": "RANDOM" },
         { "mode": "DIV", "spec": "RANDOM" },
         { "mode": "DIV", "spec": "RANDOM" },
-        { "mode": "DIV", "spec": "RANDOM" }        
+        { "mode": "DIV", "spec": "RANDOM" },        
         { "mode": "DIV", "spec": "RANDOM" }
     ]
 }

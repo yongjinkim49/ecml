@@ -186,10 +186,10 @@ class RemoteJobConnector(RemoteConnectorPrototype):
                 
                 if status == '200':
                     js = json.loads(resp['body'])
-                    debug("Job {} has stopped".format(js['job_id']))
+                    debug("Job {} has stopped at {}.".format(js['job_id'], time.time()))
                     return True
                 elif status == '404':
-                    debug("Job {} had been stopped.".format(job_id))
+                    debug("Job {} had been stopped at {}.".format(job_id, time.time()))
                     return True
                 else:
                     raise ValueError("Invalid worker status: {}".format(status))                

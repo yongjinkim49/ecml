@@ -16,8 +16,8 @@ import ws.hpo.batch_sim as batch
 import ws.hpo.space_mgr as space
 
 
-ALL_OPT_MODELS = ['RANDOM', 'GP', 'GP-NM', 'RF', 'HO', 'GP-HLE', 'RF-HLE', 'HO-HLE']
-ACQ_FUNCS = ['RANDOM', 'TPE', 'EI', 'PI', 'UCB']
+ALL_OPT_MODELS = ['RANDOM', 'GP', 'GP-NM', 'RF', 'TPE', 'GP-HLE', 'RF-HLE', 'TPE-HLE']
+ACQ_FUNCS = ['RANDOM', 'EI', 'PI', 'UCB']
 DIV_SPECS = ['SEQ', 'RANDOM']
 ALL_MIXING_SPECS = ['HEDGE', 'BO-HEDGE', 'BO-HEDGE-T', 'BO-HEDGE-LE', 'BO-HEDGE-LET', 
                     'EG', 'EG-LE', 'GT', 'GT-LE',

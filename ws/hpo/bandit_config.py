@@ -170,9 +170,16 @@ class BanditConfigurator(object):
             rf_options = 'response_shaping=True,shaping_func=hybrid_log'
             choosers['RF-HLE'] = rfc.init('.', rf_options)
 
-        if 'HO' in opts:
-            # XXX: This TPE is a suspicious optimizer due to using lookup. carefully use it.
-            choosers['HO'] = hoc.init(self.samples)
+        if 'TPE' in opts:
+            choosers['TPE'] = hoc.init(self.samples)
+
+        if 'TPE-LE' in opts:
+            options = 'response_shaping=True,shaping_func=log_err'            
+            choosers['TPE-LE'] = hoc.init(self.samples, options)
+
+        if 'TPE-HLE' in opts:
+            options = 'response_shaping=True,shaping_func=hybrid_log'
+            choosers['TPE-HLE'] = hoc.init(self.samples, options)
 
         return choosers
 

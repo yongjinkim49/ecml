@@ -22,7 +22,7 @@ def test_emul_main():
     set_log_level('debug')
     print_trace()
 
-    emul.all_in('HO', 'RANDOM', 1, save_results=False)
+    emul.all_in('TPE', 'RANDOM', 1, save_results=False)
 
 #    emul.mix('SEQ', 1, save_results=False)
 
