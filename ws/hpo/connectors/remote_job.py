@@ -1,5 +1,6 @@
 import json
 import time
+import datetime as dt
 
 from ws.rest_client.restful_lib import Connection
 from ws.shared.logger import *
@@ -183,16 +184,16 @@ class RemoteJobConnector(RemoteConnectorPrototype):
             else:
                 resp = self.conn.request_delete("/jobs/{}/".format(job_id), args={}, headers=self.headers)
                 status = resp['headers']['status']
-                
+                now = dt.datetime.now()
                 if status == '200':
                     js = json.loads(resp['body'])
-                    debug("Job {} has stopped at {}.".format(js['job_id'], time.time()))
+                    debug("Job {} has stopped at {}.".format(js['job_id'], now))
                     return True
                 elif status == '404':
-                    debug("Job {} had been stopped at {}.".format(job_id, time.time()))
+                    debug("Job {} had been stopped at {}.".format(job_id, now))
                     return True
                 else:
-                    raise ValueError("Invalid worker status: {}".format(status))                
+                    raise ValueError("Invalid worker status: {} at {}".format(status, now))                
         except Exception as ex:
             # FIXME: When stopping fails, system will be down. 
             warn("Stopping job {} is failed".format(job_id))
