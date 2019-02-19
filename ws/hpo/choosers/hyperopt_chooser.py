@@ -75,7 +75,7 @@ class HyperOptChooser(object):
     def fake_evaluate(self, params):
         # XXX: replace index value of categorical string type to original string 
         params = self.space_cfg.replace_string_values(params)
-        debug("Selected by HyperOpt: {}".format(params))
+        #debug("Selected by HyperOpt: {}".format(params))
         
         est_loss = 0.5 # XXX:meaningless loss value
         self.last_params = params
@@ -133,6 +133,18 @@ class HyperOptSearchSpaceConfig(object):
     def get_params(self):
         return self.config.param_order
 
+    def get_type(self, name):
+        range = []
+        hyperparams = self.get_params()
+        if name in hyperparams:
+            hp = getattr(self.config.hyperparams, name)
+            if hp.type == 'unicode':
+                return "str"
+            else:
+                return hp.type
+        
+        return range
+
     def replace_string_values(self, param_values):
         for param, setting in self.config.hyperparams.__dict__.items():
             if setting.type == "str":
@@ -169,7 +181,7 @@ class HyperoptTrialMaker(object):
         if len(complete) > 0:
             for ci in complete:
                 hpv = self.hpvs[ci]
-                param_order = self.space_cfg.get_hyperparams()
+                param_order = self.space_cfg.get_params()
                 if len(param_order) == len(hpv):
                     h = {}
                     for i in range(len(param_order)):
