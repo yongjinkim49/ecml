@@ -178,6 +178,7 @@ class HyperoptTrialMaker(object):
                             val = int(val)
                         elif isinstance(val, (str, unicode)):
                             #XXX: String value raises binning error. To avoid this error, we replace it an index
+                            debug("String value raises binning error: {}".format(val))
                             val = str_index #str(val)
                             str_index += 1
                         h[str(self.param_order[i])] = val
