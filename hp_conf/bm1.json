@@ -1,6 +1,6 @@
 {
     "dataset": "MNIST",
-    "model": "CNN",
+    "model": "CNN-9E",
     "config": { 
         "max_epoch": 9 
     },    
