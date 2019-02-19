@@ -65,7 +65,7 @@ class SearchHistory(object):
         self.complete = np.append(self.complete, [model_index], axis=0)
         self.observed_errors = np.append(self.observed_errors, [1.0], axis=0)
         self.terminal_record = np.append(self.terminal_record, [0], axis=0) 
-        
+        debug("Space expanded: {}, {}".format(len(self.observed_errors, self.terminal_record)))
         return model_index
 
 
