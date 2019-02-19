@@ -181,6 +181,7 @@ class HyperoptTrialMaker(object):
                             val = str_index #str(val)
                             str_index += 1
                         h[str(self.param_order[i])] = val
+                    debug("History: {}".format(h))
                     history.append(h)
                 else:
                     error("size mismatch: {} != {}".format(hpv, self.param_order))
@@ -216,7 +217,7 @@ class HyperoptTrialMaker(object):
                         debug("Invalid shaping function: {}".format(self.shaping_func))                    
                 hyperopt_trial['result'] = {'loss': float(loss), 'status': STATUS_OK}
                 hyperopt_trial['state'] = JOB_STATE_DONE
-                debug("History appended: {}-{}".format(c, loss))
+                #debug("History appended: {}-{}".format(c, loss))
                 trials.insert_trial_doc(hyperopt_trial)
             trials.refresh()
             return trials
