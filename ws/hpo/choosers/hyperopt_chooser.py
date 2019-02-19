@@ -207,16 +207,16 @@ class HyperoptTrialMaker(object):
                 index += 1
                 if self.response_shaping is True:
                     # transform log applied loss for enhancing optimization performance
-                    if self.shaping_func == "log_err":
-                        debug("before scaling: {}".format(loss))
+                    debug("before scaling: {}".format(loss))
+                    if self.shaping_func == "log_err":                        
                         loss = apply_log_err(loss)
                     elif self.shaping_func == "hybrid_log":
                         loss = apply_hybrid_log(loss)
                     else:
                         debug("Invalid shaping function: {}".format(self.shaping_func))                    
-                hyperopt_trial['result'] = {'loss': loss, 'status': STATUS_OK}
+                hyperopt_trial['result'] = {'loss': float(loss), 'status': STATUS_OK}
                 hyperopt_trial['state'] = JOB_STATE_DONE
-                
+                debug("History appended: {}-{}".format(c, loss))
                 trials.insert_trial_doc(hyperopt_trial)
             trials.refresh()
             return trials
