@@ -90,6 +90,9 @@ class BanditConfigurator(object):
         if not 'RF' in opts:
             opts.append('RF')
 
+        if not 'TPE' in opts:
+            opts.append('TPE')
+
         shaping_options = ''
         if self.config is not None:
             if 'response_shaping' in self.config:
