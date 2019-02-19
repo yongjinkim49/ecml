@@ -174,7 +174,7 @@ class BanditConfigurator(object):
             choosers['RF-HLE'] = rfc.init('.', rf_options)
 
         if 'TPE' in opts:
-            choosers['TPE'] = hoc.init(self.samples)
+            choosers['TPE'] = hoc.init(self.samples, "")
 
         if 'TPE-LE' in opts:
             options = 'response_shaping=True,shaping_func=log_err'            
