@@ -7,6 +7,7 @@ import math
 
 import pandas as pd
 import numpy as np
+from util import *
 
 from hyperopt import hp, fmin, tpe, base, rand, Trials, STATUS_OK, JOB_STATE_DONE
 
