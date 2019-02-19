@@ -78,9 +78,7 @@ def create_runner(trainer_url, space,
         else:
             hp_config = hp_config
 
-        hpvs = space.get_hpv()
         cred = ""
-        
         if "credential" in run_config:
             cred = run_config["credential"]
         
@@ -89,7 +87,7 @@ def create_runner(trainer_url, space,
 
         rtc = RemoteTrainConnector(trainer_url, hp_config, cred, **kwargs)
 
-        t = trainer.get_remote_trainer(rtc, hpvs, early_term_rule)
+        t = trainer.get_remote_trainer(rtc, space, early_term_rule)
         
         if early_term_rule != None and early_term_rule != "None":
             id = "{}.ETR-{}".format(id, early_term_rule)

@@ -12,9 +12,9 @@ from ws.hpo.trainers.remote.trainer import EarlyTerminateTrainer
 
 class GradientETRTrainer(EarlyTerminateTrainer):
     
-    def __init__(self, controller, hpvs):
+    def __init__(self, controller, space):
         
-        super(GradientETRTrainer, self).__init__(controller, hpvs)
+        super(GradientETRTrainer, self).__init__(controller, space)
 
     def get_gradient_average(self, acc_curve, num_step):
 

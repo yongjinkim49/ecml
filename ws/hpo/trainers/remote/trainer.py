@@ -13,10 +13,10 @@ from ws.shared.logger import *
 from ws.shared.proto import TrainerPrototype
 
 class RemoteTrainer(TrainerPrototype):
-    def __init__(self, connector, hpvs, 
+    def __init__(self, connector, space, 
                 base_error=0.9, polling_interval=5, max_timeout= 100, min_train_epoch=1):
 
-        self.hpvs = hpvs
+        self.space = space
         self.hp_config = connector.hp_config
 
         self.controller = connector
@@ -120,7 +120,7 @@ class RemoteTrainer(TrainerPrototype):
         hpv = {}
         cfg = {'cand_index' : cand_index}
         param_names = self.hp_config.get_hyperparams()
-        param_values = self.hpvs[cand_index]
+        param_values = self.space.get_hpv(cand_index)
         if type(param_values) == np.ndarray:
              param_values = param_values.tolist()
         
