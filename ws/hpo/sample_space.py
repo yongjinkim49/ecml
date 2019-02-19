@@ -38,6 +38,7 @@ class SearchHistory(object):
         if not model_index in self.complete:
             self.candidates = np.setdiff1d(self.candidates, model_index)
             self.complete = np.append(self.complete, model_index)
+            self.terminal_record = np.append(self.terminal_record, model_index)
         self.observed_errors[model_index] = test_error
         if interim == False:
             self.terminal_record[model_index] = 1
