@@ -97,7 +97,7 @@ class HyperOptSearchSpaceConfig(object):
                     # transform setting.range values to log
                     for value in setting.range:
                         log_range.append(int(math.log(base**value)))                    
-                    range_distribution = hp.qloguniform(param, log_range[0], log_range[-1])                     
+                    range_distribution = hp.qloguniform(param, log_range[0], log_range[-1], 1)                     
                 else:
                     range_distribution = hp.quniform(param, setting.range[0], setting.range[-1], 1)
             elif setting.value_type == 'continuous' and setting.type == 'float':
