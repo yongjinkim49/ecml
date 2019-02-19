@@ -47,7 +47,10 @@ class HyperOptChooser(object):
         elif acq_func != 'EI':
             debug("Unsupported acquisition function: {}".format(acq_func))
 
-        helper = HyperoptTrialMaker(samples.get_hpv(), self.hyperparams)
+        helper = HyperoptTrialMaker(samples.get_hpv(), 
+                                    self.hyperparams, 
+                                    self.response_shaping,
+                                    self.shaping_func)
         #history = objective.create_history(samples.get_completes())
         t = helper.create_trials(samples.get_completes(), 
                                 samples.get_errors("all", use_interim))
@@ -153,9 +156,13 @@ def create_ok_result(loss, index=None):
 
 
 class HyperoptTrialMaker(object):
-    def __init__(self, hpvs, param_order):
+    def __init__(self, hpvs, param_order, 
+                 response_shaping=False,
+                 shaping_func="log_err"):
         self.hpvs = hpvs
         self.param_order = param_order
+        self.response_shaping = bool(response_shaping)
+        self.shaping_func = shaping_func        
 
     def create_history(self, complete):
         history = []
