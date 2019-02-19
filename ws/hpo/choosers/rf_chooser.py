@@ -92,7 +92,7 @@ class RFChooser:
             # transform errors to log10(errors) for enhancing optimization performance
             if self.shaping_func == "log_err":
                 
-                debug("before scaling: {}".format(errs))
+                #debug("before scaling: {}".format(errs))
                 errs = np.log10(errs)
                 v_func = np.vectorize(apply_log_err)
                 errs = v_func(errs)
