@@ -29,7 +29,7 @@ ALL_LOG_LEVELS = ['debug', 'warn', 'error', 'log']
 LOOKUP_PATH = './lookup/'
 RUN_CONF_PATH = './run_conf/'
 HP_CONF_PATH = './hp_conf/'
-ALL_OPT_MODELS = ['RANDOM', 'GP', 'RF', 'HYPEROPT', 'GP-NM', 'GP-HLE', 'RF-HLE']
+ALL_OPT_MODELS = ['RANDOM', 'GP', 'RF', 'TPE', 'GP-NM', 'GP-HLE', 'RF-HLE']
 
 
 def validate_args(args):
