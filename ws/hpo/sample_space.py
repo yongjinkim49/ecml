@@ -121,7 +121,8 @@ class GridSamplingSpace(SearchHistory):
         grid_vec = cvt.to_grid_vector(hpv)
         
         self.hpv = np.append(self.hpv, hpv)
-        self.grid = np.append(self.grid, grid_vec) 
+        self.grid = np.append(self.grid, grid_vec)
+        debug("sampling space expanded: {}".format(len(self.hpv))) 
         return super(GridSamplingSpace, self).expand(hpv)
 
 
