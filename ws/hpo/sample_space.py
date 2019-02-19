@@ -38,8 +38,9 @@ class SearchHistory(object):
         if not model_index in self.complete:
             self.candidates = np.setdiff1d(self.candidates, model_index)
             self.complete = np.append(self.complete, model_index)
-            self.terminal_record = np.append(self.terminal_record, model_index)
+            
         self.observed_errors[model_index] = test_error
+
         if interim == False:
             self.terminal_record[model_index] = 1
         else:
@@ -59,7 +60,8 @@ class SearchHistory(object):
         # TODO: check hyperparams are existed
         model_index = self.num_samples # assign new model index
         self.complete = np.append(self.complete, model_index)
-        self.observed_errors = np.append(self.observed_errors, 1.0) 
+        self.observed_errors = np.append(self.observed_errors, 1.0)
+        self.terminal_record = np.append(self.terminal_record, 0) 
         
         self.num_samples += 1
         return model_index
