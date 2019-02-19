@@ -58,8 +58,7 @@ class HyperOptChooser(object):
                         trials=t, return_argmin=False) 
 
         hpv = self.get_last_hpv()
-
-        idx = samples.append(hpv)
+        idx = samples.expand(hpv)
         return idx
 
     def get_last_hpv(self):
