@@ -48,7 +48,7 @@ class HyperOptChooser(object):
             debug("Unsupported acquisition function: {}".format(acq_func))
 
         helper = HyperoptTrialMaker(samples.get_hpv(), 
-                                    self.hyperparams, 
+                                    self.space_cfg, 
                                     self.response_shaping,
                                     self.shaping_func)
         #history = objective.create_history(samples.get_completes())
@@ -156,11 +156,11 @@ def create_ok_result(loss, index=None):
 
 
 class HyperoptTrialMaker(object):
-    def __init__(self, hpvs, param_order, 
+    def __init__(self, hpvs, space_cfg, 
                  response_shaping=False,
                  shaping_func="log_err"):
         self.hpvs = hpvs
-        self.param_order = param_order
+        self.space_cfg = space_cfg
         self.response_shaping = bool(response_shaping)
         self.shaping_func = shaping_func        
 
@@ -169,19 +169,24 @@ class HyperoptTrialMaker(object):
         if len(complete) > 0:
             for ci in complete:
                 hpv = self.hpvs[ci]
-                if len(self.param_order) == len(hpv):
+                param_order = self.space_cfg.get_hyperparams()
+                if len(param_order) == len(hpv):
                     h = {}
-                    for i in range(len(self.param_order)):
+                    for i in range(len(param_order)):
                         str_index = 0
+                        param = param_order[i]
                         val = hpv[i]
-                        if isinstance(val, (int, long)):
-                            val = int(val)
-                        elif isinstance(val, (str, unicode)):
+                        type = self.space_cfg.get_type(param)
+                        if type != 'str':
+                            val = float(val)                        
+                            if type == 'int':
+                                val = int(val)
+                        else:
                             #XXX: String value raises binning error. To avoid this error, we replace it an index
-                            debug("String value raises binning error: {}".format(val))
+                            debug("Avoiding binning error: {}".format(val))
                             val = str_index #str(val)
                             str_index += 1
-                        h[str(self.param_order[i])] = val
+                        h[str(param_order[i])] = val
                     debug("History: {}".format(h))
                     history.append(h)
                 else:
