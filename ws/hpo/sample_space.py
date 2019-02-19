@@ -143,8 +143,8 @@ class SurrogateSamplingSpace(GridSamplingSpace):
             test_error = self.test_errors[model_index]
         super(GridSamplingSpace, self).update_error(model_index, test_error, interim)
 
-    def get_errors(self, index=None):
-        if index != None:
+    def get_errors(self, type_or_id, use_interim=False):
+        if type_or_id != "completes":
             return self.test_errors[index]
         else:
             return self.test_errors
