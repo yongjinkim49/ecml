@@ -28,7 +28,7 @@ class TrainingJobFactory(object):
             "status" : "not assigned",
             "cur_loss" : None,
             "cur_acc" : None,
-            "losses" : [],
+            "lr" : [],
             "run_time" : None,
             "times" : [],
             "cur_iter" : 0,

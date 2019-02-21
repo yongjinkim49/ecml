@@ -54,11 +54,11 @@ class RemoteTrainer(TrainerPrototype):
             try:
                 j = self.controller.get_job("active")
                 if j != None:
-                    if "losses" in j and len(j["losses"]) > 0:
-                        acc_curve = [ 1.0 - loss for loss in j["losses"] ]
+                    if "lr" in j and len(j["lr"]) > 0:
+                        acc_curve = [ acc for acc in j["lr"] ]
                         
                         # Interim error update
-                        interim_err = j["losses"][-1]
+                        interim_err = j["lr"][-1]
                         if prev_interim_err == None or prev_interim_err != interim_err:
                             #debug("Interim error {} will be updated".format(interim_err))
                             if space != None:
@@ -85,17 +85,17 @@ class RemoteTrainer(TrainerPrototype):
                             early_terminated = True
                             break
 
-                    elif "losses" in j and len(j["losses"]) == 0:
+                    elif "lr" in j and len(j["lr"]) == 0:
                         pass
                     else:
                         warn("Invalid job result: {}".format(j))
                 elif j == None:
                     # cross check 
                     r = self.controller.get_job(job_id)
-                    if "losses" in r:
-                        num_losses = len(r["losses"])
-                        if num_losses > 0:
-                            debug("Current working job finished with accuracy {:.4f}.".format(1.0 - min(r["losses"])))
+                    if "lr" in r:
+                        num_accs = len(r["lr"])
+                        if num_accs > 0:
+                            debug("Current working job finished with accuracy {:.4f}.".format(max(r["lr"])))
                             break
                         else:
                             debug("Result of finished job: {}".format(r)) 
@@ -161,20 +161,23 @@ class RemoteTrainer(TrainerPrototype):
                     self.jobs[job_id]["result"] = result
                     self.jobs[job_id]["status"] = "done"
                     
-                    acc_curve = [ 1.0 - loss for loss in result["losses"] ]
-                    max_i = np.argmax(acc_curve)
-                    min_loss = result['cur_loss']
+                    acc_curve = result["lr"]
+                    test_err = result['cur_loss']
+                    best_epoch = len(acc_curve) + 1
                     if acc_curve != None and len(acc_curve) > 0:
-                        min_loss = 1.0 - acc_curve[max_i]
+                        max_i = np.argmax(acc_curve)
+                        test_err = 1.0 - acc_curve[max_i]
+                        best_epoch = max_i + 1
                         self.history.append({
                             "curve": acc_curve, 
                             "train_time": result['run_time'], 
                             "train_epoch": len(acc_curve)}
                             ) 
-
+                                            
                     return {
-                            "test_error": min_loss, 
-                            "exec_time" : result['run_time'], 
+                            "test_error": test_err,
+                            "best_epoch" : best_epoch, 
+                            "train_time" : result['run_time'], 
                             'early_terminated' : early_terminated
                     }  
                 else:

@@ -332,6 +332,7 @@ class HPOBanditMachine(object):
 
                 if best_acc < curr_acc:
                     best_acc = curr_acc
+                
                 if self.run_mode == 'GOAL':
                     if best_acc >= self.target_accuracy:
                         break
@@ -346,8 +347,7 @@ class HPOBanditMachine(object):
 
             trial_sim_time = time.time() - trial_start_time
             log("{} found best accuracy {:.2f}% at run #{}. ({:.1f} sec)".format(
-                self.id, best_acc * 100, i, trial_sim_time))
-            
+                self.id, best_acc * 100, i, trial_sim_time))            
             if best_acc < self.target_accuracy:
                 wr.force_terminated()
 
@@ -381,8 +381,7 @@ class HPOBanditMachine(object):
             self.total_results, start_idx = self.temp_saver.restore()
 
         self.est_records = {}
-        for i in range(start_idx, num_trials):
-            
+        for i in range(start_idx, num_trials):            
             trial_start_time = time.time()
             self.init_bandit()
             arm = self.bandit.get_arm(strategy)
@@ -392,16 +391,15 @@ class HPOBanditMachine(object):
             self.est_records[str(i)] = []
 
             for j in range(NUM_MAX_ITERATIONS):
-
-                start_time = time.time()
+                iter_start_time = time.time()
                 use_interim_result = True
                 if self.warm_up_time != None:
                     if self.warm_up_time < self.cur_runtime:
                         use_interim_result = False
                 model, acq_func, _ = arm.select(j, use_interim_result)
-                select_opt_time = time.time() - start_time
 
-                curr_acc, opt_log = self.pull(model, acq_func, wr, select_opt_time)
+                curr_acc, opt_log = self.pull(model, acq_func, wr, 
+                                             time.time() - iter_start_time)
                 if self.stop_flag == True:
                     return self.total_results
                 

@@ -640,30 +640,6 @@ def get_predefined_style(name):
         color = palette[1]
         if 'S-Div' in name:            
             marker = 'x'
-            if '(naive)' in name:
-                marker = '^'
-                #color = 'xkcd:royal blue'
-            elif '(log)' in name:
-                marker = '*'
-                #color = 'xkcd:royal blue'
-            elif '(hybrid' in name:
-                marker = 'o'
-                #color = 'black'
-            elif '(baseline' in name:
-                marker = ''
-                #color = 'black'                 
-            if 'β=0.1' in name:
-                color = 'xkcd:orange'
-                marker = '*'  
-            elif 'β=0.25' in name:
-                color = 'xkcd:orange'
-                marker = 'd' 
-            elif 'β=0.2' in name:
-                color = 'xkcd:orange'
-                marker = 'v'
-            elif 'β=0.05' in name:
-                color = 'xkcd:orange'
-                marker = '|'                                                                    
         elif 'R-Div' in name:
             marker = 'o'
         elif 'P-Div' in name:
@@ -743,12 +719,37 @@ def get_predefined_style(name):
             marker_index += 3        
             marker = markers[marker_index]
 
-    if '(baseline)' in name:
+    if '(baseline' in name:
         line_style = ':'
 
-    if '(surrogate)' in name:
+    if '(surrogate' in name:
         marker = '8'
         line_style = '--'
+
+    if '(naive' in name:
+        marker = '^'
+        #color = 'xkcd:royal blue'
+    elif '(log' in name:
+        marker = '*'
+        #color = 'xkcd:royal blue'
+    elif '(hybrid' in name:
+        marker = 'o'
+        #color = 'black'
+    elif '(baseline' in name:
+        marker = ''
+        #color = 'black'                 
+    if 'β=0.1' in name:
+        color = 'xkcd:orange'
+        marker = '*'  
+    elif 'β=0.25' in name:
+        color = 'xkcd:orange'
+        marker = 'd' 
+    elif 'β=0.2' in name:
+        color = 'xkcd:orange'
+        marker = 'v'
+    elif 'β=0.05' in name:
+        color = 'xkcd:orange'
+        marker = '|'   
 
     return marker, color, line_style
 
@@ -773,7 +774,9 @@ def draw_trials_curve(results, arm, run_index,
     if len(available_arms) > 0:
         unlabeled_arms = copy.copy(available_arms)
     available_arms = list(available_arms)
-
+    color = 'black'
+    marker = '.'
+    
     for i in range(len(x_time)):
         if len(available_arms) > 0:
             if 'select_trace' in selected:            
