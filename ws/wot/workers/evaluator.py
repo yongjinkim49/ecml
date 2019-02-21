@@ -53,7 +53,7 @@ class IterativeFunctionEvaluator(Trainer):
                 result['lr'] = [copy.copy(r['cur_acc']) for r in self.results]
             
             result['times'] = [copy.copy(r['run_time']) for r in self.results]
-            result['cur_loss'] = min(result['losses'])
+            #result['cur_loss'] = 1.0 - max(result['lr'])
             
             return result
 
