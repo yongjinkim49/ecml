@@ -32,6 +32,7 @@ class RemoteTrainer(TrainerPrototype):
             self.max_train_epoch = self.hp_config.config.max_epoch
         
         self.max_timeout = max_timeout
+        self.wait_factor = 1 # XXX: Increasing this number required for long run job.
         self.polling_interval = polling_interval
 
         super(RemoteTrainer, self).__init__()
@@ -70,7 +71,7 @@ class RemoteTrainer(TrainerPrototype):
                             time_out_count = 0 
                         else:
                             time_out_count += 1
-                            if time_out_count > self.max_timeout * 10:
+                            if time_out_count > self.max_timeout * self.wait_factor:
                                 log("Force to stop due to no update for {} sec".format(self.polling_interval * self.max_timeout * 10))
                                 self.controller.stop(job_id)
                                 early_terminated = True
