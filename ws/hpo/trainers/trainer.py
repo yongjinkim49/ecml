@@ -61,25 +61,27 @@ def get_simulator(space, run_config):
         return TrainEmulator(lookup)
 
 
-def get_remote_trainer(rtc, space, etr):
+def get_remote_trainer(rtc, space, run_config):
     from ws.hpo.trainers.remote.trainer import RemoteTrainer    
     from ws.hpo.trainers.remote.grad_etr import GradientETRTrainer
     from ws.hpo.trainers.remote.threshold_etr import MultiThresholdingETRTrainer
 
     try:
-        if etr == None:
-            return RemoteTrainer(rtc, space)
-        elif etr == 'Gradient':
-            return GradientETRTrainer(rtc, space)
-        elif etr == "DecaTercet":
-            return MultiThresholdingETRTrainer(rtc, space, 0.1)
-        elif etr == "PentaTercet":
-            return MultiThresholdingETRTrainer(rtc, space, 0.2) 
-        elif etr == "TetraTercet":
-            return MultiThresholdingETRTrainer(rtc, space, 0.25)                
+        if run_config and "early_term_rule" in run_config:
+            etr = run_config["early_term_rule"]
+            if etr == 'Gradient':
+                return GradientETRTrainer(rtc, space, run_config)
+            elif etr == "DecaTercet":
+                return MultiThresholdingETRTrainer(rtc, space, 0.1, run_config)
+            elif etr == "PentaTercet":
+                return MultiThresholdingETRTrainer(rtc, space, 0.2, run_config) 
+            elif etr == "TetraTercet":
+                return MultiThresholdingETRTrainer(rtc, space, 0.25, run_config)                
+            else:
+                debug("Invalid ETR: {}".format(etr))
+                return RemoteTrainer(rtc, space, run_config)            
         else:
-            debug("Invalid ETR: {}".format(etr))
-            return RemoteTrainer(rtc, space)
+            return RemoteTrainer(rtc, space, run_config)
 
     except Exception as ex:
         warn("Remote trainer creation failed: {}".format(ex))

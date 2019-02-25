@@ -12,12 +12,12 @@ from ws.hpo.trainers.remote.trainer import EarlyTerminateTrainer
 
 class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
     
-    def __init__(self, controller, space, survive_ratio):
+    def __init__(self, controller, space, survive_ratio, **kwargs):
         
         if survive_ratio < 0.0 or survive_ratio > 0.5:
             raise ValueError("Invalid survive_ratio: {}".format(survive_ratio))
 
-        super(MultiThresholdingETRTrainer, self).__init__(controller, space)
+        super(MultiThresholdingETRTrainer, self).__init__(controller, space, kwargs)
         
         self.survive_ratio = survive_ratio
         self.early_drop_percentile = (survive_ratio * 100.0)

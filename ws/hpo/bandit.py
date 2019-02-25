@@ -82,15 +82,14 @@ def create_runner(trainer_url, space,
         if "credential" in run_config:
             cred = run_config["credential"]
         
-        if run_config and "early_term_rule" in run_config:
-            early_term_rule = run_config["early_term_rule"]
-
         rtc = RemoteTrainConnector(trainer_url, hp_config, cred, **kwargs)
 
-        t = trainer.get_remote_trainer(rtc, space, early_term_rule)
-        
-        if early_term_rule != None and early_term_rule != "None":
-            id = "{}.ETR-{}".format(id, early_term_rule)
+        t = trainer.get_remote_trainer(rtc, space, run_config)
+
+        if run_config and "early_term_rule" in run_config:
+            early_term_rule = run_config["early_term_rule"]
+            if early_term_rule != "None":
+                id = "{}.ETR-{}".format(id, early_term_rule)
 
         machine = HPOBanditMachine(
             space, t, run_mode, target_acc, time_expired, run_config,

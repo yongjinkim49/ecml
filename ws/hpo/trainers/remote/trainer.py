@@ -13,27 +13,40 @@ from ws.shared.logger import *
 from ws.shared.proto import TrainerPrototype
 
 class RemoteTrainer(TrainerPrototype):
-    def __init__(self, connector, space, 
-                base_error=0.9, polling_interval=5, max_timeout= 100, min_train_epoch=1):
+    def __init__(self, connector, space, **kwargs):
+
 
         self.space = space
         self.hp_config = connector.hp_config
 
         self.controller = connector
-        self.base_error = base_error
 
         self.jobs = {}
         self.history = []
 
-        self.min_train_epoch = min_train_epoch
+        if "base_error" in kwargs:
+            self.base_error = float(kwargs["base_error"])
+        else:
+            self.base_error = 0.9
+        if "polling_interval" in kwargs:
+            self.polling_interval = int(kwargs["polling_interval"])
+        else:
+            self.polling_interval = 5
+        
+        if "max_timeout" in kwargs:
+            self.max_timeout = int(kwargs["max_timeout"])
+        else:
+            self.max_timeout = 100
+
+        if "min_train_epoch" in kwargs:
+            min_train_epoch = int(kwargs["min_train_epoch"])
+        else:
+            min_train_epoch = 1
+        
         self.max_train_epoch = None
         
         if hasattr(self.hp_config, "config") and hasattr(self.hp_config.config, "max_epoch"):
             self.max_train_epoch = self.hp_config.config.max_epoch
-        
-        self.max_timeout = max_timeout
-        self.wait_factor = 1 # XXX: Increasing this number required for long run job.
-        self.polling_interval = polling_interval
 
         super(RemoteTrainer, self).__init__()
     
@@ -71,7 +84,7 @@ class RemoteTrainer(TrainerPrototype):
                             time_out_count = 0 
                         else:
                             time_out_count += 1
-                            if time_out_count > self.max_timeout * self.wait_factor:
+                            if time_out_count > self.max_timeout:
                                 log("Force to stop due to no update for {} sec".format(self.polling_interval * self.max_timeout * 10))
                                 self.controller.stop(job_id)
                                 early_terminated = True
@@ -215,9 +228,9 @@ class RemoteTrainer(TrainerPrototype):
 
 class EarlyTerminateTrainer(RemoteTrainer):
     
-    def __init__(self, controller, hpvs):
+    def __init__(self, controller, hpvs, **kwargs):
         self.early_terminated_history = []
-        super(EarlyTerminateTrainer, self).__init__(controller, hpvs)
+        super(EarlyTerminateTrainer, self).__init__(controller, hpvs, kwargs)
 
         self.history = []
         self.early_terminated_history = []
