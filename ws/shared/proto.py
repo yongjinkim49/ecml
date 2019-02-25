@@ -1,4 +1,7 @@
-from ws.rest_client.restful_lib import Connection
+try:
+    from ws.rest_client.restful_lib import Connection
+except ImportError:
+    from ws.rest_client.dummy_lib import Connection
 from ws.shared.db_mgr import get_database_manager 
 
 from ws.shared.logger import * 
@@ -42,7 +45,7 @@ class TrainerPrototype(object):
         raise NotImplementedError("This should override to reset the accumulated result.")
 
     def train(self, cand_index, estimates=None, min_train_epoch=None, space=None):
-        raise NotImplementedError("This should return result dictionary.")
+        raise NotImplementedError("This should return loss and duration.")
 
     def get_interim_error(self, model_index, cur_dur):
         raise NotImplementedError("This should return interim loss.")

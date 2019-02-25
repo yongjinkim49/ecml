@@ -61,6 +61,7 @@ class Worker(object):
             self.timer = threading.Timer(self.timeout, self.stop)
             self.timer.daemon = True
             self.timer.start()
+        return True
 
     def pause(self):
         self.paused = True

@@ -13,17 +13,6 @@ from ws.resources.config import Config
 from ws.resources.jobs import Jobs
 from ws.resources.job import Job
 
-from ws.resources.space import Space
-from ws.resources.candidates import Candidates
-from ws.resources.completes import Completes
-from ws.resources.grid import Grid
-from ws.resources.hparams import HyperparamVector
-from ws.resources.error import ObservedError
-from ws.resources.spaces import Spaces
-from ws.resources.space import Space 
-from ws.resources.nodes import Nodes
-from ws.resources.node import Node
-
 from flask import Flask
 from flask_restful import Api
 
@@ -56,6 +45,15 @@ class WebServiceManager(ManagerPrototype):
                         resource_class_kwargs={'job_manager': self.job_mgr})
 
         if self.job_mgr.type == "ParallelHPOManager":
+            from ws.resources.candidates import Candidates
+            from ws.resources.completes import Completes
+            from ws.resources.grid import Grid
+            from ws.resources.hparams import HyperparamVector
+            from ws.resources.error import ObservedError
+            from ws.resources.spaces import Spaces
+            from ws.resources.space import Space 
+            from ws.resources.nodes import Nodes
+            from ws.resources.node import Node            
             # For managing HPO nodes
             self.api.add_resource(Nodes, "/nodes/", 
                             resource_class_kwargs={'node_manager': self.job_mgr})

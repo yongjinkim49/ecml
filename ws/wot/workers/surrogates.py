@@ -14,8 +14,8 @@ from ws.wot.workers.evaluator import IterativeFunctionEvaluator
 class SurrogateEvaluator(IterativeFunctionEvaluator):
     def __init__(self, name, lookup, **kwargs):
         self.lookup = lookup
-        id = "surrogate_{}-".format(name)        
-        super(SurrogateEvaluator, self).__init__(id)
+        id = "surrogate_{}".format(name)        
+        super(SurrogateEvaluator, self).__init__(id, forked=False)
 
         self.type = 'surrogate'
 
@@ -70,41 +70,53 @@ class SurrogateEvaluator(IterativeFunctionEvaluator):
         try:            
             total_epoches = self.lookup.num_epochs
             if self.max_iters is not None:
-                if self.iter_unit == "epoch" and self.max_iters < total_epoches:
+                if self.iter_unit == "epoch" and self.max_iters <= total_epoches:
                     total_epoches = self.max_iters
                 else:
-                    raise ValueError("Invalid max iteration setting: {}{}".format(self.max_iters, self.iter_unit))
+                    raise ValueError("Invalid max iteration setting: {} vs {}".format(self.max_iters, total_epoches))
             durations = self.lookup.get_elapsed_times()
             total_samples = len(durations)
             if self.cur_model_index > total_samples:
                 raise ValueError("Invalid surrogate vector index")
             duration = durations[self.cur_model_index]
             dur_per_epoch = float(duration / total_epoches)
+            debug("Total duration of surrogate: {}".format(duration))
 
-            for ep in range(total_epoches):
+            for i in range(total_epoches):
+                cur_epoch = i + 1
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()
-                    num_epoch = ep + 1
-                    cur_dur = dur_per_epoch * num_epoch
-                    lcs = self.lookup.get_accuracies_per_epoch(num_epoch)
+
+                    lcs = self.lookup.get_accuracies_per_epoch(cur_epoch)
                     lc = lcs.values.tolist()[self.cur_model_index]
                     #debug("learning curve of index {}: {}".format(self.cur_model_index, lc))
                     cur_loss = 1.0 - lc[-1]
+                    cur_dur = dur_per_epoch * cur_epoch
+                    wait_iters = int
                     if self.time_slip_rate:
-                        time.sleep(dur_per_epoch / self.time_slip_rate)
-                    if self.stop_flag:
+                        wait_iters = int(dur_per_epoch / self.time_slip_rate)
+                    else:
+                        wait_iters = int(dur_per_epoch/10.0)
+						
+                    i = 0
+                    while i < wait_iters and self.stop_flag == False:
+                        time.sleep(1)
+                        i += 1
+						
+                    if self.stop_flag == True:
+                        debug("Early stopped at {}".format(cur_epoch))
                         break
-                    debug("training {} complete with loss {:.4f} at {} epoches".format(self.id, cur_loss, num_epoch)) # for debugging
-                    result = {
-                        "run_time": cur_dur, 
-                        "cur_loss": cur_loss, 
-                        "cur_iter": num_epoch,
-                        "iter_unit" : "epoch"
-                    }
+                    else:
+                        debug("After {:.1f} secs, loss {:.4f} at {} epoches".format(cur_dur, cur_loss, cur_epoch)) # for debugging
+                        result = {
+                            "run_time": cur_dur, 
+                            "cur_loss": cur_loss, 
+                            "cur_iter": cur_epoch,
+                            "iter_unit": "epoch"
+                        }
                     
-                    self.results.append(result)
-                    
+                        self.results.append(result)
 
         except Exception as ex:
             warn("Exception occurs: {}".format(sys.exc_info()[0]))

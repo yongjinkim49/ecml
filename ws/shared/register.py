@@ -2,7 +2,10 @@ import json
 import socket
 import time
 
-from ws.rest_client.restful_lib import Connection
+try:
+    from ws.rest_client.restful_lib import Connection
+except ImportError:
+    from ws.rest_client.dummy_lib import Connection
 from ws.shared.logger import *
 from ws.shared.proto import RemoteConnectorPrototype
 
