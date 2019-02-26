@@ -231,7 +231,7 @@ class EarlyTerminateTrainer(RemoteTrainer):
     
     def __init__(self, controller, hpvs, **kwargs):
         self.early_terminated_history = []
-        super(EarlyTerminateTrainer, self).__init__(controller, hpvs, kwargs)
+        super(EarlyTerminateTrainer, self).__init__(controller, hpvs, **kwargs)
 
         self.history = []
         self.early_terminated_history = []
