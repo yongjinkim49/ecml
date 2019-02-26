@@ -81,8 +81,8 @@ class BanditConfigurator(object):
         choosers = {}
 
         # Add default modeling methods
-        if not 'RANDOM' in opts:
-            opts.append('RANDOM')
+        if not 'SOBOL' in opts:
+            opts.append('SOBOL')
 
         if not 'GP' in opts:
             opts.append('GP')
@@ -150,8 +150,8 @@ class BanditConfigurator(object):
                 gp.add_time_acq_funcs(self.time_acq_funcs)
             choosers['GP-HLE'] = gp
 
-        if 'RANDOM' in opts:
-            choosers['RANDOM'] = RandomChooser.init('.', '')
+        if 'SOBOL' in opts:
+            choosers['SOBOL'] = RandomChooser.init('.', '')
 
         # for global RF options
         rf_options = "max_features=auto" + shaping_options

@@ -101,10 +101,10 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -m MODE, --mode MODE  The optimization mode. Set a model name to use a
-                        specific model only.Set DIV to sequential
+                        specific model only. Set DIV to sequential
                         diverification mode. Set BATCH to parallel mode.
-                        ['RANDOM', 'GP', 'RF', 'HYPEROPT', 'GP-NM', 'GP-HLE',
-                        'RF-HLE', 'DIV', 'ADA', 'BATCH'] are available.
+                        ['SOBOL', 'GP', 'RF', 'TPE', 'GP-NM', 'GP-HLE',
+                        'RF-HLE', 'TPE-HLE', 'DIV', 'ADA', 'BATCH'] are available.
                         default is DIV.
   -s SPEC, --spec SPEC  The detailed specification of the given mode. (e.g.
                         acquisition function) ['RANDOM', 'EI', 'PI',

@@ -1,5 +1,5 @@
 # Baseline algorithms
-#python hpo_runner.py -m RANDOM -s RANDOM -et 1d data1 100
+#python hpo_runner.py -m SOBOL -s RANDOM -et 1d data1 100
 # Single BO
 #python hpo_runner.py -m GP -s EI -et 1d data1 100
 #python hpo_runner.py -m GP -s PI -et 1d data1 100

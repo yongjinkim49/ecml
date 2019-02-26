@@ -705,6 +705,8 @@ def get_predefined_style(name):
         color = palette[0]
         line_style = '--'
         marker = markers[marker_index]
+    elif 'TPE' in name:
+        line_style = ':'
 
     if '-EI' in name:
         color = palette[1]

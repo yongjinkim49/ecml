@@ -1,5 +1,5 @@
 # Baseline algorithms
-#python hpo_runner.py -m RANDOM -s RANDOM -et 5d data207 100
+#python hpo_runner.py -m SOBOL -s RANDOM -et 5d data207 100
 # Sequential BO
 #python hpo_runner.py -m GP -s EI -et 5d data207 100
 #python hpo_runner.py -m GP -s PI -et 5d data207 100

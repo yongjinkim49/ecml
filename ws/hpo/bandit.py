@@ -267,7 +267,7 @@ class HPOBanditMachine(object):
         except:
             warn("Exception occurred in the estimation processing. " +
                  "To avoid stopping, it selects the candidate randomly.")
-            model = 'RANDOM'
+            model = 'SOBOL'
             acq_func = 'RANDOM'
             next_index, opt_time, metrics = self.select_candidate(
                 model, acq_func)
@@ -403,7 +403,7 @@ class HPOBanditMachine(object):
                     return self.total_results
                 
                 if opt_log['exception_raised']:
-                    model = 'RANDOM'
+                    model = 'SOBOL'
                     acq_func = 'RANDOM'
 
                 wr.update_trace(model, acq_func)

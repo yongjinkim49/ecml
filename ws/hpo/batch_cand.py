@@ -28,7 +28,7 @@ class CandidateSelector(object):
                     next_index, cur_shelves))
                 bandit['num_duplicates'] += 1
                 # XXX:random sampling the next candidate for failover
-                model = 'RANDOM'
+                model = 'SOBOL'
                 acq_func = 'RANDOM'
 
             else:
@@ -104,7 +104,7 @@ class CandidateSelector(object):
                  "To avoid stopping, it selects the candidate randomly.")
             next_index, opt_time, _ = optimizer.select_candidate(
                 'RANDOM', 'RANDOM', samples)
-            model = 'RANDOM'
+            model = 'SOBOL'
             acq_func = 'RANDOM'
 
         return next_index, opt_time, model, acq_func
@@ -130,7 +130,7 @@ class CandidateSelector(object):
         except:
             warn("Exception occurred in the estimation processing. " +
                  "To avoid stopping, it selects the candidate randomly.")
-            model = 'RANDOM'
+            model = 'SOBOL'
             acq_func = 'RANDOM'
             next_index, opt_time, _ = optimizer.select_candidate(
                 model, acq_func, samples)

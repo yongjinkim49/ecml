@@ -68,7 +68,7 @@ class BatchHPOSimulator(object):
                 for a in ['EI', 'PI', 'UCB']:
                     b = {'mode': m, 'spec': a}
                     bandits.append(b)
-            bandits.append({'mode': 'RANDOM', 'spec': 'RANDOM'})
+            bandits.append({'mode': 'SOBOL', 'spec': 'RANDOM'})
 
         bandit_list = []
         
@@ -140,7 +140,7 @@ class BatchHPOSimulator(object):
 
         # random starts
         if cur_iters < num_random_start:
-            model = 'RANDOM'
+            model = 'SOBOL'
             acq_func = 'RANDOM'
 
         return model, acq_func
