@@ -30,7 +30,10 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
 
         debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
-
+        train_epoch = len(acc_curve)
+        test_error = 1.0 - max(acc_curve)
+        exec_time = self.total_times[cand_index]
+        etred = False
         for i in range(min_epoch, self.epoch_length-1):
             acc = acc_curve[i]
             if acc > cur_max_acc:
@@ -40,10 +43,15 @@ class IntervalETRTrainer(EarlyTerminateTrainer):
             if self.acc_min < acc < self.acc_max:
                 debug("stop at epoch{} if acc is ({},{})".format(i+1, self.acc_min, self.acc_max))
                 self.early_terminated_history.append(True)
-                return 1.0 - cur_max_acc, self.get_train_time(cand_index, i+1), True
+                test_error = 1.0 - cur_max_acc, 
+                exec_time = self.get_train_time(cand_index, i+1)
+                train_epoch = i + 1
+                etred = True
+                break
 
         return {
-                "test_error":  1.0 - max(acc_curve), 
-                "exec_time" : self.total_times[cand_index], 
-                'early_terminated' : False
+                "test_error": test_error , 
+                "train_epoch": train_epoch,  
+                "exec_time" : exec_time, 
+                'early_terminated' : etred
         }    

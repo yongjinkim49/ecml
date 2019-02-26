@@ -166,11 +166,11 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                         
                         min_loss = 1.0 - cur_max_acc
                         train_time = self.get_train_time(cand_index, i+1)
-                        
                         break                    
         self.early_terminated_history.append(early_terminated)
         return {
                 "test_error":  min_loss,
+                "train_epoch": i + 1, 
                 "exec_time" : train_time, 
                 'early_terminated' : early_terminated
         }    

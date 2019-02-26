@@ -190,6 +190,7 @@ class RemoteTrainer(TrainerPrototype):
                                             
                     return {
                             "test_error": test_err,
+                            "train_epoch": len(acc_curve),
                             "best_epoch" : best_epoch, 
                             "train_time" : result['run_time'], 
                             'early_terminated' : early_terminated

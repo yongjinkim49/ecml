@@ -288,10 +288,14 @@ class HPOBanditMachine(object):
             test_acc = eval_result['test_acc']            
         exec_time = eval_result['exec_time']
         early_terminated = eval_result['early_terminated']
-        
+        train_epoch = eval_result['train_epoch']
+        best_epoch = eval_result['best_epoch']
+
         result_repo.append(next_index, test_error,
                     total_opt_time, exec_time, 
-                    metrics=metrics, early_terminated=early_terminated,
+                    metrics=metrics, 
+                    train_epoch=train_epoch,
+                    best_epoch=best_epoch,
                     test_acc=test_acc)
         self.cur_runtime += (total_opt_time + exec_time)
         self.samples.update_error(next_index, test_error, early_terminated)

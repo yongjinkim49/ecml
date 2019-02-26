@@ -51,7 +51,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
         debug("accuracy curve: {}".format(acc_curve))
         
         min_loss = 1.0 - max(acc_curve)
-
+        train_epoch = len(acc_curve)
         for i in range(min_epoch, self.epoch_length-1):
             acc = acc_curve[i]
             if acc > cur_max_acc:
@@ -68,6 +68,7 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
                             self.early_terminated_history.append(True)
                             min_loss = 1.0 - cur_max_acc
                             train_time = self.get_train_time(cand_index, i+1)
+                            train_epoch = i + 1
                             early_terminated = True
                             break 
 
@@ -84,10 +85,12 @@ class KickStarterETRTrainer(EarlyTerminateTrainer):
                             min_loss = 1.0 - cur_max_acc
                             train_time = self.get_train_time(cand_index, i+1)
                             early_terminated = True
+                            train_epoch = i + 1
                             break
         
         return {
-                "test_error": min_loss, 
+                "test_error": min_loss,
+                "train_epoch": train_epoch,   
                 "exec_time" : train_time, 
                 'early_terminated' : early_terminated
         }    

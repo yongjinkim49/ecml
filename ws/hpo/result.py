@@ -24,6 +24,8 @@ class HPOResultFactory(object):
         self.result['cum_opt_time'] = []        
         self.result['model_idx'] = []  # for tracing selected candidates
         self.result['select_trace'] = []  # for tracing arm selection
+        self.result['train_epoch'] = []
+        self.result['best_epoch'] = []
 
         self.result['num_duplicates'] = []
         #self.result['force_terminate'] = False # whether it found a goal or not
@@ -31,7 +33,9 @@ class HPOResultFactory(object):
         #debug("result initialized")
 
     def append(self, select_index, test_error, opt_time, exec_time, 
-               metrics=None, est_exec_time=None, early_terminated=False, test_acc=None):
+               metrics=None, est_exec_time=None, 
+               train_epoch=None, best_epoch=None,
+               test_acc=None):
         if test_acc == None:
             self.curr_acc = 1.0 - test_error
         else:
@@ -52,7 +56,13 @@ class HPOResultFactory(object):
         self.result['opt_time'].append(opt_time)
         self.result['cum_exec_time'].append(self.cum_exec_time)
         self.result['cum_opt_time'].append(self.cum_opt_time)
-        
+
+        if train_epoch != None:
+            self.result['train_epoch'].append(train_epoch)
+
+        if best_epoch != None:
+            self.result['best_epoch'].append(best_epoch)
+
         #if est_exec_time is None:
         #   est_exec_time = -1 
         #self.result['est_exec_time'].append(est_exec_time)

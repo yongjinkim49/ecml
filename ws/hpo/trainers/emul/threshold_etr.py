@@ -102,7 +102,8 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
         self.early_terminated_history.append(early_terminated)
         
         return {
-                "test_error": min_loss, 
+                "test_error": min_loss,
+                "train_epoch": len(cur_acc_curve), 
                 "exec_time" : train_time, 
                 'early_terminated' : early_terminated
         }    
@@ -176,7 +177,8 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
         self.early_terminated_history.append(early_terminated)
       
         return {
-                "test_error": min_loss, 
+                "test_error": min_loss,
+                "train_epoch": len(cur_acc_curve), 
                 "exec_time" : train_time, 
                 'early_terminated' : early_terminated
         }    

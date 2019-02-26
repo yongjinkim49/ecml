@@ -263,13 +263,16 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         next_index, opt_time, model, acq_func = cs_func(b, cur_shelves, cur_time)
 
         #est_exec_time = b['machine'].estimate_eval_time(next_index, model)
-        test_error, exec_time, etred = b['machine'].evaluate(
+        eval_result = b['machine'].evaluate(
             next_index, model, b['samples'])
-
-        acc = 1.0 - test_error
+        test_error = eval_result['test_error']
+        exec_time = eval_result['exec_time']
+        acc = eval_result['test_acc']
+        train_epoch = eval_result['train_epoch']
+                
         b['local_result'].append(next_index, test_error,
-                                        opt_time, exec_time, 
-                                        early_terminated=etred)
+                                 opt_time, exec_time,
+                                 train_epoch=train_epoch)
         b['samples'].update(next_index, test_error)
 
         b['local_result'].update_trace(model, acq_func)
@@ -364,14 +367,17 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 next_index = cur_shelves[i]['model_idx']
 
                 #est_exec_time = b['machine'].estimate_eval_time(next_index, optimizer)
-                test_error, exec_time, etred = b['machine'].evaluate(
-                    next_index, optimizer, samples)
+                eval_result = b['machine'].evaluate(next_index, optimizer, samples)
+                test_error = eval_result['test_error']
+                exec_time = eval_result['exec_time']
+                train_epoch = eval_result['train_epoch']
+                acc = eval_result['test_acc']
                 total_opt_time = opt_times[i]
                 b['local_result'].append(next_index, test_error,
-                                                total_opt_time, exec_time, 
-                                                early_terminated=etred)
+                                        total_opt_time, exec_time,
+                                        train_epoch=train_epoch)
                 b['samples'].update(next_index, test_error)
-                acc = 1.0 - test_error
+                
                 i += 1
 
                 duration = b['local_result'].get_total_duration(-1)
@@ -404,9 +410,10 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                     'exec_time', -1)
                 opt_time = worst_bandit['local_result'].get_value(
                     'opt_time', -1)
-                
+                best_epoch = best_bandit['local_result'].get_value('best_epoch', -1)
                 repo.append(select_index, test_error,
-                                 opt_time, exec_time)
+                                 opt_time, exec_time,
+                                 best_epoch=best_epoch)
                 repo.count_duplicates(cur_shelves)
 
             self.cur_sync_time += max_duration

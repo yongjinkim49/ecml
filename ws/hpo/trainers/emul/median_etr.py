@@ -50,12 +50,14 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
                     self.early_terminated_history.append(True)
                     return {
                             "test_error":  1.0 - max(acc_curve), 
+                            "train_epoch": self.eval_epoch,
                             "exec_time" : self.get_train_time(cand_index, i+1), 
                             'early_terminated' : True
                     }    
         self.early_terminated_history.append(False)
         return {
                 "test_error":  1.0 - max(acc_curve), 
+                "train_epoch": len(acc_curve),
                 "exec_time" : self.total_times[cand_index], 
                 'early_terminated' : False
         }    
