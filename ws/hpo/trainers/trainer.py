@@ -70,18 +70,18 @@ def get_remote_trainer(rtc, space, run_config):
         if run_config and "early_term_rule" in run_config:
             etr = run_config["early_term_rule"]
             if etr == 'Gradient':
-                return GradientETRTrainer(rtc, space, run_config)
+                return GradientETRTrainer(rtc, space, **run_config)
             elif etr == "DecaTercet":
-                return MultiThresholdingETRTrainer(rtc, space, 0.1, run_config)
+                return MultiThresholdingETRTrainer(rtc, space, 0.1, **run_config)
             elif etr == "PentaTercet":
-                return MultiThresholdingETRTrainer(rtc, space, 0.2, run_config) 
+                return MultiThresholdingETRTrainer(rtc, space, 0.2, **run_config) 
             elif etr == "TetraTercet":
-                return MultiThresholdingETRTrainer(rtc, space, 0.25, run_config)                
+                return MultiThresholdingETRTrainer(rtc, space, 0.25, **run_config)                
             else:
                 debug("Invalid ETR: {}".format(etr))
-                return RemoteTrainer(rtc, space, run_config)            
+                return RemoteTrainer(rtc, space, **run_config)            
         else:
-            return RemoteTrainer(rtc, space, run_config)
+            return RemoteTrainer(rtc, space, **run_config)
 
     except Exception as ex:
         warn("Remote trainer creation failed: {}".format(ex))
