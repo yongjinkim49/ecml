@@ -39,9 +39,9 @@ class RemoteTrainer(TrainerPrototype):
             self.max_timeout = 100
 
         if "min_train_epoch" in kwargs:
-            min_train_epoch = int(kwargs["min_train_epoch"])
+            self.min_train_epoch = int(kwargs["min_train_epoch"])
         else:
-            min_train_epoch = 1
+            self.min_train_epoch = 1
         
         self.max_train_epoch = None
         

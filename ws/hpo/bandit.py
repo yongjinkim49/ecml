@@ -110,7 +110,7 @@ class HPOBanditMachine(object):
                  num_resume=0, 
                  with_pkl=False, 
                  calc_measure=False,
-                 min_train_epoch=10,
+                 min_train_epoch=1,
                  id="HPO"):
 
         self.id = id
