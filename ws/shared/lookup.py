@@ -19,6 +19,9 @@ def load(data_type, data_folder='lookup/', config_folder='hp_conf/', grid_order=
     cfg = hp_cfg.read_config(cfg_path)
 
     num_epochs = 15
+    if data_type == 'data20' or data_type == 'data30':
+        num_epochs = 50
+    
     if hasattr(cfg, 'num_epoch'):
         num_epochs = cfg.num_epoch
     
