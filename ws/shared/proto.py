@@ -71,7 +71,24 @@ class ManagerPrototype(object):
             warn("database can not be updated because it does not loaded yet.")
 
     def authorize(self, auth_key):
+        debug("Auth: {}".format(auth_key))
+        # FIXME: remove dev auth key before it release
         if auth_key == "Basic {}".format(self.database['credential']):
             return True
         else:
+            try:
+                key = auth_key.replace("Basic ", "")
+                u_pw = key.decode('base64')
+                #debug("User:Password = {}".format(u_pw))
+                if ":" in u_pw:
+                    tokens = u_pw.split(":")
+                    #debug("Tokens: {}".format(tokens))
+                    for u in self.database['users']:
+                        if tokens[0] in u and u[tokens[0]] == tokens[1]:
+                            return True
+                
+                return False
+
+            except Exception as ex:
+                debug("Auth key decoding error: {}".format(ex))
             return False
