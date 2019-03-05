@@ -178,6 +178,12 @@ class RemoteTrainer(TrainerPrototype):
                     acc_curve = result["lr"]
                     test_err = result['cur_loss']
                     best_epoch = len(acc_curve) + 1
+                    train_epoch = len(acc_curve)
+                    
+                    # XXX: exceptional case handling - when timeout occurs, acc_curve increased largely.
+                    if self.max_train_epoch != None and train_epoch > self.max_train_epoch:
+                        train_epoch = self.max_train_epoch
+                    
                     if acc_curve != None and len(acc_curve) > 0:
                         max_i = np.argmax(acc_curve)
                         test_err = 1.0 - acc_curve[max_i]
@@ -185,12 +191,12 @@ class RemoteTrainer(TrainerPrototype):
                         self.history.append({
                             "curve": acc_curve, 
                             "train_time": result['run_time'], 
-                            "train_epoch": len(acc_curve)}
+                            "train_epoch": train_epoch}
                             ) 
                                             
                     return {
                             "test_error": test_err,
-                            "train_epoch": len(acc_curve),
+                            "train_epoch": train_epoch,
                             "best_epoch" : best_epoch, 
                             "train_time" : result['run_time'], 
                             'early_terminated' : early_terminated

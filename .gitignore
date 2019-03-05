@@ -125,3 +125,4 @@ results/figs/
 *_log.txt
 results/data2/benchmark/partial/*.json
 results/bm1/*.json
+results/bm1/bohb/

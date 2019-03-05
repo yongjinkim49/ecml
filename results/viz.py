@@ -522,26 +522,6 @@ def draw_boxplot_strategies(results, threshold,
         plt.savefig(target_folder + save_name + '.png', format='png', dpi=300)
 
 
-def get_style(arm, all_items):
-    markers = ['x', '.', 'o', 'p', '*', '^', 's', 'v', 'D', '<',
-               '>', '+', '1', '2', '3', 'P', '4', 'H', '8', 'd']
-    marker_colors = ['xkcd:green', 'xkcd:lavender', 'xkcd:teal',  'xkcd:brown', 'xkcd:purple',
-                     'xkcd:red', 'xkcd:mustard', 'xkcd:pink', 'xkcd:orange', 'xkcd:magenta',
-                     'xkcd:light green', 'xkcd:yellow', 'xkcd:peach', 'xkcd:lime green', 'xkcd:violet',
-                     'xkcd:goldenrod', 'xkcd:fuchsia', 'xkcd:leaf green', 'xkcd:deep purple', 'xkcd:sage']
-    
-    if 'DIV' in arm:
-        line_style = '-'
-    else:
-        line_style = '--'
-        arm = arm.replace('+', '_')
-    try:
-        index = list(all_items).index(arm)
-    except:
-        index = 0
-    return markers[index], marker_colors[index], line_style
-
-
 def name_map(name):
     if name == 'SP-GP-EI(6)':
         return 'Synch. GP-EI-MCMC(10)'
@@ -622,6 +602,31 @@ def get_label(arm):
         return 'Random' + postfix
 
     return label + postfix
+
+
+
+def get_style(arm, all_items):
+    markers = ['o', 'p', '*', '^', 's', 'D', 'x', '<', '.', 'v',
+               '>', '+', '1', '2', '3', 'P', '4', 'H', '8', 'd']
+    marker_colors = ['xkcd:brown', 'xkcd:purple', 'xkcd:violet', 
+                     'xkcd:green', 'xkcd:lime green', 'xkcd:teal', 
+                     'xkcd:magenta', 'xkcd:mustard', 'xkcd:orange', 
+                     'xkcd:red', 'xkcd:pink', 'xkcd:yellow',                      
+                     'xkcd:peach', 'xkcd:lavender', 'xkcd:fuchsia',
+                     'xkcd:goldenrod', 'xkcd:light green', 'xkcd:leaf green', 
+                     'xkcd:deep purple', 'xkcd:sage']
+        
+    if 'DIV' in arm:
+        line_style = '-'
+    else:
+        line_style = '--'
+        arm = arm.replace('+', '_')
+    try:
+        index = list(all_items).index(arm)
+    except:
+        index = 0
+
+    return markers[index], marker_colors[index], line_style
 
 
 def get_predefined_style(name):
@@ -775,16 +780,24 @@ def draw_trials_curve(results, arm, run_index,
     unlabeled_arms = set([arm])
     if len(available_arms) > 0:
         unlabeled_arms = copy.copy(available_arms)
-    available_arms = list(available_arms)
+    available_arms = list(sorted(available_arms))
     color = 'black'
     marker = '.'
+    opacity = 1.0
+    default_marker_size = 6.0
+    marker_size = default_marker_size * opacity
     
     for i in range(len(x_time)):
         if len(available_arms) > 0:
             if 'select_trace' in selected:            
                 arm = selected['select_trace'][i]
-                
+
             marker, color, _ = get_style(arm, available_arms)
+            if 'train_epoch' in selected:
+                opacity = float(selected['train_epoch'][i] / max(selected['train_epoch']))
+                marker_size = float(default_marker_size * opacity * 1.2)
+                marker = 'o' # XXX: set same marker
+
             if 'model_index' in selected:
                 if selected['model_index'][i] < 0:
                     color = 'red'
@@ -796,15 +809,18 @@ def draw_trials_curve(results, arm, run_index,
                     marker = '*'
                 else:
                     marker = 'o'
-                 
 
         if arm in unlabeled_arms:
             subplot.semilogy(
-                x_time[i], y_errors[i], color=color, linestyle='', marker=marker, label=get_label(arm))
+                x_time[i], y_errors[i], 
+                color=color, linestyle='', alpha=opacity,
+                marker=marker, markersize=marker_size,
+                label=get_label(arm))
             unlabeled_arms.remove(arm)
         else:
             subplot.semilogy(x_time[i], y_errors[i],
-                             color=color, linestyle='', marker=marker)
+                             color=color, linestyle='', alpha=opacity,
+                             marker=marker, markersize=marker_size)
 
     # line plot for best error
     subplot.semilogy([0] + x_time, [1.0] + line_best_errors, color='blue',

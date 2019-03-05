@@ -48,13 +48,14 @@ The following additional packages are required to install:
 * validators
 * weave
 * flask-restful
+* requests
 
 If you are working on Linux, install these packages as follows:
 
 ```bash
 
 (hpo)device:path$ conda install pandas scikit-learn future numpy scipy
-(hpo)device:path$ pip install hyperopt validators flask-restful
+(hpo)device:path$ pip install hyperopt validators flask-restful requests
 ```
 
 
