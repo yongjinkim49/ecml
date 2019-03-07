@@ -840,7 +840,12 @@ def draw_trials_curve(results, arm, run_index,
         plt.xticks(x_ticks)
 
     for s in guidelines:
-        label = "Top {:2.2f}%".format(s['difficulty'])
+        label = ""
+        if "label" in s:
+            label = s['label']
+        elif 'difficulty' in s:
+            label = "Top {:2.2f}%".format(s['difficulty'])
+
         plt.text(x_range[-1] + 0.1, s['error'], label, size=12)
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
@@ -1003,7 +1008,12 @@ def draw_best_error_curve(results, arms, repeats,
         plt.ylim(ylim)
 
     for s in guidelines:
-        label = "Top {:.2f}%".format(s['difficulty'])
+        label = ""
+        if "label" in s:
+            label = s['label']
+        elif 'difficulty' in s:
+            label = "Top {:.2f}%".format(s['difficulty'])
+        
         plt.text(x_range[0] + .1, s['error'], label)
         plt.axhline(y=s['error'], color='gray', linestyle=':')
 
