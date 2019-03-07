@@ -14,8 +14,6 @@ from ws.shared.proto import TrainerPrototype
 
 class RemoteTrainer(TrainerPrototype):
     def __init__(self, connector, space, **kwargs):
-
-
         self.space = space
         self.hp_config = connector.hp_config
 
@@ -24,6 +22,8 @@ class RemoteTrainer(TrainerPrototype):
         self.jobs = {}
         self.history = []
 
+        debug("Trainer optional params: {}".format(kwargs))
+        
         if "base_error" in kwargs:
             self.base_error = float(kwargs["base_error"])
         else:
