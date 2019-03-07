@@ -2,6 +2,7 @@
     "credential" : "jo2fulwkq",
     "title": "p7div-etr",
     "early_term_rule" : "DecaTercet",
+    "max_timeout" : 300,
     "arms": [
         {
             "model": "GP-HLE",
