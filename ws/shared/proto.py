@@ -18,7 +18,7 @@ class RemoteConnectorPrototype(object):
             self.timeout = 10
 
         if "num_retry" in kwargs:
-            self.num_retry = kwargs['timeout']
+            self.num_retry = kwargs['num_retry']
         else:
             self.num_retry = 100
 

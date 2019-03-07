@@ -3,7 +3,8 @@
     "model": "CNN-243E",
     "config": { 
         "max_epoch": 243 
-    },    
+    },
+    "max_timeout" : 300,    
     "hyperparams": {
         "num_conv_layers": {
             "type": "int",
