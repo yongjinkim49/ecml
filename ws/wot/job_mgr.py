@@ -30,7 +30,6 @@ class TrainingJobFactory(object):
             "cur_acc" : None,
             "lr" : [],
             "run_time" : None,
-            "times" : [],
             "cur_iter" : 0,
             "iter_unit" : "epoch",
             "dataset" : dataset,

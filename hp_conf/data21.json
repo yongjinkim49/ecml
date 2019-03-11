@@ -1,0 +1,31 @@
+{
+    "dataset": "CIFAR-10",
+    "model": "VGG-4P",
+    "config": { 
+        "max_epoch": 50 
+    },        
+    "hyperparams": {
+        "num_conv1_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [4, 128]
+        },
+        "num_conv2_filters": {
+            "type": "int",
+            "value_type": "discrete",
+            "range": [4, 128]
+        },
+        "learning_rate": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [-4, -2],
+            "power_of": 10
+        },
+        "loss_weight": {
+            "type": "float",
+            "value_type": "continuous",
+            "range": [0.0, 1.0]
+        }
+    },
+    "param_order" : [ "learning_rate", "loss_weight", "num_conv1_filters", "num_conv2_filters"]
+}
