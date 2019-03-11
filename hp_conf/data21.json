@@ -8,12 +8,12 @@
         "num_conv1_filters": {
             "type": "int",
             "value_type": "discrete",
-            "range": [4, 128]
+            "range": [8, 32]
         },
         "num_conv2_filters": {
             "type": "int",
             "value_type": "discrete",
-            "range": [4, 128]
+            "range": [32, 64]
         },
         "learning_rate": {
             "type": "float",
