@@ -275,7 +275,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         b['local_result'].append(next_index, test_error,
                                  opt_time, exec_time,
                                  train_epoch=train_epoch)
-        b['samples'].update(next_index, test_error)
+        b['samples'].update_error(next_index, test_error)
 
         b['local_result'].update_trace(model, acq_func)
         if b['mode'] == 'DIV':
@@ -380,7 +380,7 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 b['local_result'].append(next_index, test_error,
                                         total_opt_time, exec_time,
                                         train_epoch=train_epoch)
-                b['samples'].update(next_index, test_error)
+                b['samples'].update_error(next_index, test_error)
                 
                 i += 1
 
