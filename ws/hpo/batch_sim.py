@@ -268,7 +268,9 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         test_error = eval_result['test_error']
         exec_time = eval_result['exec_time']
         acc = eval_result['test_acc']
-        train_epoch = eval_result['train_epoch']
+        train_epoch = None
+        if 'train_epoch' in eval_result:
+            train_epoch = eval_result['train_epoch']
                 
         b['local_result'].append(next_index, test_error,
                                  opt_time, exec_time,
@@ -370,7 +372,9 @@ class SynchronusBatchSimulator(BatchHPOSimulator):
                 eval_result = b['machine'].evaluate(next_index, optimizer, samples)
                 test_error = eval_result['test_error']
                 exec_time = eval_result['exec_time']
-                train_epoch = eval_result['train_epoch']
+                train_epoch = None
+                if 'train_epoch' in eval_result:
+                    train_epoch = eval_result['train_epoch']
                 acc = eval_result['test_acc']
                 total_opt_time = opt_times[i]
                 b['local_result'].append(next_index, test_error,
