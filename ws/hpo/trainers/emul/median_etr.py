@@ -25,7 +25,6 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
         cur_max_acc = 0
         debug("cand_index:{}".format(cand_index))
         acc_curve = self.acc_curves.loc[cand_index].values
-        self.history.append(acc_curve)
 
         history = []   
 
@@ -36,7 +35,10 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
 
         debug("commencing iteration {}".format(len(self.history)))
         debug("accuracy curve: {}".format(acc_curve))
-
+        test_error = 1.0 - max(acc_curve)
+        train_epoch = len(acc_curve)
+        exec_time = self.total_times[cand_index]
+        early_terminated = False
         for i in range(min_epoch, self.epoch_length-1):
             acc = acc_curve[i]
             if acc > cur_max_acc:
@@ -47,19 +49,19 @@ class VizMedianETRTrainer(EarlyTerminateTrainer): #
             if i+1 == self.eval_epoch:
                 if acc < threshold:
                     debug("terminated at epoch{}".format(i+1))
-                    self.early_terminated_history.append(True)
-                    return {
-                            "test_error":  1.0 - max(acc_curve), 
-                            "train_epoch": self.eval_epoch,
-                            "exec_time" : self.get_train_time(cand_index, i+1), 
-                            'early_terminated' : True
-                    }    
-        self.early_terminated_history.append(False)
+                    train_epoch = self.eval_epoch
+                    acc_curve = acc_curve[:train_epoch]
+                    early_terminated = True
+                    exec_time = self.get_train_time(cand_index, i+1)
+                    break
+
+        self.add_train_history(acc_curve, exec_time, 
+                        train_epoch, early_terminated)
         return {
-                "test_error":  1.0 - max(acc_curve), 
-                "train_epoch": len(acc_curve),
-                "exec_time" : self.total_times[cand_index], 
-                'early_terminated' : False
+                "test_error":  test_error, 
+                "train_epoch": train_epoch,
+                "exec_time" : exec_time, 
+                'early_terminated' : early_terminated
         }    
 
 

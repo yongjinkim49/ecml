@@ -188,11 +188,10 @@ class RemoteTrainer(TrainerPrototype):
                         max_i = np.argmax(acc_curve)
                         test_err = 1.0 - acc_curve[max_i]
                         best_epoch = max_i + 1
-                        self.history.append({
-                            "curve": acc_curve, 
-                            "train_time": result['run_time'], 
-                            "train_epoch": train_epoch}
-                            ) 
+
+                        self.add_train_history(acc_curve, 
+                                               result['run_time'], 
+                                               train_epoch)
                                             
                     return {
                             "test_error": test_err,

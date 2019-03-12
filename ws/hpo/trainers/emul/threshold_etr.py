@@ -66,7 +66,11 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
 
         #debug("cand_index:{}".format(cand_index))
 
-        acc_curve, train_time, min_loss = self.get_preevaluated_result(cand_index)
+        result = self.get_preevaluated_result(cand_index)
+        acc_curve = result['acc_curve']
+        train_time = result['train_time']
+        min_loss = result['test_error']
+
         debug("{}: commencing iteration {}".format(type(self).__name__, len(self.history)))
         #debug("accuracy curve: {}".format(acc_curve))
 
@@ -97,10 +101,7 @@ class ThresholdingETRTrainer(EarlyTerminateTrainer):
             
             cur_epoch += 1
 
-        lc = {"curve": cur_acc_curve, "train_time":train_time, "train_epoch": cur_epoch}
-        self.history.append(lc)
-        self.early_terminated_history.append(early_terminated)
-        
+        self.add_train_history(cur_acc_curve, train_time, cur_epoch, early_terminated)
         return {
                 "test_error": min_loss,
                 "train_epoch": len(cur_acc_curve), 
@@ -146,9 +147,9 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
         if min_train_epoch == None:
             min_train_epoch = 1
         
-        acc_curve, train_time, min_loss = self.get_preevaluated_result(cand_index)
+        result = self.get_preevaluated_result(cand_index)
 
-        cur_acc_curve = acc_curve
+        cur_acc_curve = result['acc_curve']
         cur_max_acc = 0
         cur_epoch = min_train_epoch
         early_terminated = False
@@ -157,29 +158,28 @@ class MultiThresholdingETRTrainer(EarlyTerminateTrainer):
         while cur_epoch <= self.num_epochs:
            
             if cur_epoch < threshold_epoch:
-                min_loss, train_time, early_terminated = self.lower_etr.train(cand_index, estimates,
-                                                                            max_train_epoch=threshold_epoch)
-                if early_terminated == True:
+                result = self.lower_etr.train(cand_index, estimates,
+                                            max_train_epoch=threshold_epoch)
+                
+                if result['early_terminated'] == True:
                     cur_acc_curve = cur_acc_curve[:threshold_epoch]
                     cur_epoch = threshold_epoch
                 else:
-                    min_loss, train_time, early_terminated = self.higher_etr.train(cand_index, estimates, 
-                                                                            min_train_epoch=threshold_epoch)
-                    if early_terminated == True:
+                    result = self.higher_etr.train(cand_index, estimates, 
+                                                   min_train_epoch=threshold_epoch)
+                    if result['early_terminated'] == True:
                         cur_epoch = self.higher_etr.get_eval_epoch()
-                        cur_acc_curve = copy.copy(acc_curve[:cur_epoch]) 
+                        cur_acc_curve = copy.copy(cur_acc_curve[:cur_epoch]) 
                     else:
                        cur_epoch = self.num_epochs 
                 break
 
-        lc = {"curve": cur_acc_curve, "train_time":train_time, "train_epoch": cur_epoch}
-        self.history.append(lc)
-        self.early_terminated_history.append(early_terminated)
-      
+        self.add_train_history(cur_acc_curve, result['exec_time'], 
+                                cur_epoch, result['early_terminated'])
         return {
-                "test_error": min_loss,
+                "test_error": result['test_error'],
                 "train_epoch": len(cur_acc_curve), 
-                "exec_time" : train_time, 
-                'early_terminated' : early_terminated
+                "exec_time" : result['exec_time'], 
+                'early_terminated' : result['early_terminated']
         }    
 

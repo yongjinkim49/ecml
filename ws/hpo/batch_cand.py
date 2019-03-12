@@ -59,7 +59,7 @@ class CandidateSelector(object):
             duration = cur_time - w['start_time']
             #debug("bandit: {} - training model: {}, current duration: {:.1f}".format(bandit["m_id"], working_model, duration))
             pre_error = bandit['machine'].trainer.get_interim_error(working_model, duration)
-            pre_samples.update(working_model, pre_error)
+            pre_samples.update_error(working_model, pre_error)
 
         next_index, opt_time, model, acq_func = self.get_candidate(
             bandit['machine'], self.model, self.acq_func, pre_samples)

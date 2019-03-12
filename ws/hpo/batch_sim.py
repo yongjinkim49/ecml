@@ -263,8 +263,7 @@ class AsynchronusBatchSimulator(BatchHPOSimulator):
         next_index, opt_time, model, acq_func = cs_func(b, cur_shelves, cur_time)
 
         #est_exec_time = b['machine'].estimate_eval_time(next_index, model)
-        eval_result = b['machine'].evaluate(
-            next_index, model, b['samples'])
+        eval_result = b['machine'].evaluate(next_index, model, b['samples'])
         test_error = eval_result['test_error']
         exec_time = eval_result['exec_time']
         acc = eval_result['test_acc']

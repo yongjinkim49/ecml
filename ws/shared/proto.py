@@ -32,6 +32,7 @@ class TrainerPrototype(object):
 
     def __init__(self, *args, **kwargs):
         self.shaping_func = apply_no_shaping
+        self.history = []
 
     def set_response_shaping(self, shape_func_type):
         if shape_func_type == "hybrid_log":
@@ -42,7 +43,14 @@ class TrainerPrototype(object):
             self.shaping_func = apply_no_shaping
 
     def reset(self):
-        raise NotImplementedError("This should override to reset the accumulated result.")
+        self.history = []
+
+    def add_train_history(self, curve, train_time, cur_epoch):
+        self.history.append({
+            "curve": curve, 
+            "train_time": train_time, 
+            "train_epoch": cur_epoch
+        })
 
     def train(self, cand_index, estimates=None, min_train_epoch=None, space=None):
         raise NotImplementedError("This should return loss and duration.")

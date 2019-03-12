@@ -12,11 +12,8 @@ class TrainEmulator(TrainerPrototype):
         self.acc_curves = lookup.get_accuracies_per_epoch()
         self.total_times = lookup.get_elapsed_times()
         self.data_type = lookup.data_type
-        
-        super(TrainEmulator, self).__init__()
 
-    def reset(self):
-        pass
+        super(TrainEmulator, self).__init__()
 
     def get_min_train_epoch(self):
         if self.lookup.data_type == "data200":
@@ -58,13 +55,10 @@ class EarlyTerminateTrainer(TrainEmulator):
     def __init__(self, lookup):
 
         super(EarlyTerminateTrainer, self).__init__(lookup)
-
-        self.history = []
         self.early_terminated_history = []
 
     def reset(self):
-        # reset history
-        self.history = []
+        super(EarlyTerminateTrainer, self).reset()        
         self.early_terminated_history = []
 
     def get_train_time(self, cand_index, stop_epoch):
@@ -80,8 +74,23 @@ class EarlyTerminateTrainer(TrainEmulator):
         acc_curve = self.acc_curves.loc[cand_index].values
         train_time = self.total_times[cand_index]
         min_loss = 1.0 - max(acc_curve)
-        return acc_curve, train_time, min_loss
-        
+
+        return {
+            "acc_curve": acc_curve, 
+            "train_time" : train_time, 
+            "test_error" : min_loss
+        }
+
+    def add_train_history(self, curve, train_time, cur_epoch, 
+                          early_terminated=False):
+        lc = {
+            "curve": curve, 
+            "train_time": train_time, 
+            "train_epoch": cur_epoch
+        }
+        super(EarlyTerminateTrainer, self).add_train_history(curve, train_time, cur_epoch)
+        self.early_terminated_history.append(early_terminated)      
+
 
 class EarlyStopTerminateBoilerplate(EarlyTerminateTrainer):
     ''' Sample code for your ETR logic. 

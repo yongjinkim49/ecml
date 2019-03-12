@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 from collections import Counter
 # For path arrangement (set the parent directory as the root folder)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -18,15 +19,17 @@ def data2_test(etr):
     
     set_log_level('debug')
     
-    run_cfg = bconf.read("p6div-nf.json", path="run_conf/")
+    run_cfg = bconf.read("p6div-no_log-etr-nc.json", path="run_conf/")
     #run_cfg["early_term_rule"] = etr
     c = batch.get_simulator("ASYNC", "data207",
                         "GOAL", 0.9318, 
                         "30h", run_cfg)
     results = c.run(1, save_results=False)
-    for i in range(len(results)):
+    for i in results.keys():
         result = results[i]
-        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
+        traces = result["select_trace"]        
+        log("At trial {}, traces: {}".format(i, traces))
+        
 
 if __name__ == "__main__":
     #data2_test("None")
