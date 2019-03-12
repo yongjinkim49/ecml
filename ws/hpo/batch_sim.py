@@ -128,7 +128,7 @@ class BatchHPOSimulator(object):
         done_index = bandit['local_result'].get_value('model_idx', -1)
         # debug("machine #{} has evaluated work index #{}".format(machine_index, done_index))
 
-        self.cur_samples.update(done_index)
+        self.cur_samples.update_error(done_index)
         
 
     def get_optimizer(self, bandit, cur_iters, num_random_start=2):
