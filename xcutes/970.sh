@@ -1,29 +1,15 @@
-# Baseline algorithms
-#python hpo_runner.py -m SOBOL -s RANDOM -et 1d data20 100
-# Single BO
-#python hpo_runner.py -m GP -s EI -et 1d data20 100
-#python hpo_runner.py -m GP -s PI -et 1d data20 100
-#python hpo_runner.py -m GP -s UCB -et 1d data20 100
-#python hpo_runner.py -m RF -s EI -et 1d data20 100
-#python hpo_runner.py -m RF -s PI -et 1d data20 100
-#python hpo_runner.py -m RF -s UCB -et 1d data20 100
-# Adaptation
-#python hpo_runner.py -rc gp-hedge3.json -m ADA -s BO-HEDGE -et 1d data20 100
-# Sequential diversification
-#python hpo_runner.py -m DIV -s RANDOM -et 1d data20 100
-#python hpo_runner.py -m DIV -s SEQ -et 1d data20 100
-#python hpo_runner.py -rc arms-log.json -m DIV -s SEQ -et 1d data20 100
-#python hpo_runner.py -rc arms-pure.json -m DIV -s SEQ -et 1d data20 100
-# Parallel BO
-#python hpo_runner.py -rc p6gp.json -m BATCH -s SYNC -et 4h data20 100
-#python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 4h data20 100
-#python hpo_runner.py -rc p6gp-nm.json -m BATCH -s ASYNC -et 4h data20 100
-#python hpo_runner.py -rc p6rf.json -m BATCH -s ASYNC -et 4h data20 100
 # Parallel diversification
-#python hpo_runner.py -rc no_failover.json -m BATCH -s ASYNC -et 4h data20 100
-#python hpo_runner.py -m BATCH -s ASYNC -et 4h data20 100
-# Sequential diversification with ETR
-#python hpo_runner.py -m DIV -s SEQ -et 1d -etr VizMedian data20 100
-#python hpo_runner.py -m DIV -s SEQ -et 1d -etr Interval data20 100
-#python hpo_runner.py -m DIV -s SEQ -et 1d -etr Knock data20 100
-#python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalKnock data20 100
+# no log + no ETR
+python hpo_runner.py -rc p6div-no_log-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+python hpo_runner.py -rc p6div-no_log-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+python hpo_runner.py -rc p6div-no_log-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+python hpo_runner.py -rc p6div-no_log.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+# no log + ETR
+python hpo_runner.py -rc p6div-no_log-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+python hpo_runner.py -rc p6div-no_log-etr.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+# hybrid log + ETR
+#python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+#python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+#python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+#python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -e GOAL -eg 0.9934 -et 30h data207 100
+

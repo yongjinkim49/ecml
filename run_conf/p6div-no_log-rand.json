@@ -1,31 +1,30 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "p6div-etr-rand",
-    "early_term_rule" : "DecaTercet",
+    "title": "p6div-no_log-rand",
     "failover": "random",
     "arms": [
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "EI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "PI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "UCB"
         },        
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "EI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "PI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "UCB"
         }
     ],

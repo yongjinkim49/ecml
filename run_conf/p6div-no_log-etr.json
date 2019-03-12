@@ -1,35 +1,34 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "no_failover",
-    "early_term_rule" : "IntervalPentaOpt",
-    "failover": "None",        
+    "title": "p6div-no_log-etr",
+    "early_term_rule" : "DecaTercet",
+    "failover": "premature",    
     "arms": [
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "EI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "PI"
         },
         {
-            "model": "GP-HLE",
+            "model": "GP",
             "acq_func": "UCB"
         },        
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "EI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "PI"
         },
         {
-            "model": "RF-HLE",
+            "model": "RF",
             "acq_func": "UCB"
         }
     ],
-
     "bandits" : [
         { "mode": "DIV", "spec": "RANDOM" },
         { "mode": "DIV", "spec": "RANDOM" },

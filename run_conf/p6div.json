@@ -1,8 +1,7 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "p6div-etr-rand",
-    "early_term_rule" : "DecaTercet",
-    "failover": "random",
+    "title": "p6div",
+    "failover": "premature",
     "arms": [
         {
             "model": "GP-HLE",

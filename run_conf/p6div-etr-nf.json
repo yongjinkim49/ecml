@@ -1,6 +1,6 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "hybrid-deca-no_failover",
+    "title": "p6div-etr-nf",
     "early_term_rule" : "DecaTercet",
     "failover": "None",
     "arms": [

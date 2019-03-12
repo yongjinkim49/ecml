@@ -1,7 +1,6 @@
 {    
     "credential" : "jo2fulwkq",
-    "title": "p6div-etr-rand",
-    "early_term_rule" : "DecaTercet",
+    "title": "p6div-rand",
     "failover": "random",
     "arms": [
         {
