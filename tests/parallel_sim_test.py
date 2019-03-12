@@ -18,7 +18,7 @@ def data2_test(etr):
     
     set_log_level('debug')
     
-    run_cfg = bconf.read("p6div-etr.json", path="run_conf/")
+    run_cfg = bconf.read("p6div-nf.json", path="run_conf/")
     #run_cfg["early_term_rule"] = etr
     c = batch.get_simulator("ASYNC", "data207",
                         "GOAL", 0.9318, 

@@ -49,10 +49,8 @@ class SearchHistory(object):
     def get_errors(self, type_or_id, use_interim=True):
         
         if type_or_id == "completes":
-            completes = self.complete
-            if use_interim == False:
-                completes = self.get_completes(False)
-            return self.observed_errors[completes]
+            c = self.get_completes(use_interim)
+            return self.observed_errors[c]
         elif type_or_id == "all":
             return self.observed_errors
         else:
@@ -143,17 +141,19 @@ class SurrogateSamplingSpace(GridSamplingSpace):
         self.lookup = lookup
 
     # For search history 
-
     def update_error(self, model_index, test_error=None, interim=False):
         if test_error is None:
             test_error = self.test_errors[model_index]
         super(GridSamplingSpace, self).update_error(model_index, test_error, interim)
 
     def get_errors(self, type_or_id, use_interim=False):
-        if type_or_id != "completes":
-            return self.test_errors[index]
-        else:
+        if type_or_id == "completes":
+            c = self.get_completes(use_interim)
+            return self.test_errors[c]
+        elif type_or_id == "all":
             return self.test_errors
+        else:
+            return self.test_errors[type_or_id]
 
     def get_exec_time(self, index=None):
         if index != None:
