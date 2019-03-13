@@ -127,7 +127,7 @@ def execute(run_cfg, args, save_results=False):
                 
             elif 'hp_cfg' in args and args['hp_cfg'] != None:
                 hp_cfg = args['hp_cfg']
-                debug("Create grid space: seed-{}, seed-{}, one hot-{}, # of samples - {}".format(grid_seed, one_hot, num_samples))
+                debug("Create grid space: seed-{}, one hot-{}, # of samples - {}".format(grid_seed, one_hot, num_samples))
 
                 samples = space.create_grid_space(hp_cfg.get_dict(),
                             num_samples=num_samples,
