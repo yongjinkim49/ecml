@@ -288,7 +288,9 @@ class HPOBanditMachine(object):
             test_acc = eval_result['test_acc']            
         exec_time = eval_result['exec_time']
         early_terminated = eval_result['early_terminated']
-        train_epoch = eval_result['train_epoch']
+        train_epoch = None
+        if 'train_epoch' in eval_result:
+            train_epoch = eval_result['train_epoch']
         best_epoch = None
         if 'best_epoch' in eval_result:
             eval_result['best_epoch']
