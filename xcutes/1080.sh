@@ -29,4 +29,8 @@
 #python hpo_runner.py -m DIV -s SEQ -et 1d -etr IntervalPentaOpt data3 100
 #python hpo_runner.py -rc p6gp.json -m BATCH -s ASYNC -et 30h data207 100
 #python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 30h data207 100
-python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data3 100
+#python hpo_runner.py -rc p6div-etr.json -m BATCH -s ASYNC -et 4h data3 100
+python hpo_runner.py -rc p6div-one_hot_grid.json -m RF -s EI -et 12h data3 51
+python hpo_runner.py -rc p6div-one_hot_grid.json -m RF -s EI -et 12h data20 100
+python hpo_runner.py -rc p6div-one_hot_grid.json -m RF -s EI -et 12h data30 100
+python hpo_runner.py -rc p6div-one_hot_grid.json -m RF -s EI -et 90h data207 100

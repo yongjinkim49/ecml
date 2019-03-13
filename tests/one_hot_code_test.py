@@ -10,9 +10,10 @@ from ws.hpo.utils.one_hot_grid import create_one_hot_grid
 def test_main(surrogate, index):
     samples = create_surrogate_space(surrogate)
     grid = create_one_hot_grid(samples)
+    print(samples.get_hpv(index))
     print("vector size: {}\nencoded: {}".format(len(grid), grid[index]))
 
 
 if __name__ == "__main__":
-    test_main('data3', 2)
+    test_main('data207', 6024)
 

@@ -30,7 +30,7 @@
         },
         "use_distortion_for_training": {
             "type": "bool",
-            "value_type": "preordered",
+            "value_type": "categorical",
             "range": [false, true]
         },
         "train_batch_size": {

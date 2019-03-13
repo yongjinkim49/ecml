@@ -41,11 +41,16 @@ class OneHotVectorTransformer(object):
             min = range[0]
             max = range[1]
             encoded = [ (float(value - min) / float(max - min)) ] # normalized
-        elif type == 'categorical' or type == 'preordered':
+        elif type == 'categorical': 
             num_items = len(range)        
             index = self.get_cat_index(range, value)
             vecs = self.create_vectors(num_items)
             encoded = vecs[index]
+        elif type == 'preordered':
+            base = len(range) - 1
+            span = float(1.0 / base)
+            index = self.get_cat_index(range, value)
+            encoded = [index * span]
 
         return encoded
 
