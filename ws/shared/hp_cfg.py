@@ -106,7 +106,7 @@ class HyperparameterConfiguration(DictionaryToObject):
         return self._dict['param_order']
 
     def get_type(self, name):
-        range = []
+        t = None
         hyperparams = self.hyperparams
         if name in hyperparams.__dict__.keys():
             hyperparam = getattr(hyperparams, name)
@@ -115,7 +115,16 @@ class HyperparameterConfiguration(DictionaryToObject):
             else:
                 return hyperparam.type
         
-        return range
+        return t
+
+    def get_value_type(self, name):
+        t = None
+        hyperparams = self.hyperparams
+        if name in hyperparams.__dict__.keys():
+            hyperparam = getattr(hyperparams, name)
+            return hyperparam.value_type
+        
+        return t
 
     def get_range(self, name):
         range = []

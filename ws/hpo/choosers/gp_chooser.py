@@ -125,7 +125,7 @@ class GPChooser:
         
         completes = samples.get_completes(use_interim)
         candidates = samples.get_candidates(use_interim)
-        num_params = len(samples.get_params())
+        num_dims = samples.get_grid_dim()[1] # # of grid dimension
 
         errs = samples.get_errors("completes", use_interim)
         
@@ -135,7 +135,7 @@ class GPChooser:
 
         # Perform the real initialization.
         if self.D == -1:
-            self._real_init(num_params, errs)
+            self._real_init(num_dims, errs)
 
         # Grab out the relevant sets.
         comp = samples.get_grid("completes", use_interim)

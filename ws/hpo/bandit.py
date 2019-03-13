@@ -289,7 +289,9 @@ class HPOBanditMachine(object):
         exec_time = eval_result['exec_time']
         early_terminated = eval_result['early_terminated']
         train_epoch = eval_result['train_epoch']
-        best_epoch = eval_result['best_epoch']
+        best_epoch = None
+        if 'best_epoch' in eval_result:
+            eval_result['best_epoch']
 
         result_repo.append(next_index, test_error,
                     total_opt_time, exec_time, 

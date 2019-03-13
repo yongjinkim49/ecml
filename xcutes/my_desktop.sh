@@ -36,5 +36,5 @@
 #python hpo_runner.py -rc p6div-etr-nf.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
 #python hpo_runner.py -rc p6div-etr-nc.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
 #python hpo_runner.py -rc p6div-etr-rand.json -m BATCH -s ASYNC -e GOAL -eg 0.4596 -et 4h data30 100
-python hpo_runner.py -rc p6div-etr-w12h.json -m DIV -s SEQ -et 1d data3 100
+python hpo_runner.py -rc p6div-etr-one_hot_grid.json -m RF -s EI -et 12h data3 50
 

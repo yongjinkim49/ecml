@@ -5,7 +5,7 @@ from ws.shared.logger import *
 from ws.shared.hp_cfg import HyperparameterConfiguration
 from ws.hpo.utils.converter import VectorGridConverter
 from ws.hpo.utils.grid_gen import *
-
+from ws.hpo.utils.one_hot_grid import OneHotVectorTransformer
 
 class SearchHistory(object):
     def __init__(self, num_samples):
@@ -69,17 +69,24 @@ class SearchHistory(object):
 
 class GridSamplingSpace(SearchHistory):
 
-    def __init__(self, name, grid, hpv, hp_config):
+    def __init__(self, name, grid, hpv, hp_config, one_hot=False):
+
         self.name = name
         if type(hp_config) == dict:
             self.hp_config = HyperparameterConfiguration(hp_config)
         else:
             self.hp_config = hp_config
 
-        self.grid = np.asarray(grid)
         self.hpv = hpv
-
+        if one_hot == True:
+            self.grid = self.get_one_hot_grid()
+        else:
+            self.grid = np.asarray(grid)
+        
         super(GridSamplingSpace, self).__init__(len(hpv))
+
+    def get_size(self):
+        return len(self.hpv)
 
     def get_name(self):
         return self.name
@@ -89,6 +96,9 @@ class GridSamplingSpace(SearchHistory):
 
     def get_params(self):
         return self.hp_config.param_order
+
+    def get_grid_dim(self):
+        return self.grid.shape
 
     def get_grid(self, index=None, use_interim=False):
         if index == "completes":
@@ -125,16 +135,30 @@ class GridSamplingSpace(SearchHistory):
         debug("Sampling space expanded: {}".format(len(self.hpv))) 
         return super(GridSamplingSpace, self).expand(hpv)
 
+    def get_one_hot_grid(self):
+        grid = []
+        num_samples = self.get_size()
+        for i in range(num_samples):
+            s = self.get_hpv(i)
+            c = self.get_hp_config()
+
+            t = OneHotVectorTransformer(c)
+            e = t.transform(s)
+            grid.append(np.asarray(e))
+        return np.asarray(grid) 
+
 
 class SurrogateSamplingSpace(GridSamplingSpace):
 
-    def __init__(self, lookup):
+    def __init__(self, lookup, one_hot=False):
 
         self.grid = lookup.get_sobol_grid()
         self.hpv = lookup.get_hyperparam_vectors()
 
-        super(SurrogateSamplingSpace, self).__init__(lookup.data_type, self.grid, self.hpv, 
-                                                    lookup.hp_config)
+        super(SurrogateSamplingSpace, self).__init__(lookup.data_type, 
+                                                    self.grid, self.hpv, 
+                                                    lookup.hp_config,
+                                                    one_hot=one_hot)
         # preloaded results
         self.test_errors = lookup.get_test_errors()
         self.exec_times = lookup.get_elapsed_times()

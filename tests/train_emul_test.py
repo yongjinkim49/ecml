@@ -12,14 +12,13 @@ from ws.shared.logger import *
 def test_emul_main():
     
     conf = run_config.read('p6div-etr.json')
-    samples = space.create_surrogate_space('data10')
+    samples = space.create_surrogate_space('data3', one_hot=True)
     emul = bandit.create_emulator(samples,
-                'TIME', 0.999, '24h', 
+                'TIME', 0.999, '12h', 
                 run_config=conf)
     #emul.with_pkl = True
     set_log_level('debug')
     print_trace()
-
     
 #    emul.all_in('RF', 'UCB', 1, save_results=True)
 #    emul.mix('BO-HEDGE', 1, save_results=False)

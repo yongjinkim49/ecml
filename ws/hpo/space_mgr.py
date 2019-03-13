@@ -12,14 +12,14 @@ from ws.hpo.sample_space import *
 from ws.hpo.connectors.remote_space import RemoteSampleSpaceConnector
 
 
-def create_surrogate_space(surrogate, grid_order=None):
+def create_surrogate_space(surrogate, grid_order=None, one_hot=False):
     l = lookup.load(surrogate, grid_order=grid_order)
-    s = SurrogateSamplingSpace(l)
+    s = SurrogateSamplingSpace(l, one_hot=one_hot)
     debug("Surrogate sampling space created: {}".format(surrogate))
     return s
 
 
-def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1):
+def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1, one_hot=False):
     if 'config' in hp_cfg_dict:
         if 'num_samples' in hp_cfg_dict['config']:
             num_samples = hp_cfg_dict['config']['num_samples']
@@ -30,8 +30,12 @@ def create_grid_space(hp_cfg_dict, num_samples=20000, grid_seed=1):
     if 'dataset' in hp_cfg_dict and 'model' in hp_cfg_dict:
         prefix = "{}-{}".format(hp_cfg_dict['dataset'], hp_cfg_dict['model'])
     name = "{}-{}".format(prefix, time.strftime('%Y%m%dT%H%M%SZ',time.gmtime()))
+    
     hvg = HyperparameterVectorGenerator(hp_cfg_dict, num_samples, grid_seed)
-    s = GridSamplingSpace(name, hvg.get_grid(), hvg.get_hpv(), hp_cfg_dict)
+    s = GridSamplingSpace(name, 
+                        hvg.get_grid(), hvg.get_hpv(), 
+                        hp_cfg_dict, 
+                        one_hot=one_hot)
     debug("Sampling space created: {}".format(name))
     return s
 

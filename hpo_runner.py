@@ -91,6 +91,7 @@ def execute(run_cfg, args, save_results=False):
             save_pkl = args['pkl']
         
         result = []
+        
         if args['mode'].upper() != 'BATCH':
             m = None
             hp_cfg = None 
@@ -99,22 +100,39 @@ def execute(run_cfg, args, save_results=False):
             trainer = None
             samples = None
 
+            grid_order = None 
+            one_hot = False
+            num_samples = 20000
+            grid_seed = 1
+            if 'grid' in run_cfg:
+                if 'order' in run_cfg['grid']:
+                    grid_order = run_cfg['grid']['order']
+                if 'one_hot' in run_cfg['grid']:
+                    one_hot = run_cfg['grid']['one_hot']
+                if 'num_samples' in run_cfg['grid']:
+                    num_samples = run_cfg['grid']['num_samples']
+                if 'grid_seed' in run_cfg['grid']:
+                    grid_seed = run_cfg['grid']['grid_seed']                       
+            
+            
             if 'surrogate' in args and args['surrogate'] != None:
-                debug("Create surrogate space")
+                debug("Create surrogate space: order-{}, one hot-{}, seed-{}".format(grid_order, one_hot, grid_seed))
                 use_surrogate = args['surrogate']
-                path = "{}{}.json".format(args['hconf_dir'], args['surrogate'])
+                path = "{}{}.json".format(args['hconf_dir'], use_surrogate)
                 
                 hp_cfg = hconf.read_config(path)
-                grid_order = None 
-                
-                if 'grid' in run_cfg and 'order' in run_cfg['grid']:
-                    grid_order = run_cfg['grid']['order']                     
-                
-                samples = space.create_surrogate_space(args['surrogate'], grid_order)
+                samples = space.create_surrogate_space(use_surrogate, 
+                            grid_order=grid_order, 
+                            one_hot=one_hot)
                 
             elif 'hp_cfg' in args and args['hp_cfg'] != None:
                 hp_cfg = args['hp_cfg']
-                samples = space.create_grid_space(hp_cfg.get_dict())
+                debug("Create grid space: seed-{}, seed-{}, one hot-{}, # of samples - {}".format(grid_seed, one_hot, num_samples))
+
+                samples = space.create_grid_space(hp_cfg.get_dict(),
+                            num_samples=num_samples,
+                            grid_seed=grid_seed,
+                            one_hot=one_hot)
             else:
                 raise ValueError("Invalid arguments: {}".format(args))
 
