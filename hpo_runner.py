@@ -101,7 +101,7 @@ def execute(run_cfg, args, save_results=False):
             samples = None
 
             grid_order = None 
-            one_hot = False
+            one_hot = True # Set one hot coding as default for preparing final revision
             num_samples = 20000
             grid_seed = 1
             if 'grid' in run_cfg:
@@ -179,7 +179,7 @@ def main():
     default_spec = 'SEQ'
 
     default_target_goal = 0.9999
-    default_expired_time = 24 * 60 * 60
+    default_expired_time = '10d'
     default_early_term_rule = "None"
     
     exp_criteria = ['TIME', 'GOAL']
