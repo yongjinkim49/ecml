@@ -36,7 +36,7 @@ class RemoteTrainer(TrainerPrototype):
         if "max_timeout" in kwargs:
             self.max_timeout = int(kwargs["max_timeout"])
         else:
-            self.max_timeout = 100
+            self.max_timeout = int((60 * 5) / self.polling_interval) # Set default timeout is 5 min.
 
         if "min_train_epoch" in kwargs:
             self.min_train_epoch = int(kwargs["min_train_epoch"])
