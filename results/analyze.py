@@ -218,21 +218,27 @@ def get_best_acc_of_trial(lookup_table, start_col=10, end_col=25, metric='acc'):
 
 
 def get_difficulty_stats(lookup, difficulties=[]):
-    if len(difficulties) == 0:
-        difficulties = np.array([0.01, 0.005, 0.001, 0.0005, 0.0001])
+
     num_lookup = len(lookup)
+    if len(difficulties) == 0:
+        difficulties = np.array([float(100/num_lookup), float(10/num_lookup)])    
+
     stats = []
     best_accs = lookup['best_acc']
     sorted_accs = np.sort(best_accs)[::-1]
+    top_acc = max(sorted_accs)
     t_i = 0
     for df in difficulties:
         stat = {}
         th = int(df * num_lookup)        
-        stat['difficulty'] = 100 * float(df)
+        stat['difficulty'] = float(df)
+        stat['rank'] = int(num_lookup * float(df))
         stat['error'] = 1.0 - sorted_accs[th]
         stat['accuracy'] = sorted_accs[th]
+        stat['regret'] = top_acc - sorted_accs[th]
         debug(stat)
         stats.append(stat)
+
     return stats
 
 

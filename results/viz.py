@@ -762,16 +762,30 @@ def get_predefined_style(name):
 
 
 def draw_trials_curve(results, arm, run_index,
-                      x_unit='Hour', guidelines=[], loc=3,
-                      xlim=None, ylim=None, title=None, save_name=None,
-                      width=10, height=6):
+                      x_unit='Hour', guidelines=[], g_best_acc=None,
+                      xlim=None, ylim=None, title=None, save_name=None, 
+                      loc=3, width=10, height=6):
     selected = analyze.get_result(results, arm, run_index)
     x_time = analyze.get_total_times(selected, x_unit)
     y_errors = selected['error']
-    line_best_errors = analyze.get_best_errors(selected)
+    
+    if g_best_acc != None:
+        g_best_err = 1.0 - g_best_acc
+        y_errors = y_errors - g_best_err 
+
+    max_err = 1.0
+    line_best_errors = np.array(analyze.get_best_errors(selected))
+    if g_best_acc != None:
+        line_best_errors = line_best_errors - g_best_err
+        max_err = g_best_acc
+    preamble = np.array([max_err])
+    line_best_errors = np.concatenate((preamble, line_best_errors))
     rcParams['figure.figsize'] = width, height
     fig = plt.figure()
     subplot = fig.add_subplot(111)
+    plot_func = subplot.semilogy
+    if g_best_acc != None:
+        plot_func = subplot.plot 
 
     available_arms = set([arm])
     #marker, color, linestyle = get_style(arm, results.keys())
@@ -811,19 +825,19 @@ def draw_trials_curve(results, arm, run_index,
                     marker = 'o'
 
         if arm in unlabeled_arms:
-            subplot.semilogy(
+            plot_func(
                 x_time[i], y_errors[i], 
                 color=color, linestyle='', alpha=opacity,
                 marker=marker, markersize=marker_size,
                 label=get_label(arm))
             unlabeled_arms.remove(arm)
         else:
-            subplot.semilogy(x_time[i], y_errors[i],
+            plot_func(x_time[i], y_errors[i],
                              color=color, linestyle='', alpha=opacity,
                              marker=marker, markersize=marker_size)
 
     # line plot for best error
-    subplot.semilogy([0] + x_time, [1.0] + line_best_errors, color='blue',
+    plot_func([0] + x_time, line_best_errors, color='blue',
                      linestyle='--', label='best error')
 
     if title is not None:
@@ -841,15 +855,22 @@ def draw_trials_curve(results, arm, run_index,
 
     for s in guidelines:
         label = ""
-        if "label" in s:
-            label = s['label']
+        pos = s['error']
+        if g_best_acc != None and "regret" in s:
+            pos = s['regret']
+
+        if "rank" in s:
+            label = "Top-{}".format(s['rank'])
         elif 'difficulty' in s:
-            label = "Top {:2.2f}%".format(s['difficulty'])
+            label = "Top {:.2f}%".format(s['difficulty']*100)
 
-        plt.text(x_range[-1] + 0.1, s['error'], label, size=12)
-        plt.axhline(y=s['error'], color='gray', linestyle=':')
+        plt.text(x_range[-1] + 0.1, pos, label, size=12)
+        plt.axhline(y=pos, color='gray', linestyle=':')
 
-    plt.ylabel("Test error", fontsize=15)
+    if g_best_acc != None:
+        plt.ylabel("Intermidiate regret", fontsize=15)
+    else:
+        plt.ylabel("Test error", fontsize=15)
     plt.xlabel(x_unit, size=15)
     plt.legend(loc=loc, prop={'size': 15})
 
