@@ -23,6 +23,7 @@ def get_simulator(space, run_config):
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
     from ws.hpo.trainers.emul.hybrid_etr import HybridETRTrainer
     from ws.hpo.trainers.emul.kickstart_etr import KickStarterETRTrainer
+    from ws.hpo.trainers.emul.curve_predict_etr import CurvePredictETRTrainer
 
     try:
         if not hasattr(space, 'lookup'):
@@ -52,6 +53,11 @@ def get_simulator(space, run_config):
             return HybridETRTrainer(lookup)            
         elif etr == "KickStarter":
             return KickStarterETRTrainer(lookup, expired_time=expired_time)
+        
+        elif etr == 'Donham15Fantasy':
+            return CurvePredictETRTrainer(lookup)
+        elif etr == 'Donham15':
+            return CurvePredictETRTrainer(lookup, use_fantasy=False)
         else:
             debug("Invalid ETR: {}".format(etr))
             return TrainEmulator(lookup)

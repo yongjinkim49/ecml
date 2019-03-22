@@ -16,12 +16,12 @@ def data207_test(etr):
     hp_cfg = hconf.read_config("hp_conf/data207.json")
     samples = space.create_surrogate_space('data207')
     
-    set_log_level('debug')
+    #set_log_level('debug')
     
     run_cfg = bconf.read("arms.json", path="run_conf/")
-    #run_cfg["early_term_rule"] = etr
+    run_cfg["early_term_rule"] = etr
     m = bandit.create_emulator(samples, 
-                'GOAL', 0.933, '5d',
+                'TIME', 0.935, '5d',
                 run_config=run_cfg)
     results = m.mix('SEQ', 1, save_results=False)
     for i in range(len(results)):
@@ -48,11 +48,10 @@ def data2_test(etr):
 if __name__ == "__main__":
     early_term_test = data207_test
     #early_term_test("None")
-    #early_term_test("Gradient")
-    #early_term_test("VizMedian")
+    early_term_test("Donham15")
+    early_term_test("Donham15Fantasy")
     #early_term_test("Interval")
     #early_term_test("Knock")
-    #early_term_test("VizPentaOpt")
     early_term_test("PentaTercet")
     
 

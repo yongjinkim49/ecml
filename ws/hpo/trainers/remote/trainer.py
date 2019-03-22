@@ -87,7 +87,6 @@ class RemoteTrainer(TrainerPrototype):
                             if time_out_count > self.max_timeout:
                                 log("Force to stop {} due to no update for {} sec".format(job_id, self.polling_interval * self.max_timeout))
                                 self.controller.stop(job_id)
-                                early_terminated = True
                                 break
                         
                         # Early termination check
