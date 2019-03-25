@@ -64,7 +64,7 @@ def data3_test(etr):
 if __name__ == "__main__":
     early_term_test = data3_test
     #early_term_test("None")
-    early_term_test("Donham15")
+    #early_term_test("Donham15")
     early_term_test("Donham15Fantasy")
     #early_term_test("Interval")
     #early_term_test("Knock")

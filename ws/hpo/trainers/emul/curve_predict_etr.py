@@ -55,10 +55,12 @@ class SurrogateLearningCurvePredictor(object):
             if self.get_preset_checkpoint(index) != current_epoch:
                 debug("{} is not the checkpoint.".format(current_epoch))
                 return False
-        
+        f = self.get_fatasy(index) # XXX: prediction failed when it returns 0.0 
         if self.current_best == None:
             return False
-        elif self.get_fatasy(index) < self.current_best:
+        elif f == 0.0:
+            return False
+        elif f < self.current_best:
             return True
         else:
             return False  
@@ -89,7 +91,7 @@ class CurvePredictETRTrainer(EarlyTerminateTrainer):
         exec_time = self.total_times[cand_index]
         etred = False
 
-        if self.predictor.check_termination(cand_index):
+        if self.predictor.check_termination(cand_index) == True:
             exec_time = exec_time * self.predictor.get_checkpoint_ratio() + \
                         self.predictor.get_prediction_time(cand_index)
             train_epoch = self.predictor.get_preset_checkpoint(cand_index)
