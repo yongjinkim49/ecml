@@ -1,8 +1,17 @@
-# Parallel BO
-#python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 4h data2 100
-#python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 4h data3 100
-#python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 4h data10 100
-python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 4h data20 100
-python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 4h data30 100
-python hpo_runner.py -rc p6gp_pi.json -m BATCH -s ASYNC -et 30h data207 100
-
+python hpo_runner.py -m SOBOL -s RANDOM -et 1d data3 100
+# Sequential BO + donham15 (no fantasy use)
+python hpo_runner.py -m RF -s EI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m RF -s PI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m RF -s UCB -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s EI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s PI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s UCB -et 1d -etr Donham15 data3 100
+# Sequential BO + donham15 (fantasy use)
+python hpo_runner.py -m RF -s EI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m RF -s PI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m RF -s UCB -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m DIV -s SEQ -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s EI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s PI -et 1d -etr Donham15 data3 100
+python hpo_runner.py -m GP -s UCB -et 1d -etr Donham15 data3 100

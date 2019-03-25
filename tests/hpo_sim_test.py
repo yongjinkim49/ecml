@@ -44,9 +44,25 @@ def data10_test(etr):
         result = results[i]
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
+def data3_test(etr):
+    hp_cfg = hconf.read_config("hp_conf/data3.json")
+    samples = space.create_surrogate_space('data3')
+    
+    set_log_level('debug')
+    
+    run_cfg = bconf.read("arms.json", path="run_conf/")
+    run_cfg["early_term_rule"] = etr
+    m = bandit.create_emulator(samples, 
+                'TIME', 0.9999, '1d',
+                run_config=run_cfg)
+    results = m.mix('SEQ', 1, save_results=False)
+    for i in range(len(results)):
+        result = results[i]
+        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
+
 
 if __name__ == "__main__":
-    early_term_test = data10_test
+    early_term_test = data3_test
     #early_term_test("None")
     early_term_test("Donham15")
     early_term_test("Donham15Fantasy")
