@@ -681,7 +681,7 @@ def get_predefined_style(name):
     elif '-greedy' in name:
         color = palette[2]
         marker = 's'
-    elif 'Random' == name:
+    elif 'Random' in name:
         color = 'gray'
     elif 'Ind-Avg' == name:
         line_style = ':'
@@ -729,9 +729,15 @@ def get_predefined_style(name):
     if '(baseline' in name:
         line_style = ':'
 
+    if 'fantasy' in name:
+        line_style = ':'
+
     if '(surrogate' in name:
         marker = '8'
         line_style = '--'
+
+    if '(donham' in name:
+        marker = 'd'
 
     if '(naive' in name:
         marker = '^'
