@@ -28,9 +28,9 @@ def data207_test(etr):
         result = results[i]
         log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
-def data10_test(etr):
-    hp_cfg = hconf.read_config("hp_conf/data10.json")
-    samples = space.create_surrogate_space('data10')
+def data20_test(etr):
+    hp_cfg = hconf.read_config("hp_conf/data20.json")
+    samples = space.create_surrogate_space('data20')
     
     set_log_level('debug')
     
@@ -62,7 +62,7 @@ def data3_test(etr):
 
 
 if __name__ == "__main__":
-    early_term_test = data3_test
+    early_term_test = data20_test
     #early_term_test("None")
     #early_term_test("Donham15")
     early_term_test("Donham15Fantasy")
