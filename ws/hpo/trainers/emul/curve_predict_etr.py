@@ -70,9 +70,13 @@ class CurvePredictETRTrainer(EarlyTerminateTrainer):
     def __init__(self, lookup, use_fantasy=True):
         
         super(CurvePredictETRTrainer, self).__init__(lookup)
-        preset = lookup.data_type
-        self.predictor = SurrogateLearningCurvePredictor(preset)
+        self.preset = lookup.data_type
+        self.predictor = SurrogateLearningCurvePredictor(self.preset)
         self.use_fantasy = use_fantasy
+
+    def reset(self):
+        super(CurvePredictETRTrainer, self).reset()
+        self.predictor = SurrogateLearningCurvePredictor(self.preset)
 
     def train(self, cand_index, estimates, min_train_epoch=None, space=None):
         acc = 0 # stopping accuracy
