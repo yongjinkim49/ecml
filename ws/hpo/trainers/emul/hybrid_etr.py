@@ -1,10 +1,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 from itertools import compress
 
 import numpy as np
+import pandas as pd
 
 from ws.hpo.trainers.emul.trainer import EarlyTerminateTrainer
 from ws.shared.logger import *
@@ -174,3 +177,132 @@ class HybridETRTrainer(EarlyTerminateTrainer):
                 "exec_time" : train_time, 
                 'early_terminated' : early_terminated
         }    
+
+class VizTPD_HL_FA_ETRTrainer(EarlyTerminateTrainer):
+
+    def __init__(self, lookup, scope_start, scope_end, threshold, degree):
+        
+        super(VizTPD_HL_FA_ETRTrainer, self).__init__(lookup)
+
+        self.epoch_length = lookup.num_epochs
+        self.lcs = self.history
+        self.eval_epoch_start = 0
+        self.eval_epoch_mid = int(self.epoch_length*0.5)
+        self.eval_epoch_end = int(self.epoch_length*threshold/100.0)
+        self.percentile_L = 100.0 - threshold # 25
+        self.percentile_H = threshold # 75
+        self.degree = degree
+
+    def get_time_saving(self, cand_index, stop_epoch):
+        # XXX: consider preparation time later
+        total_time = self.total_times[cand_index]
+        acc_curve = self.acc_curves.loc[cand_index].values
+        epoch_length = len(acc_curve)
+        est_time = stop_epoch * (total_time / epoch_length)
+        log("Evaluation time saving: {:.1f}s".format(total_time - est_time))
+        return est_time
+
+    def get_threshold(self, prev_lcs, cur_lc, epoch_start, epoch_end, percentile):
+        threshold = None
+        if epoch_start == 0:
+            local_history = []
+            for i in range(len(prev_lcs)):
+                local_history.append(np.mean(prev_lcs[i]["curve"][epoch_start:epoch_end]))
+            local_history.append(np.mean(cur_lc[epoch_start:epoch_end]))
+            threshold = np.percentile(local_history, percentile)
+            return threshold
+        elif epoch_start > 0:
+            local_history = []
+            survivor_list = []
+            for n in range(len(prev_lcs)):
+                if len(prev_lcs[n]["curve"]) > self.eval_epoch_mid:
+                    survivor_list.append(prev_lcs[n])
+            for i in range(len(survivor_list)):
+                local_history.append(np.mean(survivor_list[i]["curve"][epoch_start:epoch_end]))
+            local_history.append(np.mean(cur_lc[epoch_start:epoch_end]))
+            threshold = np.percentile(local_history, percentile)
+            return threshold
+
+    def train(self, cand_index, estimates, min_train_epoch=None, space=None):
+        acc = 0 # stopping accuracy
+        min_epoch = 0
+        cur_max_acc = 0
+        debug("cand_index:{}".format(cand_index))
+
+        acc_curve = self.acc_curves.loc[cand_index].values
+        train_time = self.total_times[cand_index]
+        min_loss = 1.0 - max(acc_curve)
+        train_epoch = len(acc_curve)
+
+        debug("commencing iteration {}".format(len(self.lcs)))
+        #debug("accuracy curve: {}".format(acc_curve))
+        etred = False
+
+        poly_reg = PolynomialFeatures(degree = self.degree)
+        lin_reg2 = LinearRegression()
+
+        stopped_epoch = self.epoch_length
+        for i in range(min_epoch, self.epoch_length):
+            acc = acc_curve[i]
+            if acc > cur_max_acc:
+                cur_max_acc = acc
+            
+            debug("current accuracy at epoch{}: {:.4f}".format(i+1, acc))
+
+            if i+1 == self.eval_epoch_mid:
+                threshold_L = self.get_threshold(self.lcs, acc_curve, self.eval_epoch_start, 
+                                            self.eval_epoch_mid, self.percentile_L)
+                if cur_max_acc < threshold_L:
+                    train_epoch = i+1
+                    X_poly = poly_reg.fit_transform(np.array(range(i+2)[1:]).reshape(-1,1))
+                    Y = np.array(acc_curve[0:i+1])
+                    lin_reg2.fit(X_poly, Y.reshape(-1,1))
+
+                    predicted = poly_reg.fit_transform(np.array(self.epoch_length).reshape(-1,1))[0][0]
+                    if predicted >= 1:
+                        predicted = cur_max_acc
+
+                    debug("terminated at epoch{}".format(i+1))
+                    etred = True
+                    min_loss = 1.0 - predicted
+                    train_time = self.get_time_saving(cand_index, i+1)
+                    stopped_epoch = self.eval_epoch_mid
+                    break
+
+            if i+1 == self.eval_epoch_end:
+                threshold_H = self.get_threshold(self.lcs, acc_curve, self.eval_epoch_mid, 
+                                            self.eval_epoch_end, self.percentile_H)                
+                if cur_max_acc < threshold_H:
+                    train_epoch = i+1
+                    X_poly = poly_reg.fit_transform(np.array(range(i+2)[1:]).reshape(-1,1))
+                    Y = np.array(acc_curve[0:i+1])
+                    lin_reg2.fit(X_poly, Y.reshape(-1,1))
+
+                    predicted = poly_reg.fit_transform(np.array(self.epoch_length).reshape(-1,1))[0][0]
+                    if predicted >= 1:
+                        predicted = cur_max_acc
+
+                    debug("terminated at epoch{}".format(i+1))
+                    etred = True
+                    min_loss = 1.0 - predicted
+                    train_time = self.get_time_saving(cand_index, i+1)
+                    stopped_epoch = self.eval_epoch_end
+                    break
+
+        if stopped_epoch > self.eval_epoch_end:
+            etred = False
+
+        if stopped_epoch == self.eval_epoch_mid:
+            acc_curve = acc_curve[self.eval_epoch_start:self.eval_epoch_mid]
+
+        lc = {"curve": acc_curve, "train_time":train_time}
+        self.early_terminated_history.append(etred)
+        self.lcs.append(lc)
+
+        return {
+                "test_error": min_loss,
+                "exec_time": train_time,
+                "train_epoch": train_epoch,  
+                "early_terminated": etred,
+                "test_acc": cur_max_acc
+        }

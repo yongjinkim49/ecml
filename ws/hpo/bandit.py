@@ -38,9 +38,10 @@ def create_emulator(space,
                     run_config=None,
                     save_pkl=False,
                     num_resume=0,
-                    id="HPO_emulator"):
+                    id="HPO_emulator",
+                    scope_start = 0.0, scope_end = 0.0, threshold = 0.0, degree = 0.0):
 
-    t = trainer.get_simulator(space, run_config)
+    t = trainer.get_simulator(space, run_config, scope_start, scope_end, threshold, degree)
 
     if run_config != None and "early_term_rule" in run_config:
         id = "{}.ETR-{}".format(id, run_config["early_term_rule"]) 

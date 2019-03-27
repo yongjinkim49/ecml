@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from ws.shared.logger import *
 
-def get_simulator(space, run_config):
+def get_simulator(space, run_config, scope_start, scope_end, threshold, degree):
     
     etr = None
     if run_config and "early_term_rule" in run_config:
@@ -21,7 +21,7 @@ def get_simulator(space, run_config):
     from ws.hpo.trainers.emul.threshold_etr import MultiThresholdingETRTrainer     
     from ws.hpo.trainers.emul.knock_etr import KnockETRTrainer
     from ws.hpo.trainers.emul.interval_etr import IntervalETRTrainer
-    from ws.hpo.trainers.emul.hybrid_etr import HybridETRTrainer
+    from ws.hpo.trainers.emul.hybrid_etr import *
     from ws.hpo.trainers.emul.kickstart_etr import KickStarterETRTrainer
     from ws.hpo.trainers.emul.curve_predict_etr import CurvePredictETRTrainer
 
@@ -32,6 +32,8 @@ def get_simulator(space, run_config):
                 
         if etr == None or etr == "None":
             return TrainEmulator(lookup)
+        elif 'fan' in etr:
+            return VizTPD_HL_FA_ETRTrainer(lookup, scope_start, scope_end, threshold, degree)
         elif etr == "DecaTercet":
             return MultiThresholdingETRTrainer(lookup, 0.1)
         elif etr == "PentaTercet":
