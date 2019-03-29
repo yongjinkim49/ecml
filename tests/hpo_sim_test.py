@@ -61,13 +61,13 @@ import ws.hpo.space_mgr as space
 #        log("At trial {}, {} iterations by {}".format(i, len(result["select_trace"]), Counter(result["select_trace"])))
 
 def data_test(etr, scope_start, scope_end, threshold, degree):
-    for model in ['RF','GP']:
+    for model in ['GP','RF']:
         for data_name in ['data2','data3','data10','data20','data30','data207']:
             for i in range(50,51):
                 hp_cfg = hconf.read_config("hp_conf/{}.json".format(data_name))
                 samples = space.create_surrogate_space('{}'.format(data_name))
 
-                set_log_level('debug')
+                #set_log_level('debug')
 
                 time = '12h'
                 if data_name == 'data2':
@@ -85,6 +85,7 @@ def data_test(etr, scope_start, scope_end, threshold, degree):
                     goal = 0.9334
 
                 run_cfg = bconf.read("arms.json", path="run_conf/")
+                run_cfg["early_term_rule"] = etr
                 m = bandit.create_emulator(samples, 
                             'TIME', 0.9999, time,
                             run_config=run_cfg,
